@@ -18,6 +18,11 @@
       "url": "liquid-lava-lamp.json"
     },
     {
+      "id": "neon-orbit",
+      "name": "Neon Orbit",
+      "url": "neon-orbit.json"
+    },
+    {
       "id": "aurora",
       "name": "Aurora",
       "url": "aurora.json"

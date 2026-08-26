@@ -8,13 +8,14 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1] / 'themes'
 CATALOG = ROOT / 'catalog.json'
-SUPPORTED_TYPES = {'clock', 'date', 'text', 'wallpaper', 'panel', 'blob', 'particle'}
+SUPPORTED_TYPES = {'clock', 'date', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring'}
 SUPPORTED_PROPERTIES = {
     'type', 'position', 'left', 'top', 'transform', 'color', 'font-family',
     'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
     'innerHTML', 'background-color', 'border', 'border-radius', 'box-shadow',
     'padding', 'width', 'height', 'gradient', 'animation', 'animation-duration',
     'x', 'size', 'opacity', 'motion', 'motion-distance', 'motion-duration',
+    'diameter', 'stroke-width', 'arc-start', 'arc-length', 'dash', 'rotation-duration', 'rotation-direction',
 }
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},
@@ -24,6 +25,7 @@ REQUIRED_BY_TYPE = {
     'wallpaper': {'gradient'},
     'blob': {'top', 'color', 'size', 'x'},
     'particle': {'top', 'color', 'size', 'x'},
+    'ring': {'top', 'color', 'diameter', 'stroke-width'},
 }
 
 

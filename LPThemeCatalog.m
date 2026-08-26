@@ -269,7 +269,7 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     for (id elementID in elements) {
         NSDictionary *properties = [elements[elementID] isKindOfClass:[NSDictionary class]] ? elements[elementID] : nil;
         NSString *type = [properties[@"type"] isKindOfClass:NSString.class] ? properties[@"type"] : nil;
-        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"text", @"panel", @"wallpaper", @"blob", @"particle" ]];
+        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"text", @"panel", @"wallpaper", @"blob", @"particle", @"ring" ]];
         if (![elementID isKindOfClass:[NSString class]] || properties == nil || ![supportedTypes containsObject:type]) {
             return nil;
         }

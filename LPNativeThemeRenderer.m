@@ -153,6 +153,109 @@
 
 @end
 
+@interface LPOrbitRingView : UIView
+@property (nonatomic, strong) CAShapeLayer *ringLayer;
+@property (nonatomic, assign) CGFloat top;
+@property (nonatomic, assign) CGFloat diameter;
+@property (nonatomic, assign) CGFloat strokeWidth;
+@property (nonatomic, assign) CGFloat arcStartDegrees;
+@property (nonatomic, assign) CGFloat arcLengthDegrees;
+@property (nonatomic, assign) CGFloat rotationDuration;
+@property (nonatomic, assign) BOOL clockwise;
+@property (nonatomic, assign) BOOL rotationStarted;
+- (instancetype)initWithColor:(UIColor *)color
+                          top:(CGFloat)top
+                     diameter:(CGFloat)diameter
+                  strokeWidth:(CGFloat)strokeWidth
+              arcStartDegrees:(CGFloat)arcStartDegrees
+             arcLengthDegrees:(CGFloat)arcLengthDegrees
+                         dash:(NSString *)dash
+                      opacity:(CGFloat)opacity
+             rotationDuration:(CGFloat)rotationDuration
+                    clockwise:(BOOL)clockwise;
+@end
+
+@implementation LPOrbitRingView
+
+- (instancetype)initWithColor:(UIColor *)color
+                          top:(CGFloat)top
+                     diameter:(CGFloat)diameter
+                  strokeWidth:(CGFloat)strokeWidth
+              arcStartDegrees:(CGFloat)arcStartDegrees
+             arcLengthDegrees:(CGFloat)arcLengthDegrees
+                         dash:(NSString *)dash
+                      opacity:(CGFloat)opacity
+             rotationDuration:(CGFloat)rotationDuration
+                    clockwise:(BOOL)clockwise {
+    self = [super initWithFrame:CGRectZero];
+    if (self) {
+        _top = top;
+        _diameter = MIN(MAX(diameter, 44.0), 350.0);
+        _strokeWidth = MIN(MAX(strokeWidth, 1.0), 18.0);
+        _arcStartDegrees = arcStartDegrees;
+        _arcLengthDegrees = MIN(MAX(arcLengthDegrees, 12.0), 360.0);
+        _rotationDuration = MIN(MAX(rotationDuration, 0.65), 24.0);
+        _clockwise = clockwise;
+        self.userInteractionEnabled = NO;
+        self.backgroundColor = UIColor.clearColor;
+
+        _ringLayer = [CAShapeLayer layer];
+        _ringLayer.fillColor = UIColor.clearColor.CGColor;
+        _ringLayer.strokeColor = [color colorWithAlphaComponent:MIN(MAX(opacity, 0.08), 1.0)].CGColor;
+        _ringLayer.lineWidth = _strokeWidth;
+        _ringLayer.lineCap = kCALineCapRound;
+        _ringLayer.shadowColor = color.CGColor;
+        _ringLayer.shadowOpacity = MIN(0.96, MAX(0.30, opacity));
+        _ringLayer.shadowRadius = MIN(MAX(_strokeWidth * 2.2, 4.0), 24.0);
+        _ringLayer.shadowOffset = CGSizeZero;
+        if ([dash isKindOfClass:NSString.class] && dash.length > 0) {
+            NSMutableArray<NSNumber *> *pattern = [NSMutableArray array];
+            for (NSString *part in [dash componentsSeparatedByString:@"|"]) {
+                CGFloat value = part.doubleValue;
+                if (value > 0.0 && value <= 80.0) {
+                    [pattern addObject:@(value)];
+                }
+            }
+            if (pattern.count >= 2) {
+                _ringLayer.lineDashPattern = pattern;
+            }
+        }
+        [self.layer addSublayer:_ringLayer];
+    }
+    return self;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    CGFloat centerX = CGRectGetMidX(self.bounds);
+    CGFloat centerY = self.top + (self.diameter * 0.5);
+    CGFloat radius = MAX(8.0, (self.diameter - self.strokeWidth) * 0.5);
+    CGFloat start = (self.arcStartDegrees - 90.0) * M_PI / 180.0;
+    CGFloat end = start + (self.arcLengthDegrees * M_PI / 180.0);
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(centerX, centerY) radius:radius startAngle:start endAngle:end clockwise:YES];
+    self.ringLayer.frame = self.bounds;
+    self.ringLayer.path = path.CGPath;
+    if (!self.rotationStarted && self.bounds.size.width > 0.0) {
+        self.rotationStarted = YES;
+        [self startRotation];
+    }
+}
+
+- (void)startRotation {
+    if (UIAccessibilityIsReduceMotionEnabled()) {
+        return;
+    }
+    CABasicAnimation *rotation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+    rotation.fromValue = @0.0;
+    rotation.toValue = @(self.clockwise ? (M_PI * 2.0) : -(M_PI * 2.0));
+    rotation.duration = self.rotationDuration;
+    rotation.repeatCount = HUGE_VALF;
+    rotation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    [self.ringLayer addAnimation:rotation forKey:@"lockplus.orbit.rotation"];
+}
+
+@end
+
 @interface LPNativeThemeElement : NSObject
 @property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, copy) NSString *type;
@@ -236,6 +339,37 @@
                 [wallpaper.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
             ]];
             [wallpaper applyVisualAnimationFromProperties:properties];
+            continue;
+        }
+        if ([type isEqualToString:@"ring"]) {
+            UIColor *ringColor = [self colorFromCSS:properties[@"color"] fallback:UIColor.cyanColor];
+            CGFloat top = [self cssNumber:properties[@"top"] defaultValue:150.0];
+            CGFloat diameter = [self cssNumber:properties[@"diameter"] defaultValue:230.0];
+            CGFloat strokeWidth = [self cssNumber:properties[@"stroke-width"] defaultValue:3.0];
+            CGFloat arcStart = [self cssNumber:properties[@"arc-start"] defaultValue:0.0];
+            CGFloat arcLength = [self cssNumber:properties[@"arc-length"] defaultValue:360.0];
+            CGFloat opacity = [self cssNumber:properties[@"opacity"] defaultValue:0.82];
+            CGFloat duration = [self cssNumber:properties[@"rotation-duration"] defaultValue:3.0];
+            NSString *direction = [properties[@"rotation-direction"] isKindOfClass:NSString.class] ? properties[@"rotation-direction"] : @"clockwise";
+            NSString *dash = [properties[@"dash"] isKindOfClass:NSString.class] ? properties[@"dash"] : nil;
+            LPOrbitRingView *ring = [[LPOrbitRingView alloc] initWithColor:ringColor
+                                                                         top:top
+                                                                    diameter:diameter
+                                                                 strokeWidth:strokeWidth
+                                                             arcStartDegrees:arcStart
+                                                            arcLengthDegrees:arcLength
+                                                                        dash:dash
+                                                                     opacity:opacity
+                                                            rotationDuration:duration
+                                                                   clockwise:![direction isEqualToString:@"counterclockwise"]];
+            ring.translatesAutoresizingMaskIntoConstraints = NO;
+            [self insertSubview:ring atIndex:MIN((NSUInteger)1, self.subviews.count)];
+            [NSLayoutConstraint activateConstraints:@[
+                [ring.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+                [ring.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+                [ring.topAnchor constraintEqualToAnchor:self.topAnchor],
+                [ring.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+            ]];
             continue;
         }
         if ([type isEqualToString:@"blob"] || [type isEqualToString:@"particle"]) {
