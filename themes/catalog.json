@@ -13,6 +13,11 @@
       "url": "github-sync-test.json"
     },
     {
+      "id": "liquid-lava-lamp",
+      "name": "Liquid Lava Lamp",
+      "url": "liquid-lava-lamp.json"
+    },
+    {
       "id": "aurora",
       "name": "Aurora",
       "url": "aurora.json"

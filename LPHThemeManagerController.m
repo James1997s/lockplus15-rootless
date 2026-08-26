@@ -9,12 +9,14 @@ static NSString * const kLPPreferencesDomain = @"com.example.lockplus15";
 static NSString * const kLPPreferencesChanged = @"com.example.lockplus15/preferences.changed";
 static NSString * const kLPThemeDirectory = @"/Library/LockPlus15/Themes";
 static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus15/Themes";
+static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 
 @interface LPHThemeManagerController ()
 @property (nonatomic, copy) NSArray<NSDictionary *> *themeRecords;
 @property (nonatomic, strong) UILabel *statusLabel;
 @property (nonatomic, strong) UIProgressView *progressView;
 @property (nonatomic, strong) UIBarButtonItem *refreshButton;
+@property (nonatomic, strong) UIBarButtonItem *restoreButton;
 @property (nonatomic, assign, getter=isSynchronizing) BOOL synchronizing;
 @end
 
@@ -33,6 +35,8 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
 
     self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshThemes)];
     self.navigationItem.rightBarButtonItem = self.refreshButton;
+    self.restoreButton = [[UIBarButtonItem alloc] initWithTitle:@"Restore" style:UIBarButtonItemStylePlain target:self action:@selector(restoreDeletedThemes)];
+    self.navigationItem.leftBarButtonItem = self.restoreButton;
 
     UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.bounds.size.width, 96.0)];
     UILabel *status = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 16.0, MAX(1.0, self.view.bounds.size.width - 48.0), 42.0)];
@@ -92,7 +96,8 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
         NSString *bundledPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:relativePath]);
         NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
         if ([[NSFileManager defaultManager] fileExistsAtPath:bundledPath] || [[NSFileManager defaultManager] fileExistsAtPath:cachedPath]) {
-            [available addObject:@{ @"id": themeID, @"name": name }];
+            BOOL isBundled = [[NSFileManager defaultManager] fileExistsAtPath:bundledPath];
+            [available addObject:@{ @"id": themeID, @"name": name, @"remoteOnly": @(!isBundled) }];
         }
     }
 
@@ -108,6 +113,7 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
     }
     self.synchronizing = YES;
     self.refreshButton.enabled = NO;
+    self.restoreButton.enabled = NO;
     self.progressView.hidden = NO;
     self.progressView.progress = 0.0;
     self.statusLabel.text = @"Downloading and validating the GitHub catalog…";
@@ -128,6 +134,7 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
         }
         self.synchronizing = NO;
         self.refreshButton.enabled = YES;
+        self.restoreButton.enabled = YES;
         [self.tableView.refreshControl endRefreshing];
         if (!success) {
             self.progressView.hidden = YES;
@@ -175,7 +182,13 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
     NSDictionary *record = self.themeRecords[indexPath.row];
     NSString *selectedThemeID = [self selectedThemeID];
     cell.textLabel.text = record[@"name"];
-    cell.detailTextLabel.text = [record[@"id"] isEqualToString:selectedThemeID] ? @"Selected" : @"Tap to apply";
+    if ([record[@"id"] isEqualToString:selectedThemeID]) {
+        cell.detailTextLabel.text = @"Selected";
+    } else if ([record[@"remoteOnly"] boolValue]) {
+        cell.detailTextLabel.text = @"Downloaded from GitHub • Swipe to delete";
+    } else {
+        cell.detailTextLabel.text = @"Bundled fallback • Tap to apply";
+    }
     cell.accessoryType = [record[@"id"] isEqualToString:selectedThemeID] ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
     return cell;
 }
@@ -194,6 +207,91 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
     notify_post(kLPPreferencesChanged.UTF8String);
     self.statusLabel.text = [NSString stringWithFormat:@"%@ applied. Lock the device to view the new theme.", self.themeRecords[indexPath.row][@"name"]];
     [self.tableView reloadData];
+}
+
+- (BOOL)isRemoteOnlyRecord:(NSDictionary *)record {
+    return [record[@"remoteOnly"] boolValue];
+}
+
+- (NSSet<NSString *> *)hiddenThemeIDs {
+    CFPropertyListRef value = CFPreferencesCopyAppValue((__bridge CFStringRef)kLPHiddenThemeIDsKey,
+                                                        (__bridge CFStringRef)kLPPreferencesDomain);
+    NSArray *stored = nil;
+    if (value != NULL && CFGetTypeID(value) == CFArrayGetTypeID()) {
+        stored = [(__bridge NSArray *)value copy];
+    }
+    if (value != NULL) {
+        CFRelease(value);
+    }
+    NSMutableSet<NSString *> *hidden = [NSMutableSet set];
+    for (id candidate in stored) {
+        if ([candidate isKindOfClass:NSString.class] && ((NSString *)candidate).length > 0) {
+            [hidden addObject:candidate];
+        }
+    }
+    return hidden;
+}
+
+- (void)saveHiddenThemeIDs:(NSSet<NSString *> *)hiddenThemeIDs {
+    NSArray *stored = [[hiddenThemeIDs allObjects] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    CFPreferencesSetAppValue((__bridge CFStringRef)kLPHiddenThemeIDsKey,
+                             (__bridge CFPropertyListRef)stored,
+                             (__bridge CFStringRef)kLPPreferencesDomain);
+    CFPreferencesAppSynchronize((__bridge CFStringRef)kLPPreferencesDomain);
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return !self.isSynchronizing && indexPath.row < self.themeRecords.count && [self isRemoteOnlyRecord:self.themeRecords[indexPath.row]];
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return [self tableView:tableView canEditRowAtIndexPath:indexPath] ? UITableViewCellEditingStyleDelete : UITableViewCellEditingStyleNone;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"Delete";
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle != UITableViewCellEditingStyleDelete || ![self tableView:tableView canEditRowAtIndexPath:indexPath]) {
+        return;
+    }
+    NSDictionary *record = self.themeRecords[indexPath.row];
+    NSString *themeID = record[@"id"];
+    NSString *themeName = record[@"name"];
+    UIAlertController *confirmation = [UIAlertController alertControllerWithTitle:@"Delete Downloaded Theme?"
+                                                                           message:[NSString stringWithFormat:@"%@ will be removed from this phone. It stays on GitHub and can be restored later.", themeName]
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+    [confirmation addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    __weak typeof(self) weakSelf = self;
+    [confirmation addAction:[UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:^(__unused UIAlertAction *action) {
+        __strong typeof(weakSelf) self = weakSelf;
+        if (self == nil) {
+            return;
+        }
+        if ([[self selectedThemeID] isEqualToString:themeID]) {
+            CFPreferencesSetAppValue(CFSTR("theme"), CFSTR("aurora"), (__bridge CFStringRef)kLPPreferencesDomain);
+            CFPreferencesAppSynchronize((__bridge CFStringRef)kLPPreferencesDomain);
+        }
+        NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
+        [[NSFileManager defaultManager] removeItemAtPath:cachedPath error:nil];
+        NSMutableSet<NSString *> *hidden = [[self hiddenThemeIDs] mutableCopy];
+        [hidden addObject:themeID];
+        [self saveHiddenThemeIDs:hidden];
+        notify_post(kLPPreferencesChanged.UTF8String);
+        [self reloadThemeRecords];
+        self.statusLabel.text = [NSString stringWithFormat:@"%@ was removed from this phone. Tap Restore to download it again later.", themeName];
+    }]];
+    [self presentViewController:confirmation animated:YES completion:nil];
+}
+
+- (void)restoreDeletedThemes {
+    if (self.isSynchronizing) {
+        return;
+    }
+    [self saveHiddenThemeIDs:[NSSet set]];
+    self.statusLabel.text = @"Deleted GitHub themes restored to the download list. Refreshing…";
+    [self refreshThemes];
 }
 
 - (NSString *)selectedThemeID {

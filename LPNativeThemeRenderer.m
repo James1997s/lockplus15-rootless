@@ -48,6 +48,111 @@
 
 @end
 
+@interface LPLiquidBlobView : UIView
+@property (nonatomic, strong) CAShapeLayer *blobLayer;
+@property (nonatomic, assign) CGFloat normalizedX;
+@property (nonatomic, assign) CGFloat top;
+@property (nonatomic, assign) CGFloat diameter;
+@property (nonatomic, assign) CGFloat alphaValue;
+@property (nonatomic, assign) CGFloat motionDistance;
+@property (nonatomic, assign) CGFloat motionDuration;
+@property (nonatomic, copy) NSString *motion;
+@property (nonatomic, assign) BOOL motionStarted;
+- (instancetype)initWithColor:(UIColor *)color
+                  normalizedX:(CGFloat)normalizedX
+                         top:(CGFloat)top
+                        size:(CGFloat)size
+                       alpha:(CGFloat)alpha
+              motionDistance:(CGFloat)motionDistance
+               motionDuration:(CGFloat)motionDuration
+                       motion:(NSString *)motion;
+@end
+
+@implementation LPLiquidBlobView
+
+- (instancetype)initWithColor:(UIColor *)color
+                  normalizedX:(CGFloat)normalizedX
+                         top:(CGFloat)top
+                        size:(CGFloat)size
+                       alpha:(CGFloat)alpha
+              motionDistance:(CGFloat)motionDistance
+               motionDuration:(CGFloat)motionDuration
+                       motion:(NSString *)motion {
+    self = [super initWithFrame:CGRectZero];
+    if (self) {
+        _normalizedX = MIN(MAX(normalizedX, 0.0), 1.0);
+        _top = top;
+        _diameter = MIN(MAX(size, 14.0), 340.0);
+        _alphaValue = MIN(MAX(alpha, 0.08), 1.0);
+        _motionDistance = MIN(MAX(motionDistance, 8.0), 260.0);
+        _motionDuration = MIN(MAX(motionDuration, 2.0), 24.0);
+        _motion = [motion copy] ?: @"lava";
+        self.userInteractionEnabled = NO;
+        self.backgroundColor = UIColor.clearColor;
+        self.clipsToBounds = YES;
+
+        _blobLayer = [CAShapeLayer layer];
+        _blobLayer.fillColor = [color colorWithAlphaComponent:_alphaValue].CGColor;
+        _blobLayer.shadowColor = color.CGColor;
+        _blobLayer.shadowOpacity = MIN(0.95, _alphaValue + 0.20);
+        _blobLayer.shadowRadius = MIN(MAX(_diameter * 0.20, 8.0), 42.0);
+        _blobLayer.shadowOffset = CGSizeZero;
+        [self.layer addSublayer:_blobLayer];
+    }
+    return self;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    CGFloat centerX = self.bounds.size.width * self.normalizedX;
+    CGFloat centerY = self.top + (self.diameter * 0.5);
+    UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(centerX - (self.diameter * 0.5), centerY - (self.diameter * 0.5), self.diameter, self.diameter)];
+    self.blobLayer.frame = self.bounds;
+    self.blobLayer.path = path.CGPath;
+    if (!self.motionStarted && self.bounds.size.width > 0.0 && self.bounds.size.height > 0.0) {
+        self.motionStarted = YES;
+        [self startMotion];
+    }
+}
+
+- (void)startMotion {
+    if (UIAccessibilityIsReduceMotionEnabled()) {
+        return;
+    }
+    CABasicAnimation *vertical = [CABasicAnimation animationWithKeyPath:@"transform.translation.y"];
+    if ([self.motion isEqualToString:@"drift"]) {
+        vertical.fromValue = @(-self.motionDistance * 0.35);
+        vertical.toValue = @(self.motionDistance * 0.35);
+    } else {
+        vertical.fromValue = @(self.motionDistance);
+        vertical.toValue = @(-self.motionDistance);
+    }
+    vertical.duration = self.motionDuration;
+    vertical.autoreverses = YES;
+    vertical.repeatCount = HUGE_VALF;
+    vertical.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [self.blobLayer addAnimation:vertical forKey:@"lockplus.liquid.vertical"];
+
+    CAKeyframeAnimation *shape = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+    shape.values = @[ @0.82, @1.08, @0.94, @1.03, @0.82 ];
+    shape.keyTimes = @[ @0.0, @0.28, @0.55, @0.78, @1.0 ];
+    shape.duration = self.motionDuration * 0.82;
+    shape.repeatCount = HUGE_VALF;
+    shape.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [self.blobLayer addAnimation:shape forKey:@"lockplus.liquid.shape"];
+
+    CABasicAnimation *sway = [CABasicAnimation animationWithKeyPath:@"transform.translation.x"];
+    sway.fromValue = @(-self.motionDistance * 0.18);
+    sway.toValue = @(self.motionDistance * 0.18);
+    sway.duration = self.motionDuration * 0.66;
+    sway.autoreverses = YES;
+    sway.repeatCount = HUGE_VALF;
+    sway.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [self.blobLayer addAnimation:sway forKey:@"lockplus.liquid.sway"];
+}
+
+@end
+
 @interface LPNativeThemeElement : NSObject
 @property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, copy) NSString *type;
@@ -131,6 +236,35 @@
                 [wallpaper.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
             ]];
             [wallpaper applyVisualAnimationFromProperties:properties];
+            continue;
+        }
+        if ([type isEqualToString:@"blob"] || [type isEqualToString:@"particle"]) {
+            UIColor *effectColor = [self colorFromCSS:properties[@"color"] fallback:UIColor.whiteColor];
+            CGFloat normalizedX = [self cssNormalizedPosition:properties[@"x"] defaultValue:0.5];
+            CGFloat top = [self cssNumber:properties[@"top"] defaultValue:180.0];
+            CGFloat size = [self cssNumber:properties[@"size"] defaultValue:[type isEqualToString:@"particle"] ? 18.0 : 96.0];
+            CGFloat alpha = [self cssNumber:properties[@"opacity"] defaultValue:[type isEqualToString:@"particle"] ? 0.42 : 0.58];
+            CGFloat motionDistance = [self cssNumber:properties[@"motion-distance"] defaultValue:[type isEqualToString:@"particle"] ? 36.0 : 124.0];
+            CGFloat motionDuration = [self cssNumber:properties[@"motion-duration"] defaultValue:[type isEqualToString:@"particle"] ? 7.0 : 11.0];
+            NSString *motion = [properties[@"motion"] isKindOfClass:NSString.class] ? properties[@"motion"] : @"lava";
+            LPLiquidBlobView *effect = [[LPLiquidBlobView alloc] initWithColor:effectColor
+                                                                    normalizedX:normalizedX
+                                                                           top:top
+                                                                          size:size
+                                                                         alpha:alpha
+                                                                motionDistance:motionDistance
+                                                                 motionDuration:motionDuration
+                                                                         motion:motion];
+            effect.translatesAutoresizingMaskIntoConstraints = NO;
+            // Background effects are inserted below all text and panels, and are
+            // permanently noninteractive so SpringBoard retains every gesture.
+            [self insertSubview:effect atIndex:MIN((NSUInteger)1, self.subviews.count)];
+            [NSLayoutConstraint activateConstraints:@[
+                [effect.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+                [effect.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+                [effect.topAnchor constraintEqualToAnchor:self.topAnchor],
+                [effect.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+            ]];
             continue;
         }
 
@@ -295,6 +429,17 @@
     effect.repeatCount = HUGE_VALF;
     effect.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     [view.layer addAnimation:effect forKey:[@"lockplus." stringByAppendingString:animation]];
+}
+
+- (CGFloat)cssNormalizedPosition:(id)value defaultValue:(CGFloat)defaultValue {
+    if (![value isKindOfClass:NSString.class] && ![value isKindOfClass:NSNumber.class]) {
+        return defaultValue;
+    }
+    if ([value isKindOfClass:NSString.class] && [(NSString *)value hasSuffix:@"%"]) {
+        return MIN(MAX([(NSString *)value doubleValue] / 100.0, 0.0), 1.0);
+    }
+    CGFloat parsed = [value doubleValue];
+    return MIN(MAX(parsed, 0.0), 1.0);
 }
 
 - (CGFloat)cssNumber:(id)value defaultValue:(CGFloat)defaultValue {

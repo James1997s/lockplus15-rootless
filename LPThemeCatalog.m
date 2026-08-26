@@ -4,6 +4,7 @@
 
 static NSString * const kLPPrefsDomain = @"com.example.lockplus15";
 static NSString * const kLPDefaultThemeID = @"aurora";
+static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 static NSUInteger const kLPMaximumCatalogThemes = 64;
 // The public repository is the only trusted remote theme catalog.
 static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.com/James1997s/lockplus15-rootless/main/themes/catalog.json";
@@ -30,6 +31,25 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
         CFRelease(value);
     }
     return [self isSafeThemeID:themeID] ? themeID : kLPDefaultThemeID;
+}
+
+- (NSSet<NSString *> *)hiddenThemeIDs {
+    CFPropertyListRef value = CFPreferencesCopyAppValue((__bridge CFStringRef)kLPHiddenThemeIDsKey,
+                                                        (__bridge CFStringRef)kLPPrefsDomain);
+    NSArray *storedIDs = nil;
+    if (value != NULL && CFGetTypeID(value) == CFArrayGetTypeID()) {
+        storedIDs = [(__bridge NSArray *)value copy];
+    }
+    if (value != NULL) {
+        CFRelease(value);
+    }
+    NSMutableSet<NSString *> *safeIDs = [NSMutableSet set];
+    for (id candidate in storedIDs) {
+        if ([candidate isKindOfClass:NSString.class] && [self isSafeThemeID:candidate]) {
+            [safeIDs addObject:candidate];
+        }
+    }
+    return safeIDs;
 }
 
 - (NSURL *)bundledThemeURLForID:(NSString *)themeID {
@@ -100,13 +120,14 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 
         NSMutableArray<NSDictionary *> *records = [NSMutableArray array];
         NSMutableSet<NSString *> *seenIDs = [NSMutableSet set];
+        NSSet<NSString *> *hiddenThemeIDs = [self hiddenThemeIDs];
         for (id candidate in allRecords) {
             if (![candidate isKindOfClass:[NSDictionary class]]) {
                 continue;
             }
             NSString *themeID = [candidate[@"id"] isKindOfClass:[NSString class]] ? candidate[@"id"] : nil;
             NSString *relativeURL = [candidate[@"url"] isKindOfClass:[NSString class]] ? candidate[@"url"] : nil;
-            if (![self isSafeThemeID:themeID] || ![self isSafeRelativeThemeURL:relativeURL] || [seenIDs containsObject:themeID]) {
+            if (![self isSafeThemeID:themeID] || ![self isSafeRelativeThemeURL:relativeURL] || [seenIDs containsObject:themeID] || [hiddenThemeIDs containsObject:themeID]) {
                 continue;
             }
             NSString *name = [candidate[@"name"] isKindOfClass:NSString.class] ? candidate[@"name"] : themeID;
@@ -248,7 +269,7 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     for (id elementID in elements) {
         NSDictionary *properties = [elements[elementID] isKindOfClass:[NSDictionary class]] ? elements[elementID] : nil;
         NSString *type = [properties[@"type"] isKindOfClass:NSString.class] ? properties[@"type"] : nil;
-        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"text", @"panel", @"wallpaper" ]];
+        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"text", @"panel", @"wallpaper", @"blob", @"particle" ]];
         if (![elementID isKindOfClass:[NSString class]] || properties == nil || ![supportedTypes containsObject:type]) {
             return nil;
         }
