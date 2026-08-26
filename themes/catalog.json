@@ -33,6 +33,11 @@
       "url": "white-word-wheel.json"
     },
     {
+      "id": "framed-parking",
+      "name": "White Framed Motion",
+      "url": "framed-parking.json"
+    },
+    {
       "id": "liquid-lava-lamp",
       "name": "Liquid Lava Lamp",
       "url": "liquid-lava-lamp.json"

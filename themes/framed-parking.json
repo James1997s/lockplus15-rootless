@@ -1,0 +1,128 @@
+{
+  "assets": [
+    {
+      "id": "parking-animation",
+      "url": "assets/framed-parking/parking-animation.gif",
+      "sha256": "ea0dfac9c0851762d42d415ef20b3fb336bedf5749c0a15a248cfe142a428d2f"
+    }
+  ],
+  "placedElements": {
+    "wallpaper": {
+      "type": "wallpaper",
+      "position": "absolute",
+      "left": "50%",
+      "top": "0px",
+      "transform": "translateX(-50%)",
+      "gradient": "#FFFFFF|#FFFFFF",
+      "z-index": "-100"
+    },
+    "heading": {
+      "type": "text",
+      "position": "absolute",
+      "left": "50%",
+      "top": "75px",
+      "transform": "translateX(-50%)",
+      "width": "300px",
+      "height": "18px",
+      "innerHTML": "A MOMENT IN MOTION",
+      "color": "#191919",
+      "font-family": "HelveticaNeue-Medium",
+      "font-size": "11px",
+      "font-weight": "600",
+      "letter-spacing": "2.0px",
+      "z-index": "10"
+    },
+    "wordClock": {
+      "type": "word-clock",
+      "position": "absolute",
+      "left": "50%",
+      "top": "105px",
+      "transform": "translateX(-50%)",
+      "width": "332px",
+      "height": "92px",
+      "color": "#0D0D0D",
+      "font-family": "AvenirNext-DemiBold",
+      "font-size": "31px",
+      "font-weight": "700",
+      "letter-spacing": "1.1px",
+      "z-index": "20"
+    },
+    "date": {
+      "type": "date",
+      "position": "absolute",
+      "left": "50%",
+      "top": "210px",
+      "transform": "translateX(-50%)",
+      "width": "300px",
+      "height": "20px",
+      "time-format": "EEEE, MMMM d",
+      "uppercase": "true",
+      "color": "#565656",
+      "font-family": "HelveticaNeue-Medium",
+      "font-size": "12px",
+      "font-weight": "600",
+      "letter-spacing": "1.0px",
+      "z-index": "20"
+    },
+    "outerFrame": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "258px",
+      "transform": "translateX(-50%)",
+      "width": "324px",
+      "height": "250px",
+      "padding": "0px",
+      "background-color": "#181818",
+      "border-radius": "2px",
+      "innerHTML": "",
+      "color": "rgba(0,0,0,0)",
+      "z-index": "10"
+    },
+    "whiteMat": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "264px",
+      "transform": "translateX(-50%)",
+      "width": "312px",
+      "height": "238px",
+      "padding": "0px",
+      "background-color": "#FFFFFF",
+      "border": "1px solid #D7D7D7",
+      "innerHTML": "",
+      "color": "rgba(0,0,0,0)",
+      "z-index": "12"
+    },
+    "framedAnimation": {
+      "type": "image",
+      "position": "absolute",
+      "left": "50%",
+      "top": "288px",
+      "transform": "translateX(-50%)",
+      "asset-id": "parking-animation",
+      "image-role": "panel",
+      "width": "284px",
+      "height": "190px",
+      "opacity": "1.0",
+      "border-radius": "0px",
+      "z-index": "15"
+    },
+    "caption": {
+      "type": "text",
+      "position": "absolute",
+      "left": "50%",
+      "top": "518px",
+      "transform": "translateX(-50%)",
+      "width": "300px",
+      "height": "18px",
+      "innerHTML": "MOTION STUDY",
+      "color": "#171717",
+      "font-family": "HelveticaNeue-Bold",
+      "font-size": "11px",
+      "font-weight": "700",
+      "letter-spacing": "2.0px",
+      "z-index": "20"
+    }
+  }
+}
