@@ -40,6 +40,57 @@
       "font-weight": "700",
       "letter-spacing": "3px",
       "z-index": "20"
+    },
+    "wallpaper": {
+      "type": "wallpaper",
+      "position": "absolute",
+      "left": "50%",
+      "top": "0px",
+      "transform": "translateX(-50%)",
+      "gradient": "#21130A|#7C2D12|#F59E0B",
+      "z-index": "-100"
+    },
+    "themeBanner": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "214px",
+      "transform": "translateX(-50%)",
+      "width": "314px",
+      "height": "64px",
+      "padding": "0px",
+      "background-color": "rgba(124,45,18,0.66)",
+      "border": "1px solid rgba(245,158,11,0.72)",
+      "border-radius": "18px",
+      "box-shadow": "0 6px 20px rgba(33,19,10,0.46)",
+      "innerHTML": "EDITORIAL WORD CLOCK",
+      "color": "#F8FAFC",
+      "font-family": "HelveticaNeue-Medium",
+      "font-size": "12px",
+      "font-weight": "700",
+      "letter-spacing": "1px",
+      "z-index": "4"
+    },
+    "themeFooter": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "488px",
+      "transform": "translateX(-50%)",
+      "width": "314px",
+      "height": "36px",
+      "padding": "0px",
+      "background-color": "rgba(124,45,18,0.66)",
+      "border": "1px solid rgba(245,158,11,0.72)",
+      "border-radius": "18px",
+      "box-shadow": "0 6px 20px rgba(33,19,10,0.46)",
+      "innerHTML": "LOCKPLUS 15  \u2022  GITHUB THEME",
+      "color": "#F8FAFC",
+      "font-family": "HelveticaNeue-Medium",
+      "font-size": "10px",
+      "font-weight": "700",
+      "letter-spacing": "2px",
+      "z-index": "4"
     }
   }
 }

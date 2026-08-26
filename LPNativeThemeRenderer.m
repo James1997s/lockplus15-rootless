@@ -1,5 +1,35 @@
 #import "LPNativeThemeRenderer.h"
 
+@interface LPGradientWallpaperView : UIView
+@property (nonatomic, strong) CAGradientLayer *gradientLayer;
+@end
+
+@implementation LPGradientWallpaperView
+
+- (instancetype)initWithColors:(NSArray<UIColor *> *)colors {
+    self = [super initWithFrame:CGRectZero];
+    if (self) {
+        _gradientLayer = [CAGradientLayer layer];
+        NSMutableArray *cgColors = [NSMutableArray array];
+        for (UIColor *color in colors) {
+            [cgColors addObject:(__bridge id)color.CGColor];
+        }
+        _gradientLayer.colors = cgColors;
+        _gradientLayer.startPoint = CGPointMake(0.10, 0.0);
+        _gradientLayer.endPoint = CGPointMake(0.90, 1.0);
+        [self.layer insertSublayer:_gradientLayer atIndex:0];
+        self.userInteractionEnabled = NO;
+    }
+    return self;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.gradientLayer.frame = self.bounds;
+}
+
+@end
+
 @interface LPNativeThemeElement : NSObject
 @property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, copy) NSString *type;
@@ -72,6 +102,19 @@
         }
 
         NSString *type = [properties[@"type"] isKindOfClass:NSString.class] ? properties[@"type"] : @"text";
+        if ([type isEqualToString:@"wallpaper"]) {
+            LPGradientWallpaperView *wallpaper = [[LPGradientWallpaperView alloc] initWithColors:[self wallpaperColorsFromProperties:properties]];
+            wallpaper.translatesAutoresizingMaskIntoConstraints = NO;
+            [self insertSubview:wallpaper atIndex:0];
+            [NSLayoutConstraint activateConstraints:@[
+                [wallpaper.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+                [wallpaper.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+                [wallpaper.topAnchor constraintEqualToAnchor:self.topAnchor],
+                [wallpaper.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+            ]];
+            continue;
+        }
+
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
         label.textAlignment = NSTextAlignmentCenter;
         label.numberOfLines = 2;
@@ -84,7 +127,7 @@
         [self addSubview:label];
         CGFloat padding = [self cssNumber:properties[@"padding"] defaultValue:0.0];
         CGFloat top = [self cssNumber:properties[@"top"] defaultValue:72.0];
-        CGFloat defaultHeight = [type isEqualToString:@"clock"] ? 76.0 : 34.0;
+        CGFloat defaultHeight = [type isEqualToString:@"clock"] ? 76.0 : ([type isEqualToString:@"panel"] ? 72.0 : 34.0);
         CGFloat width = [self cssNumber:properties[@"width"] defaultValue:320.0] + (padding * 2.0);
         CGFloat height = [self cssNumber:properties[@"height"] defaultValue:defaultHeight] + (padding * 2.0);
         [NSLayoutConstraint activateConstraints:@[
@@ -100,7 +143,7 @@
         element.properties = properties;
         element.label = label;
         [self.elements addObject:element];
-        if ([type isEqualToString:@"text"]) {
+        if ([type isEqualToString:@"text"] || [type isEqualToString:@"panel"]) {
             [self applyText:[properties[@"innerHTML"] isKindOfClass:NSString.class] ? properties[@"innerHTML"] : @"" toElement:element];
         }
     }
@@ -127,6 +170,33 @@
             [self applyText:[formatter stringFromDate:now] toElement:element];
         }
     }
+}
+
+- (NSArray<UIColor *> *)wallpaperColorsFromProperties:(NSDictionary<NSString *, NSString *> *)properties {
+    NSString *gradient = properties[@"gradient"];
+    NSMutableArray<UIColor *> *colors = [NSMutableArray array];
+    if ([gradient isKindOfClass:NSString.class]) {
+        for (NSString *part in [gradient componentsSeparatedByString:@"|"]) {
+            UIColor *color = [self colorFromCSS:part fallback:nil];
+            if (color != nil) {
+                [colors addObject:color];
+            }
+        }
+    }
+    if (colors.count == 0) {
+        UIColor *base = [self colorFromCSS:properties[@"background-color"] fallback:nil];
+        if (base != nil) {
+            [colors addObject:base];
+        }
+    }
+    if (colors.count == 0) {
+        [colors addObjectsFromArray:@[
+            [UIColor colorWithRed:0.05 green:0.07 blue:0.16 alpha:1.0],
+            [UIColor colorWithRed:0.19 green:0.13 blue:0.37 alpha:1.0],
+            [UIColor colorWithRed:0.48 green:0.20 blue:0.50 alpha:1.0],
+        ]];
+    }
+    return colors;
 }
 
 - (void)applyText:(NSString *)text toElement:(LPNativeThemeElement *)element {

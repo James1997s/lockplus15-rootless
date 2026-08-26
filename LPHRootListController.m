@@ -1,9 +1,13 @@
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
+#import <Preferences/PSTableCell.h>
 #import <UIKit/UIKit.h>
 #import <notify.h>
 #import <rootless.h>
+#import "LPHThemePickerController.h"
 
+static NSString * const kLPPreferencesDomain = @"com.example.lockplus15";
+static NSString * const kLPPreferencesChanged = @"com.example.lockplus15/preferences.changed";
 static NSString * const kLPThemeDirectory = @"/Library/LockPlus15/Themes";
 static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus15/Themes";
 
@@ -13,15 +17,54 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
 @implementation LPHRootListController
 
 - (NSArray *)specifiers {
-    if (_specifiers == nil) {
-        _specifiers = [self loadSpecifiersFromPlistName:@"Root" target:self];
-        for (PSSpecifier *specifier in _specifiers) {
-            if ([[specifier propertyForKey:@"key"] isEqualToString:@"theme"]) {
-                [specifier setProperty:[self themeTitles] forKey:@"validTitles"];
-                [specifier setProperty:[self themeValues] forKey:@"validValues"];
-            }
-        }
+    if (_specifiers != nil) {
+        return _specifiers;
     }
+
+    self.title = @"LockPlus 15";
+    NSMutableArray<PSSpecifier *> *specifiers = [NSMutableArray array];
+
+    PSSpecifier *intro = [PSSpecifier groupSpecifierWithName:nil];
+    [intro setProperty:@"Select a bundled or GitHub-synced theme. Changes are sent to SpringBoard immediately." forKey:@"footerText"];
+    [specifiers addObject:intro];
+
+    PSSpecifier *enabled = [PSSpecifier preferenceSpecifierNamed:@"Enable LockPlus 15"
+                                                          target:self
+                                                             set:@selector(writePreferenceValue:specifier:)
+                                                             get:@selector(readPreferenceValue:)
+                                                          detail:nil
+                                                            cell:PSSwitchCell
+                                                            edit:nil];
+    [enabled setProperty:kLPPreferencesDomain forKey:@"defaults"];
+    [enabled setProperty:@"enabled" forKey:@"key"];
+    [enabled setProperty:@NO forKey:@"default"];
+    [enabled setProperty:kLPPreferencesChanged forKey:@"PostNotification"];
+    [specifiers addObject:enabled];
+
+    PSSpecifier *theme = [PSSpecifier preferenceSpecifierNamed:@"Theme"
+                                                        target:self
+                                                           set:nil
+                                                           get:nil
+                                                        detail:nil
+                                                          cell:PSButtonCell
+                                                          edit:nil];
+    [theme setProperty:kLPPreferencesDomain forKey:@"defaults"];
+    [theme setProperty:@"theme" forKey:@"key"];
+    [theme setProperty:@"aurora" forKey:@"default"];
+    theme.buttonAction = @selector(openThemePicker);
+    [specifiers addObject:theme];
+
+    PSSpecifier *sync = [PSSpecifier preferenceSpecifierNamed:@"Sync Themes from GitHub"
+                                                       target:self
+                                                          set:nil
+                                                          get:nil
+                                                       detail:nil
+                                                         cell:PSButtonCell
+                                                         edit:nil];
+    sync.buttonAction = @selector(syncThemes);
+    [specifiers addObject:sync];
+
+    _specifiers = [specifiers copy];
     return _specifiers;
 }
 
@@ -39,7 +82,6 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
         if (themeID.length == 0 || name.length == 0 || relativePath.length == 0) {
             continue;
         }
-
         NSString *bundledPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:relativePath]);
         NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
         if ([[NSFileManager defaultManager] fileExistsAtPath:bundledPath] || [[NSFileManager defaultManager] fileExistsAtPath:cachedPath]) {
@@ -68,8 +110,52 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
     return titles.count > 0 ? titles : @[ @"Aurora" ];
 }
 
+- (id)readPreferenceValue:(PSSpecifier *)specifier {
+    NSString *key = [specifier propertyForKey:@"key"];
+    if (key.length == 0) {
+        return nil;
+    }
+    CFPropertyListRef value = CFPreferencesCopyAppValue((__bridge CFStringRef)key,
+                                                        (__bridge CFStringRef)kLPPreferencesDomain);
+    if (value == NULL) {
+        return [specifier propertyForKey:@"default"];
+    }
+    return CFBridgingRelease(value);
+}
+
+- (void)writePreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+    NSString *key = [specifier propertyForKey:@"key"];
+    if (key.length == 0) {
+        return;
+    }
+    CFPreferencesSetAppValue((__bridge CFStringRef)key,
+                             (__bridge CFPropertyListRef)value,
+                             (__bridge CFStringRef)kLPPreferencesDomain);
+    CFPreferencesAppSynchronize((__bridge CFStringRef)kLPPreferencesDomain);
+    notify_post(kLPPreferencesChanged.UTF8String);
+}
+
+- (void)openThemePicker {
+    NSString *selectedThemeID = [self readPreferenceValue:[self themeSpecifier]];
+    LPHThemePickerController *picker = [[LPHThemePickerController alloc] initWithThemeRecords:[self availableThemeRecords]
+                                                                                selectedThemeID:selectedThemeID];
+    [self.navigationController pushViewController:picker animated:YES];
+}
+
+- (PSSpecifier *)themeSpecifier {
+    for (PSSpecifier *specifier in _specifiers) {
+        if ([[specifier propertyForKey:@"key"] isEqualToString:@"theme"]) {
+            return specifier;
+        }
+    }
+    PSSpecifier *specifier = [PSSpecifier preferenceSpecifierNamed:@"Theme" target:self set:nil get:nil detail:nil cell:PSButtonCell edit:nil];
+    [specifier setProperty:@"theme" forKey:@"key"];
+    [specifier setProperty:@"aurora" forKey:@"default"];
+    return specifier;
+}
+
 - (void)syncThemes {
-    notify_post("com.example.lockplus15/preferences.changed");
+    notify_post(kLPPreferencesChanged.UTF8String);
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Theme Sync Started"
                                                                    message:@"SpringBoard is downloading every compatible GitHub theme. Close and reopen this page after a few seconds to refresh the selector."
                                                             preferredStyle:UIAlertControllerStyleAlert];
