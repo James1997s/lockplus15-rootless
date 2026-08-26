@@ -53,6 +53,11 @@
       "url": "pulse-timeline.json"
     },
     {
+      "id": "brushstroke-time",
+      "name": "Brushstroke Time",
+      "url": "brushstroke-time.json"
+    },
+    {
       "id": "liquid-lava-lamp",
       "name": "Liquid Lava Lamp",
       "url": "liquid-lava-lamp.json"

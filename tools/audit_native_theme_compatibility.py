@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1] / 'themes'
 CATALOG = ROOT / 'catalog.json'
-SUPPORTED_TYPES = {'clock', 'date', 'word-clock', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay', 'ecg-time'}
+SUPPORTED_TYPES = {'clock', 'date', 'word-clock', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay', 'ecg-time', 'brushstroke-time'}
 SUPPORTED_PROPERTIES = {
     'type', 'position', 'left', 'top', 'transform', 'color', 'font-family',
     'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
@@ -17,7 +17,7 @@ SUPPORTED_PROPERTIES = {
     'padding', 'width', 'height', 'gradient', 'animation', 'animation-duration',
     'x', 'size', 'opacity', 'motion', 'motion-distance', 'motion-duration',
     'diameter', 'stroke-width', 'arc-start', 'arc-length', 'dash', 'rotation-duration', 'rotation-direction',
-    'asset-id', 'image-role', 'time-format', 'uppercase', 'grid-color',
+    'asset-id', 'image-role', 'time-format', 'uppercase', 'grid-color', 'brush-asset-id',
 }
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},
@@ -31,6 +31,7 @@ REQUIRED_BY_TYPE = {
     'ring': {'top', 'color', 'diameter', 'stroke-width'},
     'image': {'asset-id'},
     'ecg-time': {'top', 'color', 'grid-color', 'width', 'height', 'stroke-width'},
+    'brushstroke-time': {'top', 'color', 'brush-asset-id', 'width', 'height', 'stroke-width'},
     'widget': {'top', 'background-color', 'innerHTML'},
     'overlay': {'top', 'background-color', 'innerHTML'},
 }
@@ -131,6 +132,10 @@ def main() -> None:
                 errors.append(f'{identifier}/{element_id}: unsupported transform.')
             if 'javascript:' in ' '.join(str(value).lower() for value in properties.values()):
                 errors.append(f'{identifier}/{element_id}: unsafe URI value.')
+            if element_type == 'image' and properties.get('asset-id') not in asset_ids:
+                errors.append(f'{identifier}/{element_id}: image asset-id must reference a declared asset.')
+            if element_type == 'brushstroke-time' and properties.get('brush-asset-id') not in asset_ids:
+                errors.append(f'{identifier}/{element_id}: brush-asset-id must reference a declared asset.')
         theme_count += 1
 
     if errors:

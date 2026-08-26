@@ -327,6 +327,236 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 
 @end
 
+@interface LPBrushstrokeTimeView : UIView
+@property (nonatomic, strong) CAShapeLayer *paintLayer;
+@property (nonatomic, strong) CALayer *brushLayer;
+@property (nonatomic, strong) UIColor *paintColor;
+@property (nonatomic, strong) UIImage *brushImage;
+@property (nonatomic, assign) CGFloat strokeWidth;
+@property (nonatomic, assign) CGFloat animationDuration;
+@property (nonatomic, copy) NSString *lastTimeKey;
+- (instancetype)initWithPaintColor:(UIColor *)paintColor
+                        brushImage:(UIImage *)brushImage
+                       strokeWidth:(CGFloat)strokeWidth
+                 animationDuration:(CGFloat)animationDuration;
+- (void)updateForDate:(NSDate *)date;
+@end
+
+@implementation LPBrushstrokeTimeView
+
+- (instancetype)initWithPaintColor:(UIColor *)paintColor
+                        brushImage:(UIImage *)brushImage
+                       strokeWidth:(CGFloat)strokeWidth
+                 animationDuration:(CGFloat)animationDuration {
+    self = [super initWithFrame:CGRectZero];
+    if (self) {
+        _paintColor = paintColor ?: [UIColor colorWithRed:0.06 green:0.20 blue:0.69 alpha:1.0];
+        _brushImage = brushImage;
+        _strokeWidth = MIN(MAX(strokeWidth, 5.0), 22.0);
+        _animationDuration = MIN(MAX(animationDuration, 2.8), 7.0);
+        self.userInteractionEnabled = NO;
+        self.backgroundColor = UIColor.clearColor;
+        self.clipsToBounds = YES;
+
+        _paintLayer = [CAShapeLayer layer];
+        _paintLayer.fillColor = UIColor.clearColor.CGColor;
+        _paintLayer.strokeColor = _paintColor.CGColor;
+        _paintLayer.lineWidth = _strokeWidth;
+        _paintLayer.lineCap = kCALineCapRound;
+        _paintLayer.lineJoin = kCALineJoinRound;
+        _paintLayer.shadowColor = _paintColor.CGColor;
+        _paintLayer.shadowOpacity = 0.22;
+        _paintLayer.shadowRadius = MIN(MAX(_strokeWidth * 0.72, 3.0), 14.0);
+        _paintLayer.shadowOffset = CGSizeMake(0.0, 1.0);
+        [self.layer addSublayer:_paintLayer];
+
+        _brushLayer = [CALayer layer];
+        _brushLayer.contents = (__bridge id)_brushImage.CGImage;
+        _brushLayer.contentsGravity = kCAGravityResizeAspect;
+        _brushLayer.contentsScale = UIScreen.mainScreen.scale;
+        _brushLayer.bounds = CGRectMake(0.0, 0.0, 112.0, 54.0);
+        _brushLayer.anchorPoint = CGPointMake(0.03, 0.50);
+        _brushLayer.hidden = (_brushImage == nil);
+        _brushLayer.shadowColor = UIColor.blackColor.CGColor;
+        _brushLayer.shadowOpacity = 0.18;
+        _brushLayer.shadowRadius = 3.0;
+        _brushLayer.shadowOffset = CGSizeMake(1.0, 2.0);
+        [self.layer addSublayer:_brushLayer];
+    }
+    return self;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.paintLayer.frame = self.bounds;
+    self.lastTimeKey = nil;
+    [self updateForDate:[NSDate date]];
+}
+
+- (void)appendDigit:(unichar)digit x:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height toPath:(UIBezierPath *)path {
+    CGFloat left = x;
+    CGFloat right = x + width;
+    CGFloat middle = y + (height * 0.50);
+    CGFloat bottom = y + height;
+    switch (digit) {
+        case '0':
+            [path moveToPoint:CGPointMake(left + (width * 0.53), y + 2.0)];
+            [path addCurveToPoint:CGPointMake(right - 2.0, middle) controlPoint1:CGPointMake(right, y + (height * 0.04)) controlPoint2:CGPointMake(right + 2.0, y + (height * 0.31))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.47), bottom - 2.0) controlPoint1:CGPointMake(right - (width * 0.02), bottom - (height * 0.10)) controlPoint2:CGPointMake(right - (width * 0.08), bottom)];
+            [path addCurveToPoint:CGPointMake(left + 2.0, middle) controlPoint1:CGPointMake(left + (width * 0.15), bottom + 2.0) controlPoint2:CGPointMake(left - 2.0, bottom - (height * 0.28))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.53), y + 2.0) controlPoint1:CGPointMake(left + (width * 0.02), y + (height * 0.22)) controlPoint2:CGPointMake(left + (width * 0.18), y + (height * 0.03))];
+            break;
+        case '1':
+            [path moveToPoint:CGPointMake(left + (width * 0.14), y + (height * 0.18))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.52), y + (height * 0.05)) controlPoint1:CGPointMake(left + (width * 0.31), y + (height * 0.15)) controlPoint2:CGPointMake(left + (width * 0.42), y + (height * 0.07))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.49), bottom - 2.0) controlPoint1:CGPointMake(left + (width * 0.54), middle) controlPoint2:CGPointMake(left + (width * 0.48), bottom - (height * 0.20))];
+            [path addCurveToPoint:CGPointMake(right - 2.0, bottom - 1.0) controlPoint1:CGPointMake(left + (width * 0.63), bottom) controlPoint2:CGPointMake(left + (width * 0.78), bottom - 2.0)];
+            break;
+        case '2':
+            [path moveToPoint:CGPointMake(left + 1.0, y + (height * 0.25))];
+            [path addCurveToPoint:CGPointMake(right - (width * 0.06), y + (height * 0.20)) controlPoint1:CGPointMake(left + (width * 0.22), y - 1.0) controlPoint2:CGPointMake(right - (width * 0.10), y + (height * 0.03))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.12), bottom - (height * 0.12)) controlPoint1:CGPointMake(right + 2.0, middle) controlPoint2:CGPointMake(left + (width * 0.37), middle + (height * 0.18))];
+            [path addCurveToPoint:CGPointMake(right, bottom - 1.0) controlPoint1:CGPointMake(left + (width * 0.36), bottom) controlPoint2:CGPointMake(left + (width * 0.72), bottom)];
+            break;
+        case '3':
+            [path moveToPoint:CGPointMake(left + (width * 0.10), y + (height * 0.12))];
+            [path addCurveToPoint:CGPointMake(right - (width * 0.08), middle) controlPoint1:CGPointMake(right, y + (height * 0.03)) controlPoint2:CGPointMake(right, y + (height * 0.40))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.10), bottom - (height * 0.10)) controlPoint1:CGPointMake(right, bottom - (height * 0.02)) controlPoint2:CGPointMake(left + (width * 0.52), bottom + 1.0)];
+            break;
+        case '4':
+            [path moveToPoint:CGPointMake(right - (width * 0.16), y + 1.0)];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.12), middle + (height * 0.05)) controlPoint1:CGPointMake(left + (width * 0.58), y + (height * 0.30)) controlPoint2:CGPointMake(left + (width * 0.34), middle)];
+            [path addCurveToPoint:CGPointMake(right, middle + (height * 0.05)) controlPoint1:CGPointMake(left + (width * 0.40), middle + (height * 0.07)) controlPoint2:CGPointMake(left + (width * 0.72), middle + (height * 0.05))];
+            [path moveToPoint:CGPointMake(right - (width * 0.16), y + 1.0)];
+            [path addCurveToPoint:CGPointMake(right - (width * 0.12), bottom - 1.0) controlPoint1:CGPointMake(right - (width * 0.08), middle) controlPoint2:CGPointMake(right - (width * 0.15), bottom - (height * 0.20))];
+            break;
+        case '5':
+            [path moveToPoint:CGPointMake(right - (width * 0.03), y + (height * 0.06))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.15), y + (height * 0.05)) controlPoint1:CGPointMake(left + (width * 0.60), y) controlPoint2:CGPointMake(left + (width * 0.30), y + (height * 0.04))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.14), middle) controlPoint1:CGPointMake(left + (width * 0.11), y + (height * 0.23)) controlPoint2:CGPointMake(left + (width * 0.14), middle - (height * 0.08))];
+            [path addCurveToPoint:CGPointMake(right - (width * 0.04), bottom - (height * 0.11)) controlPoint1:CGPointMake(right - (width * 0.02), middle - (height * 0.13)) controlPoint2:CGPointMake(right, bottom - (height * 0.22))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.10), bottom - (height * 0.08)) controlPoint1:CGPointMake(right - (width * 0.25), bottom + 1.0) controlPoint2:CGPointMake(left + (width * 0.40), bottom)];
+            break;
+        case '6':
+            [path moveToPoint:CGPointMake(right - (width * 0.04), y + (height * 0.10))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.15), middle) controlPoint1:CGPointMake(left + (width * 0.52), y + (height * 0.24)) controlPoint2:CGPointMake(left + (width * 0.08), middle - (height * 0.12))];
+            [path addCurveToPoint:CGPointMake(right - (width * 0.08), bottom - (height * 0.13)) controlPoint1:CGPointMake(left + (width * 0.15), bottom - (height * 0.10)) controlPoint2:CGPointMake(right - (width * 0.12), bottom)];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.18), middle + (height * 0.02)) controlPoint1:CGPointMake(right + 1.0, middle + (height * 0.12)) controlPoint2:CGPointMake(left + (width * 0.53), middle - (height * 0.06))];
+            break;
+        case '7':
+            [path moveToPoint:CGPointMake(left + (width * 0.04), y + (height * 0.06))];
+            [path addCurveToPoint:CGPointMake(right - (width * 0.04), y + (height * 0.05)) controlPoint1:CGPointMake(left + (width * 0.38), y) controlPoint2:CGPointMake(right - (width * 0.26), y + (height * 0.04))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.34), bottom - 1.0) controlPoint1:CGPointMake(right - (width * 0.38), middle) controlPoint2:CGPointMake(left + (width * 0.51), bottom - (height * 0.20))];
+            break;
+        case '8':
+            [path moveToPoint:CGPointMake(left + (width * 0.52), y + 1.0)];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.18), middle) controlPoint1:CGPointMake(right, y + (height * 0.08)) controlPoint2:CGPointMake(left + (width * 0.02), y + (height * 0.28))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.52), bottom - 1.0) controlPoint1:CGPointMake(right - (width * 0.02), middle + (height * 0.15)) controlPoint2:CGPointMake(right - (width * 0.08), bottom)];
+            [path addCurveToPoint:CGPointMake(right - (width * 0.12), middle) controlPoint1:CGPointMake(left + (width * 0.12), bottom) controlPoint2:CGPointMake(right + 1.0, bottom - (height * 0.20))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.52), y + 1.0) controlPoint1:CGPointMake(left + (width * 0.05), y + (height * 0.30)) controlPoint2:CGPointMake(left + (width * 0.15), y + (height * 0.02))];
+            break;
+        case '9':
+            [path moveToPoint:CGPointMake(left + (width * 0.16), middle)];
+            [path addCurveToPoint:CGPointMake(right - (width * 0.16), y + (height * 0.08)) controlPoint1:CGPointMake(left + (width * 0.06), y + (height * 0.07)) controlPoint2:CGPointMake(right - (width * 0.08), y)];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.26), middle) controlPoint1:CGPointMake(right, middle - (height * 0.02)) controlPoint2:CGPointMake(left + (width * 0.65), middle + (height * 0.14))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.08), bottom - 1.0) controlPoint1:CGPointMake(left + (width * 0.40), middle + (height * 0.24)) controlPoint2:CGPointMake(left + (width * 0.19), bottom - (height * 0.14))];
+            break;
+        default:
+            break;
+    }
+}
+
+- (UIBezierPath *)paintPathForDate:(NSDate *)date width:(CGFloat)width height:(CGFloat)height {
+    NSDateComponents *components = [NSCalendar.currentCalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:date];
+    NSString *digits = [NSString stringWithFormat:@"%02ld%02ld", (long)components.hour, (long)components.minute];
+    CGFloat digitHeight = MIN(MAX(height * 0.53, 72.0), 124.0);
+    CGFloat digitWidth = digitHeight * 0.43;
+    CGFloat gap = digitWidth * 0.16;
+    CGFloat colonWidth = digitWidth * 0.38;
+    CGFloat totalWidth = (digitWidth * 4.0) + (gap * 3.0) + colonWidth;
+    CGFloat x = MAX(10.0, (width - totalWidth) * 0.5);
+    CGFloat y = MAX(10.0, (height - digitHeight) * 0.42);
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    for (NSUInteger index = 0; index < digits.length; index++) {
+        [self appendDigit:[digits characterAtIndex:index] x:x y:y width:digitWidth height:digitHeight toPath:path];
+        x += digitWidth;
+        if (index == 1) {
+            CGFloat colonX = x + (colonWidth * 0.52);
+            CGFloat dotSize = MAX(2.8, self.strokeWidth * 0.48);
+            [path moveToPoint:CGPointMake(colonX - dotSize, y + (digitHeight * 0.34))];
+            [path addLineToPoint:CGPointMake(colonX + dotSize, y + (digitHeight * 0.34))];
+            [path moveToPoint:CGPointMake(colonX - dotSize, y + (digitHeight * 0.69))];
+            [path addLineToPoint:CGPointMake(colonX + dotSize, y + (digitHeight * 0.69))];
+            x += colonWidth;
+        } else if (index < digits.length - 1) {
+            x += gap;
+        }
+    }
+    return path;
+}
+
+- (void)startLoop {
+    [self.paintLayer removeAnimationForKey:@"speciallock.brushstroke.paint"];
+    [self.brushLayer removeAnimationForKey:@"speciallock.brushstroke.brush"];
+    if (UIAccessibilityIsReduceMotionEnabled()) {
+        self.brushLayer.hidden = YES;
+        return;
+    }
+    self.brushLayer.hidden = (self.brushImage == nil);
+    CFTimeInterval duration = self.animationDuration;
+
+    CAKeyframeAnimation *paintEnd = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+    paintEnd.values = @[ @0.0, @0.0, @1.0, @1.0, @1.0 ];
+    paintEnd.keyTimes = @[ @0.0, @0.10, @0.71, @0.84, @1.0 ];
+    CAKeyframeAnimation *paintStart = [CAKeyframeAnimation animationWithKeyPath:@"strokeStart"];
+    paintStart.values = @[ @0.0, @0.0, @0.0, @0.0, @1.0 ];
+    paintStart.keyTimes = @[ @0.0, @0.10, @0.77, @0.89, @1.0 ];
+    CAAnimationGroup *paint = [CAAnimationGroup animation];
+    paint.animations = @[ paintEnd, paintStart ];
+    paint.duration = duration;
+    paint.repeatCount = HUGE_VALF;
+    paint.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [self.paintLayer addAnimation:paint forKey:@"speciallock.brushstroke.paint"];
+
+    if (self.brushImage != nil) {
+        CAKeyframeAnimation *travel = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+        travel.path = self.paintLayer.path;
+        travel.calculationMode = kCAAnimationPaced;
+        travel.rotationMode = kCAAnimationRotateAutoReverse;
+        travel.beginTime = duration * 0.10;
+        travel.duration = duration * 0.61;
+        CAKeyframeAnimation *opacity = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
+        opacity.values = @[ @0.0, @0.0, @1.0, @1.0, @0.0, @0.0 ];
+        opacity.keyTimes = @[ @0.0, @0.08, @0.11, @0.72, @0.79, @1.0 ];
+        CAAnimationGroup *brush = [CAAnimationGroup animation];
+        brush.animations = @[ travel, opacity ];
+        brush.duration = duration;
+        brush.repeatCount = HUGE_VALF;
+        [self.brushLayer addAnimation:brush forKey:@"speciallock.brushstroke.brush"];
+    }
+}
+
+- (void)updateForDate:(NSDate *)date {
+    if (self.bounds.size.width < 120.0 || self.bounds.size.height < 100.0) {
+        return;
+    }
+    NSDateComponents *components = [NSCalendar.currentCalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:date];
+    NSString *timeKey = [NSString stringWithFormat:@"%02ld%02ld", (long)components.hour, (long)components.minute];
+    if ([timeKey isEqualToString:self.lastTimeKey]) {
+        return;
+    }
+    self.lastTimeKey = timeKey;
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.paintLayer.path = [self paintPathForDate:date width:self.bounds.size.width height:self.bounds.size.height].CGPath;
+    self.paintLayer.strokeStart = 0.0;
+    self.paintLayer.strokeEnd = 1.0;
+    [CATransaction commit];
+    [self startLoop];
+}
+
+@end
+
 @interface LPECGTimeView : UIView
 @property (nonatomic, strong) CAShapeLayer *gridLayer;
 @property (nonatomic, strong) CAShapeLayer *leadLayer;
@@ -595,6 +825,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 @interface LPNativeThemeRenderer ()
 @property (nonatomic, strong) NSMutableArray<LPNativeThemeElement *> *elements;
 @property (nonatomic, strong) NSMutableArray<LPECGTimeView *> *ecgTimeViews;
+@property (nonatomic, strong) NSMutableArray<LPBrushstrokeTimeView *> *brushstrokeTimeViews;
 @property (nonatomic, strong) NSTimer *updateTimer;
 @end
 
@@ -608,6 +839,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         self.userInteractionEnabled = NO;
         self.elements = [NSMutableArray array];
         self.ecgTimeViews = [NSMutableArray array];
+        self.brushstrokeTimeViews = [NSMutableArray array];
         [self reloadWithThemeJSONString:themeJSONString];
     }
     return self;
@@ -654,6 +886,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     }
     [self.elements removeAllObjects];
     [self.ecgTimeViews removeAllObjects];
+    [self.brushstrokeTimeViews removeAllObjects];
 
     NSData *data = [themeJSONString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *theme = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
@@ -733,6 +966,31 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
                 ]];
             }
             [self applyVisualAnimationFromProperties:properties toView:imageView];
+            continue;
+        }
+        if ([type isEqualToString:@"brushstroke-time"]) {
+            UIColor *paintColor = [self colorFromCSS:properties[@"color"] fallback:[UIColor colorWithRed:0.06 green:0.20 blue:0.69 alpha:1.0]];
+            NSString *brushAssetID = [properties[@"brush-asset-id"] isKindOfClass:NSString.class] ? properties[@"brush-asset-id"] : nil;
+            UIImage *brushImage = [self cachedImageAssetWithID:brushAssetID];
+            if (brushImage == nil) {
+                continue;
+            }
+            CGFloat top = [self cssNumber:properties[@"top"] defaultValue:190.0];
+            CGFloat width = MIN(MAX([self cssNumber:properties[@"width"] defaultValue:340.0], 160.0), 360.0);
+            CGFloat height = MIN(MAX([self cssNumber:properties[@"height"] defaultValue:240.0], 120.0), 440.0);
+            CGFloat strokeWidth = [self cssNumber:properties[@"stroke-width"] defaultValue:12.0];
+            CGFloat animationDuration = [self cssNumber:properties[@"animation-duration"] defaultValue:4.8];
+            LPBrushstrokeTimeView *brushstrokeTime = [[LPBrushstrokeTimeView alloc] initWithPaintColor:paintColor brushImage:brushImage strokeWidth:strokeWidth animationDuration:animationDuration];
+            brushstrokeTime.translatesAutoresizingMaskIntoConstraints = NO;
+            brushstrokeTime.layer.zPosition = [self cssNumber:properties[@"z-index"] defaultValue:0.0];
+            [self addSubview:brushstrokeTime];
+            [NSLayoutConstraint activateConstraints:@[
+                [brushstrokeTime.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+                [brushstrokeTime.topAnchor constraintEqualToAnchor:self.topAnchor constant:top],
+                [brushstrokeTime.widthAnchor constraintEqualToConstant:width],
+                [brushstrokeTime.heightAnchor constraintEqualToConstant:height],
+            ]];
+            [self.brushstrokeTimeViews addObject:brushstrokeTime];
             continue;
         }
         if ([type isEqualToString:@"ecg-time"]) {
@@ -909,6 +1167,9 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     }
     for (LPECGTimeView *ecgTimeView in self.ecgTimeViews) {
         [ecgTimeView updateForDate:now];
+    }
+    for (LPBrushstrokeTimeView *brushstrokeTimeView in self.brushstrokeTimeViews) {
+        [brushstrokeTimeView updateForDate:now];
     }
 }
 

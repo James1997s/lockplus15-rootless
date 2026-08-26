@@ -1,0 +1,34 @@
+{
+  "assets": [
+    {
+      "id": "paintbrush",
+      "url": "assets/brushstroke-time/paintbrush.png",
+      "sha256": "b4bc2495c0d04762d91d25552f7cd33f10a51800c5d357babdeaa498fa66d845"
+    }
+  ],
+  "placedElements": {
+    "paper": {
+      "type": "wallpaper",
+      "position": "absolute",
+      "left": "50%",
+      "top": "0px",
+      "transform": "translateX(-50%)",
+      "gradient": "#FAF7EF|#EEE8DA",
+      "z-index": "-100"
+    },
+    "paintedTime": {
+      "type": "brushstroke-time",
+      "position": "absolute",
+      "left": "50%",
+      "top": "186px",
+      "transform": "translateX(-50%)",
+      "width": "340px",
+      "height": "254px",
+      "color": "#173DAD",
+      "brush-asset-id": "paintbrush",
+      "stroke-width": "13px",
+      "animation-duration": "5.2s",
+      "z-index": "20"
+    }
+  }
+}
