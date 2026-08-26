@@ -330,6 +330,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 @interface LPECGTimeView : UIView
 @property (nonatomic, strong) CAShapeLayer *gridLayer;
 @property (nonatomic, strong) CAShapeLayer *leadLayer;
+@property (nonatomic, strong) CAShapeLayer *heartbeatLayer;
 @property (nonatomic, strong) CAShapeLayer *timeLayer;
 @property (nonatomic, strong) UIColor *traceColor;
 @property (nonatomic, strong) UIColor *gridColor;
@@ -367,8 +368,11 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         [self.layer addSublayer:_gridLayer];
 
         _leadLayer = [self newTraceLayer];
+        _leadLayer.opacity = 0.42;
+        _heartbeatLayer = [self newTraceLayer];
         _timeLayer = [self newTraceLayer];
         [self.layer addSublayer:_leadLayer];
+        [self.layer addSublayer:_heartbeatLayer];
         [self.layer addSublayer:_timeLayer];
     }
     return self;
@@ -392,6 +396,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     [super layoutSubviews];
     self.gridLayer.frame = self.bounds;
     self.leadLayer.frame = self.bounds;
+    self.heartbeatLayer.frame = self.bounds;
     self.timeLayer.frame = self.bounds;
     self.lastTimeKey = nil;
     [self updateForDate:[NSDate date]];
@@ -509,6 +514,27 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     [layer addAnimation:draw forKey:key];
 }
 
+- (void)startContinuousHeartbeat {
+    [self.heartbeatLayer removeAnimationForKey:@"speciallock.ecg.heartbeat"];
+    if (UIAccessibilityIsReduceMotionEnabled()) {
+        self.heartbeatLayer.hidden = YES;
+        return;
+    }
+    self.heartbeatLayer.hidden = NO;
+    CAKeyframeAnimation *strokeEnd = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+    strokeEnd.values = @[ @0.0, @1.0, @1.0 ];
+    strokeEnd.keyTimes = @[ @0.0, @0.46, @1.0 ];
+    CAKeyframeAnimation *strokeStart = [CAKeyframeAnimation animationWithKeyPath:@"strokeStart"];
+    strokeStart.values = @[ @0.0, @0.0, @1.0 ];
+    strokeStart.keyTimes = @[ @0.0, @0.56, @1.0 ];
+    CAAnimationGroup *heartbeat = [CAAnimationGroup animation];
+    heartbeat.animations = @[ strokeEnd, strokeStart ];
+    heartbeat.duration = MIN(MAX(self.animationDuration, 1.6), 4.4);
+    heartbeat.repeatCount = HUGE_VALF;
+    heartbeat.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    [self.heartbeatLayer addAnimation:heartbeat forKey:@"speciallock.ecg.heartbeat"];
+}
+
 - (void)updateForDate:(NSDate *)date {
     if (self.bounds.size.width < 120.0 || self.bounds.size.height < 100.0) {
         return;
@@ -524,15 +550,22 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     self.gridLayer.path = [self gridPathForWidth:self.bounds.size.width height:self.bounds.size.height].CGPath;
-    self.leadLayer.path = [self leadPathForWidth:self.bounds.size.width height:self.bounds.size.height].CGPath;
+    CGPathRef leadPath = [self leadPathForWidth:self.bounds.size.width height:self.bounds.size.height].CGPath;
+    self.leadLayer.path = leadPath;
+    self.heartbeatLayer.path = leadPath;
     self.timeLayer.path = [self timePathForDate:date width:self.bounds.size.width height:self.bounds.size.height].CGPath;
+    self.leadLayer.strokeStart = 0.0;
     self.leadLayer.strokeEnd = 1.0;
+    self.heartbeatLayer.strokeStart = 0.0;
+    self.heartbeatLayer.strokeEnd = 1.0;
     self.timeLayer.strokeEnd = 1.0;
     [CATransaction commit];
     if (shouldAnimate) {
         CFTimeInterval now = CACurrentMediaTime();
-        [self animateLayer:self.leadLayer key:@"speciallock.ecg.lead" beginTime:now duration:(self.animationDuration * 0.42)];
         [self animateLayer:self.timeLayer key:@"speciallock.ecg.time" beginTime:(now + (self.animationDuration * 0.30)) duration:(self.animationDuration * 0.70)];
+        [self startContinuousHeartbeat];
+    } else {
+        [self startContinuousHeartbeat];
     }
 }
 
