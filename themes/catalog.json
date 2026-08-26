@@ -8,6 +8,11 @@
       "url": "test.json"
     },
     {
+      "id": "github-sync-test",
+      "name": "GitHub Sync Test",
+      "url": "github-sync-test.json"
+    },
+    {
       "id": "aurora",
       "name": "Aurora",
       "url": "aurora.json"
