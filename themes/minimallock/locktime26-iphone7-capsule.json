@@ -1,0 +1,72 @@
+{
+  "placedElements": {
+    "capsuleTop": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "56px",
+      "transform": "translateX(-50%)",
+      "width": "92px",
+      "height": "271px",
+      "background": "transparent",
+      "border": "2px solid rgba(245,250,255,0.82)",
+      "border-radius": "48px",
+      "box-shadow": "0 1px 3px rgba(0,0,0,0.16)",
+      "z-index": "1",
+      "pointer-events": "none"
+    },
+    "todaystrings": {
+      "type": "date",
+      "position": "absolute",
+      "left": "50%",
+      "top": "91px",
+      "transform": "translateX(-50%)",
+      "color": "rgba(255,255,255,0.96)",
+      "font-family": "HelveticaNeue-Medium, Arial, sans-serif",
+      "font-size": "18px",
+      "font-weight": "500",
+      "letter-spacing": "0px",
+      "text-shadow": "0 1px 3px rgba(0,0,0,0.36)",
+      "z-index": "5"
+    },
+    "clock": {
+      "type": "clock",
+      "position": "absolute",
+      "left": "50%",
+      "top": "116px",
+      "transform": "translateX(-50%)",
+      "color": "rgba(255,255,255,0.98)",
+      "font-family": "HelveticaNeue-UltraLight, LockTime26Stencil, Arial, sans-serif",
+      "font-size": "78px",
+      "font-weight": "200",
+      "letter-spacing": "-2px",
+      "line-height": "0.95",
+      "text-shadow": "0 2px 4px rgba(0,0,0,0.38)",
+      "z-index": "5"
+    },
+    "capsuleBottom": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "305px",
+      "transform": "translateX(-50%)",
+      "width": "92px",
+      "height": "235px",
+      "background": "transparent",
+      "border": "2px solid rgba(245,250,255,0.82)",
+      "border-radius": "48px",
+      "box-shadow": "0 1px 3px rgba(0,0,0,0.16)",
+      "z-index": "1",
+      "pointer-events": "none"
+    }
+  },
+  "twentyFourHour": true,
+  "metadata": {
+    "name": "LockTime26 iPhone 7 Capsule UI",
+    "author": "Converted from supplied LockPlus reference",
+    "description": "Wallpaper-transparent iPhone 7 lock-screen UI with overlapping capsule outlines, large clock, and long date."
+  },
+  "id": "minimallock-locktime26-iphone7-capsule",
+  "name": "LockTime26 iPhone 7 Capsule UI",
+  "version": "1.0.0"
+}
