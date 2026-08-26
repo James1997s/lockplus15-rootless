@@ -74,8 +74,9 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
     NSString *cachedCatalogPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
     NSData *catalogData = [NSData dataWithContentsOfFile:cachedCatalogPath];
     NSDictionary *catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
-    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : nil;
-    if (records.count == 0) {
+    BOOL hasCachedCatalog = [catalog[@"themes"] isKindOfClass:NSArray.class];
+    NSArray *records = hasCachedCatalog ? catalog[@"themes"] : nil;
+    if (!hasCachedCatalog) {
         catalogData = [NSData dataWithContentsOfFile:bundledCatalogPath];
         catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
         records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : @[];

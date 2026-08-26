@@ -18,6 +18,7 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 @property (nonatomic, strong) UIBarButtonItem *refreshButton;
 @property (nonatomic, strong) UIBarButtonItem *restoreButton;
 @property (nonatomic, assign, getter=isSynchronizing) BOOL synchronizing;
+@property (nonatomic, assign) BOOL hasCachedCatalog;
 @end
 
 @implementation LPHThemeManagerController
@@ -77,8 +78,9 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     NSString *bundledCatalogPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
     NSData *catalogData = [NSData dataWithContentsOfFile:cachedCatalogPath];
     NSDictionary *catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
-    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : nil;
-    if (records.count == 0) {
+    self.hasCachedCatalog = [catalog[@"themes"] isKindOfClass:NSArray.class];
+    NSArray *records = self.hasCachedCatalog ? catalog[@"themes"] : nil;
+    if (!self.hasCachedCatalog) {
         catalogData = [NSData dataWithContentsOfFile:bundledCatalogPath];
         catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
         records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : @[];
@@ -97,7 +99,8 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
         if ([[NSFileManager defaultManager] fileExistsAtPath:bundledPath] || [[NSFileManager defaultManager] fileExistsAtPath:cachedPath]) {
             BOOL isBundled = [[NSFileManager defaultManager] fileExistsAtPath:bundledPath];
-            [available addObject:@{ @"id": themeID, @"name": name, @"remoteOnly": @(!isBundled) }];
+            BOOL isCached = [[NSFileManager defaultManager] fileExistsAtPath:cachedPath];
+            [available addObject:@{ @"id": themeID, @"name": name, @"remoteOnly": @(!isBundled), @"cached": @(isCached) }];
         }
     }
 
@@ -184,8 +187,8 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     cell.textLabel.text = record[@"name"];
     if ([record[@"id"] isEqualToString:selectedThemeID]) {
         cell.detailTextLabel.text = @"Selected";
-    } else if ([record[@"remoteOnly"] boolValue]) {
-        cell.detailTextLabel.text = @"Downloaded from GitHub • Swipe to delete";
+    } else if (self.hasCachedCatalog) {
+        cell.detailTextLabel.text = @"Cached GitHub theme • Swipe to delete";
     } else {
         cell.detailTextLabel.text = @"Bundled fallback • Tap to apply";
     }
@@ -207,10 +210,6 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     notify_post(kLPPreferencesChanged.UTF8String);
     self.statusLabel.text = [NSString stringWithFormat:@"%@ applied. Lock the device to view the new theme.", self.themeRecords[indexPath.row][@"name"]];
     [self.tableView reloadData];
-}
-
-- (BOOL)isRemoteOnlyRecord:(NSDictionary *)record {
-    return [record[@"remoteOnly"] boolValue];
 }
 
 - (NSSet<NSString *> *)hiddenThemeIDs {
@@ -241,7 +240,9 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return !self.isSynchronizing && indexPath.row < self.themeRecords.count && [self isRemoteOnlyRecord:self.themeRecords[indexPath.row]];
+    // Rows are deletable only when they came from the on-device GitHub catalog.
+    // Bundled fallback records remain protected until a GitHub refresh creates a cache.
+    return !self.isSynchronizing && self.hasCachedCatalog && indexPath.row < self.themeRecords.count;
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -275,6 +276,7 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         }
         NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
         [[NSFileManager defaultManager] removeItemAtPath:cachedPath error:nil];
+        [self removeThemeIDFromCachedCatalog:themeID];
         NSMutableSet<NSString *> *hidden = [[self hiddenThemeIDs] mutableCopy];
         [hidden addObject:themeID];
         [self saveHiddenThemeIDs:hidden];
@@ -283,6 +285,29 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         self.statusLabel.text = [NSString stringWithFormat:@"%@ was removed from this phone. Tap Restore to download it again later.", themeName];
     }]];
     [self presentViewController:confirmation animated:YES completion:nil];
+}
+
+- (void)removeThemeIDFromCachedCatalog:(NSString *)themeID {
+    NSString *catalogPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
+    NSData *data = [NSData dataWithContentsOfFile:catalogPath];
+    NSMutableDictionary *catalog = [[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil] mutableCopy];
+    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : nil;
+    if (records == nil) {
+        return;
+    }
+    NSMutableArray *retained = [NSMutableArray array];
+    for (id candidate in records) {
+        NSDictionary *record = [candidate isKindOfClass:NSDictionary.class] ? candidate : nil;
+        NSString *candidateID = [record[@"id"] isKindOfClass:NSString.class] ? record[@"id"] : nil;
+        if (![candidateID isEqualToString:themeID]) {
+            [retained addObject:candidate];
+        }
+    }
+    catalog[@"themes"] = retained;
+    NSData *updated = [NSJSONSerialization dataWithJSONObject:catalog options:0 error:nil];
+    if (updated != nil) {
+        [updated writeToFile:catalogPath options:NSDataWritingAtomic error:nil];
+    }
 }
 
 - (void)restoreDeletedThemes {
