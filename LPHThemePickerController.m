@@ -72,8 +72,8 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     NSDictionary *record = self.records[indexPath.row];
     NSString *themeID = record[@"id"];
     NSString *themeName = record[@"name"];
-    UIAlertController *confirmation = [UIAlertController alertControllerWithTitle:@"Delete Cached Theme?"
-                                                                           message:[NSString stringWithFormat:@"%@ will be removed from this phone. It remains on GitHub and can be restored in Theme Manager.", themeName]
+    UIAlertController *confirmation = [UIAlertController alertControllerWithTitle:@"Remove Downloaded Copy?"
+                                                                           message:[NSString stringWithFormat:@"%@ will be removed from this phone. It remains available in Theme Manager to download again later.", themeName]
                                                                     preferredStyle:UIAlertControllerStyleAlert];
     [confirmation addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     __weak typeof(self) weakSelf = self;
@@ -101,36 +101,6 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     NSString *cacheDirectory = ROOT_PATH_NS(kLPCachedThemeDirectory);
     [[NSFileManager defaultManager] removeItemAtPath:[cacheDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]] error:nil];
 
-    NSString *catalogPath = [cacheDirectory stringByAppendingPathComponent:@"catalog.json"];
-    NSData *data = [NSData dataWithContentsOfFile:catalogPath];
-    NSMutableDictionary *catalog = [[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil] mutableCopy];
-    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : nil;
-    if (records != nil) {
-        NSMutableArray *remaining = [NSMutableArray array];
-        for (id candidate in records) {
-            NSString *candidateID = [candidate[@"id"] isKindOfClass:NSString.class] ? candidate[@"id"] : nil;
-            if (![candidateID isEqualToString:themeID]) {
-                [remaining addObject:candidate];
-            }
-        }
-        catalog[@"themes"] = remaining;
-        NSData *updatedCatalog = [NSJSONSerialization dataWithJSONObject:catalog options:0 error:nil];
-        [updatedCatalog writeToFile:catalogPath options:NSDataWritingAtomic error:nil];
-    }
-
-    CFPropertyListRef value = CFPreferencesCopyAppValue((__bridge CFStringRef)kLPHiddenThemeIDsKey,
-                                                        (__bridge CFStringRef)kLPPreferencesDomain);
-    NSArray *stored = (value != NULL && CFGetTypeID(value) == CFArrayGetTypeID()) ? [(__bridge NSArray *)value copy] : @[];
-    if (value != NULL) {
-        CFRelease(value);
-    }
-    NSMutableSet *hidden = [NSMutableSet setWithArray:stored];
-    [hidden addObject:themeID];
-    NSArray *saved = [[hidden allObjects] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    CFPreferencesSetAppValue((__bridge CFStringRef)kLPHiddenThemeIDsKey,
-                             (__bridge CFPropertyListRef)saved,
-                             (__bridge CFStringRef)kLPPreferencesDomain);
-    CFPreferencesAppSynchronize((__bridge CFStringRef)kLPPreferencesDomain);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

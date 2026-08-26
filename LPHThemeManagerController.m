@@ -59,6 +59,7 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     self.tableView.tableHeaderView = header;
     [self reloadThemeRecords];
     [self showIdleStatus];
+    [self refreshCatalogSilently];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -69,8 +70,34 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 }
 
 - (void)showIdleStatus {
-    self.statusLabel.text = @"Themes in the local cache. Tap Refresh to download the current GitHub catalog.";
+    self.statusLabel.text = @"Loading the current GitHub theme list. Theme files download only when you select one.";
     self.progressView.hidden = YES;
+}
+
+- (void)refreshCatalogSilently {
+    if (self.isSynchronizing) {
+        return;
+    }
+    self.synchronizing = YES;
+    self.refreshButton.enabled = NO;
+    self.restoreButton.enabled = NO;
+    self.statusLabel.text = @"Refreshing the GitHub theme list…";
+    __weak typeof(self) weakSelf = self;
+    [[LPThemeCatalog sharedCatalog] refreshCatalogWithCompletion:^(BOOL success) {
+        __strong typeof(weakSelf) self = weakSelf;
+        if (self == nil) {
+            return;
+        }
+        self.synchronizing = NO;
+        self.refreshButton.enabled = YES;
+        self.restoreButton.enabled = YES;
+        if (!success) {
+            self.statusLabel.text = @"Could not refresh GitHub. Showing the last available catalog.";
+            return;
+        }
+        [self reloadThemeRecords];
+        self.statusLabel.text = [NSString stringWithFormat:@"%lu GitHub themes available. Tap one to download it.", (unsigned long)self.themeRecords.count];
+    }];
 }
 
 - (void)reloadThemeRecords {
@@ -292,8 +319,8 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     NSDictionary *record = self.themeRecords[indexPath.row];
     NSString *themeID = record[@"id"];
     NSString *themeName = record[@"name"];
-    UIAlertController *confirmation = [UIAlertController alertControllerWithTitle:@"Delete Downloaded Theme?"
-                                                                           message:[NSString stringWithFormat:@"%@ will be removed from this phone. It stays on GitHub and can be restored later.", themeName]
+    UIAlertController *confirmation = [UIAlertController alertControllerWithTitle:@"Remove Downloaded Copy?"
+                                                                           message:[NSString stringWithFormat:@"%@ will be removed from this phone only. It stays listed here and can be downloaded again later.", themeName]
                                                                     preferredStyle:UIAlertControllerStyleAlert];
     [confirmation addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     __weak typeof(self) weakSelf = self;
@@ -308,38 +335,11 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         }
         NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
         [[NSFileManager defaultManager] removeItemAtPath:cachedPath error:nil];
-        [self removeThemeIDFromCachedCatalog:themeID];
-        NSMutableSet<NSString *> *hidden = [[self hiddenThemeIDs] mutableCopy];
-        [hidden addObject:themeID];
-        [self saveHiddenThemeIDs:hidden];
         notify_post(kLPPreferencesChanged.UTF8String);
         [self reloadThemeRecords];
-        self.statusLabel.text = [NSString stringWithFormat:@"%@ was removed from this phone. Tap Restore to download it again later.", themeName];
+        self.statusLabel.text = [NSString stringWithFormat:@"%@ was removed from the local cache. It remains available to download again.", themeName];
     }]];
     [self presentViewController:confirmation animated:YES completion:nil];
-}
-
-- (void)removeThemeIDFromCachedCatalog:(NSString *)themeID {
-    NSString *catalogPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
-    NSData *data = [NSData dataWithContentsOfFile:catalogPath];
-    NSMutableDictionary *catalog = [[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil] mutableCopy];
-    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : nil;
-    if (records == nil) {
-        return;
-    }
-    NSMutableArray *retained = [NSMutableArray array];
-    for (id candidate in records) {
-        NSDictionary *record = [candidate isKindOfClass:NSDictionary.class] ? candidate : nil;
-        NSString *candidateID = [record[@"id"] isKindOfClass:NSString.class] ? record[@"id"] : nil;
-        if (![candidateID isEqualToString:themeID]) {
-            [retained addObject:candidate];
-        }
-    }
-    catalog[@"themes"] = retained;
-    NSData *updated = [NSJSONSerialization dataWithJSONObject:catalog options:0 error:nil];
-    if (updated != nil) {
-        [updated writeToFile:catalogPath options:NSDataWritingAtomic error:nil];
-    }
 }
 
 - (void)restoreDeletedThemes {

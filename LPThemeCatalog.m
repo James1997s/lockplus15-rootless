@@ -137,7 +137,6 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 
         NSMutableArray<NSDictionary *> *records = [NSMutableArray array];
         NSMutableSet<NSString *> *seenIDs = [NSMutableSet set];
-        NSSet<NSString *> *hiddenThemeIDs = [self hiddenThemeIDs];
         for (id candidate in allRecords) {
             if (![candidate isKindOfClass:[NSDictionary class]]) {
                 continue;
@@ -145,7 +144,7 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
             NSString *themeID = [candidate[@"id"] isKindOfClass:[NSString class]] ? candidate[@"id"] : nil;
             NSString *relativeURL = [candidate[@"url"] isKindOfClass:[NSString class]] ? candidate[@"url"] : nil;
             NSString *name = [candidate[@"name"] isKindOfClass:NSString.class] ? candidate[@"name"] : themeID;
-            if (![self isSafeThemeID:themeID] || ![self isSafeRelativeThemeURL:relativeURL] || [seenIDs containsObject:themeID] || [hiddenThemeIDs containsObject:themeID] || name.length == 0 || name.length > 96) {
+            if (![self isSafeThemeID:themeID] || ![self isSafeRelativeThemeURL:relativeURL] || [seenIDs containsObject:themeID] || name.length == 0 || name.length > 96) {
                 continue;
             }
             [seenIDs addObject:themeID];
