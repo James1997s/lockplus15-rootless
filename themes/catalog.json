@@ -31,6 +31,11 @@
       "id": "brushstroke-time",
       "name": "Brushstroke Time",
       "url": "brushstroke-time.json"
+    },
+    {
+      "id": "planet-globe-3d-lock",
+      "name": "Planet Globe 3D Lock",
+      "url": "planet-globe-android.json"
     }
   ]
 }
