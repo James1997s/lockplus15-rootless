@@ -17,7 +17,7 @@ SUPPORTED_PROPERTIES = {
     'padding', 'width', 'height', 'gradient', 'animation', 'animation-duration',
     'x', 'size', 'opacity', 'motion', 'motion-distance', 'motion-duration',
     'diameter', 'stroke-width', 'arc-start', 'arc-length', 'dash', 'rotation-duration', 'rotation-direction',
-    'asset-id', 'image-role', 'time-format', 'uppercase', 'grid-color', 'brush-asset-id',
+    'asset-id', 'image-role', 'time-format', 'uppercase', 'grid-color', 'brush-asset-id', 'painting-asset-ids',
 }
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},
@@ -31,7 +31,7 @@ REQUIRED_BY_TYPE = {
     'ring': {'top', 'color', 'diameter', 'stroke-width'},
     'image': {'asset-id'},
     'ecg-time': {'top', 'color', 'grid-color', 'width', 'height', 'stroke-width'},
-    'brushstroke-time': {'top', 'color', 'brush-asset-id', 'width', 'height', 'stroke-width'},
+    'brushstroke-time': {'top', 'color', 'brush-asset-id', 'painting-asset-ids', 'width', 'height', 'stroke-width'},
     'widget': {'top', 'background-color', 'innerHTML'},
     'overlay': {'top', 'background-color', 'innerHTML'},
 }
@@ -136,6 +136,10 @@ def main() -> None:
                 errors.append(f'{identifier}/{element_id}: image asset-id must reference a declared asset.')
             if element_type == 'brushstroke-time' and properties.get('brush-asset-id') not in asset_ids:
                 errors.append(f'{identifier}/{element_id}: brush-asset-id must reference a declared asset.')
+            if element_type == 'brushstroke-time':
+                painting_ids = [asset_id.strip() for asset_id in properties.get('painting-asset-ids', '').split(',') if asset_id.strip()]
+                if len(painting_ids) > 2 or any(asset_id not in asset_ids for asset_id in painting_ids):
+                    errors.append(f'{identifier}/{element_id}: painting-asset-ids must reference at most two declared assets.')
         theme_count += 1
 
     if errors:

@@ -332,11 +332,18 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 @property (nonatomic, strong) NSMutableArray<CALayer *> *brushLayers;
 @property (nonatomic, strong) UIColor *paintColor;
 @property (nonatomic, strong) UIImage *brushImage;
+@property (nonatomic, strong) NSArray<UIImage *> *paintingImages;
+@property (nonatomic, strong) CALayer *paintingLayer;
+@property (nonatomic, strong) CAShapeLayer *paintingMaskLayer;
+@property (nonatomic, strong) CALayer *paintingBrushLayer;
+@property (nonatomic, strong) NSTimer *paintingCycleTimer;
+@property (nonatomic, assign) NSInteger paintingIndex;
 @property (nonatomic, assign) CGFloat strokeWidth;
 @property (nonatomic, assign) CGFloat animationDuration;
 @property (nonatomic, copy) NSString *lastTimeKey;
 - (instancetype)initWithPaintColor:(UIColor *)paintColor
                         brushImage:(UIImage *)brushImage
+                    paintingImages:(NSArray<UIImage *> *)paintingImages
                        strokeWidth:(CGFloat)strokeWidth
                  animationDuration:(CGFloat)animationDuration;
 - (void)updateForDate:(NSDate *)date;
@@ -346,20 +353,42 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 
 - (instancetype)initWithPaintColor:(UIColor *)paintColor
                         brushImage:(UIImage *)brushImage
+                    paintingImages:(NSArray<UIImage *> *)paintingImages
                        strokeWidth:(CGFloat)strokeWidth
                  animationDuration:(CGFloat)animationDuration {
     self = [super initWithFrame:CGRectZero];
     if (self) {
         _paintColor = paintColor ?: [UIColor colorWithRed:0.06 green:0.20 blue:0.69 alpha:1.0];
         _brushImage = brushImage;
+        _paintingImages = [paintingImages copy] ?: @[];
+        _paintingIndex = -1;
         _strokeWidth = MIN(MAX(strokeWidth, 5.0), 22.0);
-        _animationDuration = MIN(MAX(animationDuration, 2.8), 7.0);
+        _animationDuration = MIN(MAX(animationDuration, 12.0), 22.0);
         self.userInteractionEnabled = NO;
         self.backgroundColor = UIColor.clearColor;
         self.clipsToBounds = YES;
 
         _strokeLayers = [NSMutableArray array];
         _brushLayers = [NSMutableArray array];
+        if (_paintingImages.count > 0) {
+            _paintingLayer = [CALayer layer];
+            _paintingLayer.backgroundColor = [UIColor colorWithRed:0.965 green:0.945 blue:0.900 alpha:1.0].CGColor;
+            _paintingLayer.borderColor = [UIColor colorWithRed:0.49 green:0.42 blue:0.30 alpha:0.55].CGColor;
+            _paintingLayer.borderWidth = 1.0;
+            _paintingLayer.cornerRadius = 3.0;
+            _paintingLayer.masksToBounds = YES;
+            _paintingLayer.contentsGravity = kCAGravityResizeAspect;
+            _paintingMaskLayer = [CAShapeLayer layer];
+            _paintingMaskLayer.fillColor = UIColor.clearColor.CGColor;
+            _paintingMaskLayer.strokeColor = UIColor.blackColor.CGColor;
+            _paintingMaskLayer.lineCap = kCALineCapRound;
+            _paintingMaskLayer.lineJoin = kCALineJoinRound;
+            _paintingLayer.mask = _paintingMaskLayer;
+            [self.layer addSublayer:_paintingLayer];
+            if (_brushImage != nil) {
+                _paintingBrushLayer = [self newBrushLayer];
+            }
+        }
     }
     return self;
 }
@@ -367,6 +396,23 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.lastTimeKey = nil;
+    if (self.paintingLayer != nil) {
+        self.paintingLayer.bounds = CGRectMake(0.0, 0.0, MIN(self.bounds.size.width - 28.0, 260.0), 150.0);
+        self.paintingLayer.position = CGPointMake(CGRectGetMidX(self.bounds), self.bounds.size.height * 0.77);
+        self.paintingMaskLayer.frame = self.paintingLayer.bounds;
+        UIBezierPath *maskPath = [UIBezierPath bezierPath];
+        CGFloat rows = 7.0;
+        CGFloat inset = 10.0;
+        CGFloat usableWidth = MAX(1.0, self.paintingLayer.bounds.size.width - (inset * 2.0));
+        CGFloat usableHeight = MAX(1.0, self.paintingLayer.bounds.size.height - (inset * 2.0));
+        for (NSUInteger row = 0; row < (NSUInteger)rows; row++) {
+            CGFloat y = inset + ((usableHeight / (rows - 1.0)) * row);
+            [maskPath moveToPoint:CGPointMake(inset, y)];
+            [maskPath addCurveToPoint:CGPointMake(inset + usableWidth, y + ((row % 2 == 0) ? 4.0 : -4.0)) controlPoint1:CGPointMake(inset + (usableWidth * 0.33), y - 3.0) controlPoint2:CGPointMake(inset + (usableWidth * 0.68), y + 3.0)];
+        }
+        self.paintingMaskLayer.path = maskPath.CGPath;
+        self.paintingMaskLayer.lineWidth = MAX(14.0, usableHeight / rows + 8.0);
+    }
     [self updateForDate:[NSDate date]];
 }
 
@@ -516,18 +562,29 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 }
 
 - (void)startLoop {
-    CFTimeInterval duration = MIN(MAX(self.animationDuration, 8.0), 14.0);
+    [self.paintingCycleTimer invalidate];
+    self.paintingCycleTimer = nil;
+    CFTimeInterval duration = MIN(MAX(self.animationDuration, 12.0), 22.0);
     NSUInteger count = self.strokeLayers.count;
+    if (self.paintingImages.count > 0) {
+        if (self.paintingIndex < 0) {
+            self.paintingIndex = 0;
+        }
+        self.paintingLayer.contents = (__bridge id)self.paintingImages[(NSUInteger)self.paintingIndex % self.paintingImages.count].CGImage;
+    }
     if (UIAccessibilityIsReduceMotionEnabled()) {
         for (CALayer *brush in self.brushLayers) {
             brush.hidden = YES;
         }
+        self.paintingBrushLayer.hidden = YES;
+        self.paintingMaskLayer.strokeStart = 0.0;
+        self.paintingMaskLayer.strokeEnd = 1.0;
         return;
     }
-    CFTimeInterval startOffset = duration * 0.08;
-    CFTimeInterval paintingSpan = duration * 0.70;
+    CFTimeInterval startOffset = duration * 0.07;
+    CFTimeInterval paintingSpan = duration * 0.45;
     CFTimeInterval slot = paintingSpan / MAX((NSUInteger)1, count);
-    CFTimeInterval holdEnd = duration * 0.86;
+    CFTimeInterval holdEnd = duration * 0.90;
     for (NSUInteger index = 0; index < count; index++) {
         CAShapeLayer *stroke = self.strokeLayers[index];
         CALayer *brush = index < self.brushLayers.count ? self.brushLayers[index] : nil;
@@ -545,7 +602,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         CAAnimationGroup *paintCycle = [CAAnimationGroup animation];
         paintCycle.animations = @[ drawEnd, clearStart ];
         paintCycle.duration = duration;
-        paintCycle.repeatCount = HUGE_VALF;
+        paintCycle.repeatCount = 0.0;
         paintCycle.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         [stroke addAnimation:paintCycle forKey:@"speciallock.brushstroke.paint.mark"];
 
@@ -563,10 +620,68 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
             CAAnimationGroup *brushCycle = [CAAnimationGroup animation];
             brushCycle.animations = @[ travel, opacity ];
             brushCycle.duration = duration;
-            brushCycle.repeatCount = HUGE_VALF;
+            brushCycle.repeatCount = 0.0;
             [brush addAnimation:brushCycle forKey:@"speciallock.brushstroke.brush.mark"];
         }
     }
+
+    if (self.paintingLayer != nil && self.paintingMaskLayer.path != nil) {
+        [self.paintingMaskLayer removeAllAnimations];
+        [self.paintingBrushLayer removeAllAnimations];
+        self.paintingBrushLayer.hidden = (self.brushImage == nil);
+        CFTimeInterval artStart = duration * 0.55;
+        CFTimeInterval artEnd = duration * 0.82;
+        CAKeyframeAnimation *artReveal = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+        artReveal.values = @[ @0.0, @0.0, @1.0, @1.0, @1.0 ];
+        artReveal.keyTimes = @[ @0.0, @(artStart / duration), @(artEnd / duration), @(holdEnd / duration), @1.0 ];
+        CAKeyframeAnimation *artClear = [CAKeyframeAnimation animationWithKeyPath:@"strokeStart"];
+        artClear.values = @[ @0.0, @0.0, @0.0, @0.0, @1.0 ];
+        artClear.keyTimes = @[ @0.0, @(artStart / duration), @(artEnd / duration), @(duration * 0.95 / duration), @1.0 ];
+        CAAnimationGroup *artCycle = [CAAnimationGroup animation];
+        artCycle.animations = @[ artReveal, artClear ];
+        artCycle.duration = duration;
+        [self.paintingMaskLayer addAnimation:artCycle forKey:@"speciallock.brushstroke.paint.study"];
+
+        if (self.paintingBrushLayer != nil) {
+            UIBezierPath *studyPath = [UIBezierPath bezierPathWithCGPath:self.paintingMaskLayer.path];
+            [studyPath applyTransform:CGAffineTransformMakeTranslation(CGRectGetMinX(self.paintingLayer.frame), CGRectGetMinY(self.paintingLayer.frame))];
+            CAKeyframeAnimation *travel = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+            travel.path = studyPath.CGPath;
+            travel.calculationMode = kCAAnimationPaced;
+            travel.rotationMode = kCAAnimationRotateAutoReverse;
+            travel.beginTime = artStart;
+            travel.duration = artEnd - artStart;
+            CAKeyframeAnimation *opacity = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
+            opacity.values = @[ @0.0, @0.0, @1.0, @1.0, @0.0, @0.0 ];
+            opacity.keyTimes = @[ @0.0, @(MAX(0.0, (artStart - (duration * 0.02)) / duration)), @(artStart / duration), @(artEnd / duration), @(MIN(1.0, (artEnd + (duration * 0.02)) / duration)), @1.0 ];
+            CAAnimationGroup *brushCycle = [CAAnimationGroup animation];
+            brushCycle.animations = @[ travel, opacity ];
+            brushCycle.duration = duration;
+            [self.paintingBrushLayer addAnimation:brushCycle forKey:@"speciallock.brushstroke.brush.study"];
+        }
+    }
+    if (self.paintingImages.count > 1) {
+        self.paintingCycleTimer = [NSTimer scheduledTimerWithTimeInterval:duration target:self selector:@selector(advancePaintingStudy) userInfo:nil repeats:NO];
+    }
+}
+
+- (void)advancePaintingStudy {
+    if (self.paintingImages.count > 1) {
+        self.paintingIndex = (self.paintingIndex + 1) % self.paintingImages.count;
+    }
+    [self startLoop];
+}
+
+- (void)willMoveToSuperview:(UIView *)newSuperview {
+    if (newSuperview == nil) {
+        [self.paintingCycleTimer invalidate];
+        self.paintingCycleTimer = nil;
+    }
+    [super willMoveToSuperview:newSuperview];
+}
+
+- (void)dealloc {
+    [self.paintingCycleTimer invalidate];
 }
 
 - (void)updateForDate:(NSDate *)date {
@@ -1016,12 +1131,21 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
             if (brushImage == nil) {
                 continue;
             }
-            CGFloat top = [self cssNumber:properties[@"top"] defaultValue:190.0];
+            NSMutableArray<UIImage *> *paintingImages = [NSMutableArray array];
+            NSString *paintingAssetIDs = [properties[@"painting-asset-ids"] isKindOfClass:NSString.class] ? properties[@"painting-asset-ids"] : @"";
+            for (NSString *candidate in [paintingAssetIDs componentsSeparatedByString:@","]) {
+                NSString *assetID = [candidate stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+                UIImage *paintingImage = [self cachedImageAssetWithID:assetID];
+                if (paintingImage != nil && paintingImages.count < 2) {
+                    [paintingImages addObject:paintingImage];
+                }
+            }
+            CGFloat top = [self cssNumber:properties[@"top"] defaultValue:170.0];
             CGFloat width = MIN(MAX([self cssNumber:properties[@"width"] defaultValue:340.0], 160.0), 360.0);
-            CGFloat height = MIN(MAX([self cssNumber:properties[@"height"] defaultValue:240.0], 120.0), 440.0);
+            CGFloat height = MIN(MAX([self cssNumber:properties[@"height"] defaultValue:400.0], 240.0), 440.0);
             CGFloat strokeWidth = [self cssNumber:properties[@"stroke-width"] defaultValue:12.0];
-            CGFloat animationDuration = [self cssNumber:properties[@"animation-duration"] defaultValue:4.8];
-            LPBrushstrokeTimeView *brushstrokeTime = [[LPBrushstrokeTimeView alloc] initWithPaintColor:paintColor brushImage:brushImage strokeWidth:strokeWidth animationDuration:animationDuration];
+            CGFloat animationDuration = [self cssNumber:properties[@"animation-duration"] defaultValue:18.0];
+            LPBrushstrokeTimeView *brushstrokeTime = [[LPBrushstrokeTimeView alloc] initWithPaintColor:paintColor brushImage:brushImage paintingImages:paintingImages strokeWidth:strokeWidth animationDuration:animationDuration];
             brushstrokeTime.translatesAutoresizingMaskIntoConstraints = NO;
             brushstrokeTime.layer.zPosition = [self cssNumber:properties[@"z-index"] defaultValue:0.0];
             [self addSubview:brushstrokeTime];

@@ -4,6 +4,16 @@
       "id": "paintbrush",
       "url": "assets/brushstroke-time/paintbrush.png",
       "sha256": "1defbc446d6ff6d3a241eeef156144a8cc930b170f51d7a0b310b4598e7d54ee"
+    },
+    {
+      "id": "mona-lisa-study",
+      "url": "assets/brushstroke-time/mona-lisa-study.jpg",
+      "sha256": "d1e4082eea71a62545ce348c1c87af4ef4184605fc38e69d1d8d5ebf6fab055a"
+    },
+    {
+      "id": "great-wave-study",
+      "url": "assets/brushstroke-time/great-wave-study.jpg",
+      "sha256": "9f2f27f577977b4b6c602ccd1798eb90cc92721ee82b02dcf7c32912ea288bde"
     }
   ],
   "placedElements": {
@@ -16,18 +26,19 @@
       "gradient": "#FAF7EF|#EEE8DA",
       "z-index": "-100"
     },
-    "paintedTime": {
+    "paintedTimeAndStudy": {
       "type": "brushstroke-time",
       "position": "absolute",
       "left": "50%",
-      "top": "186px",
+      "top": "156px",
       "transform": "translateX(-50%)",
       "width": "340px",
-      "height": "254px",
+      "height": "430px",
       "color": "#173DAD",
       "brush-asset-id": "paintbrush",
+      "painting-asset-ids": "mona-lisa-study,great-wave-study",
       "stroke-width": "13px",
-      "animation-duration": "5.2s",
+      "animation-duration": "18s",
       "z-index": "20"
     }
   }
