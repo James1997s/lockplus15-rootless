@@ -256,6 +256,11 @@
       "id": "minimallock-locktime26",
       "name": "LockTime26 Framed Liquid Glass",
       "url": "minimallock/locktime26.json"
+    },
+    {
+      "id": "minimallock-locktime26-liquid-glass-v2",
+      "name": "LockTime26 Framed Liquid Glass (Fresh)",
+      "url": "minimallock/locktime26-liquid-glass-v2.json"
     }
   ]
 }
