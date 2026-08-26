@@ -48,6 +48,11 @@
       "url": "animated-art-gallery.json"
     },
     {
+      "id": "pulse-timeline",
+      "name": "Pulse Timeline",
+      "url": "pulse-timeline.json"
+    },
+    {
       "id": "liquid-lava-lamp",
       "name": "Liquid Lava Lamp",
       "url": "liquid-lava-lamp.json"

@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1] / 'themes'
 CATALOG = ROOT / 'catalog.json'
-SUPPORTED_TYPES = {'clock', 'date', 'word-clock', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay'}
+SUPPORTED_TYPES = {'clock', 'date', 'word-clock', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay', 'ecg-time'}
 SUPPORTED_PROPERTIES = {
     'type', 'position', 'left', 'top', 'transform', 'color', 'font-family',
     'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
@@ -17,7 +17,7 @@ SUPPORTED_PROPERTIES = {
     'padding', 'width', 'height', 'gradient', 'animation', 'animation-duration',
     'x', 'size', 'opacity', 'motion', 'motion-distance', 'motion-duration',
     'diameter', 'stroke-width', 'arc-start', 'arc-length', 'dash', 'rotation-duration', 'rotation-direction',
-    'asset-id', 'image-role', 'time-format', 'uppercase',
+    'asset-id', 'image-role', 'time-format', 'uppercase', 'grid-color',
 }
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},
@@ -30,6 +30,7 @@ REQUIRED_BY_TYPE = {
     'particle': {'top', 'color', 'size', 'x'},
     'ring': {'top', 'color', 'diameter', 'stroke-width'},
     'image': {'asset-id'},
+    'ecg-time': {'top', 'color', 'grid-color', 'width', 'height', 'stroke-width'},
     'widget': {'top', 'background-color', 'innerHTML'},
     'overlay': {'top', 'background-color', 'innerHTML'},
 }

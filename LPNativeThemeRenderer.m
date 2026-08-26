@@ -327,6 +327,217 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 
 @end
 
+@interface LPECGTimeView : UIView
+@property (nonatomic, strong) CAShapeLayer *gridLayer;
+@property (nonatomic, strong) CAShapeLayer *leadLayer;
+@property (nonatomic, strong) CAShapeLayer *timeLayer;
+@property (nonatomic, strong) UIColor *traceColor;
+@property (nonatomic, strong) UIColor *gridColor;
+@property (nonatomic, assign) CGFloat strokeWidth;
+@property (nonatomic, assign) CGFloat animationDuration;
+@property (nonatomic, copy) NSString *lastTimeKey;
+@property (nonatomic, assign) BOOL hasRendered;
+- (instancetype)initWithTraceColor:(UIColor *)traceColor
+                         gridColor:(UIColor *)gridColor
+                       strokeWidth:(CGFloat)strokeWidth
+                 animationDuration:(CGFloat)animationDuration;
+- (void)updateForDate:(NSDate *)date;
+@end
+
+@implementation LPECGTimeView
+
+- (instancetype)initWithTraceColor:(UIColor *)traceColor
+                         gridColor:(UIColor *)gridColor
+                       strokeWidth:(CGFloat)strokeWidth
+                 animationDuration:(CGFloat)animationDuration {
+    self = [super initWithFrame:CGRectZero];
+    if (self) {
+        _traceColor = traceColor ?: UIColor.systemGreenColor;
+        _gridColor = gridColor ?: [UIColor colorWithRed:0.04 green:0.16 blue:0.17 alpha:1.0];
+        _strokeWidth = MIN(MAX(strokeWidth, 1.0), 8.0);
+        _animationDuration = MIN(MAX(animationDuration, 1.2), 5.0);
+        self.userInteractionEnabled = NO;
+        self.backgroundColor = UIColor.clearColor;
+        self.clipsToBounds = YES;
+
+        _gridLayer = [CAShapeLayer layer];
+        _gridLayer.fillColor = UIColor.clearColor.CGColor;
+        _gridLayer.strokeColor = _gridColor.CGColor;
+        _gridLayer.lineWidth = 0.65;
+        [self.layer addSublayer:_gridLayer];
+
+        _leadLayer = [self newTraceLayer];
+        _timeLayer = [self newTraceLayer];
+        [self.layer addSublayer:_leadLayer];
+        [self.layer addSublayer:_timeLayer];
+    }
+    return self;
+}
+
+- (CAShapeLayer *)newTraceLayer {
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.fillColor = UIColor.clearColor.CGColor;
+    layer.strokeColor = self.traceColor.CGColor;
+    layer.lineWidth = self.strokeWidth;
+    layer.lineCap = kCALineCapRound;
+    layer.lineJoin = kCALineJoinRound;
+    layer.shadowColor = self.traceColor.CGColor;
+    layer.shadowOpacity = 0.82;
+    layer.shadowRadius = MIN(MAX(self.strokeWidth * 2.6, 3.0), 16.0);
+    layer.shadowOffset = CGSizeZero;
+    return layer;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.gridLayer.frame = self.bounds;
+    self.leadLayer.frame = self.bounds;
+    self.timeLayer.frame = self.bounds;
+    self.lastTimeKey = nil;
+    [self updateForDate:[NSDate date]];
+}
+
+- (NSArray<NSString *> *)segmentsForDigit:(unichar)digit {
+    switch (digit) {
+        case '0': return @[ @"a", @"b", @"c", @"d", @"e", @"f" ];
+        case '1': return @[ @"b", @"c" ];
+        case '2': return @[ @"a", @"b", @"g", @"e", @"d" ];
+        case '3': return @[ @"a", @"b", @"g", @"c", @"d" ];
+        case '4': return @[ @"f", @"g", @"b", @"c" ];
+        case '5': return @[ @"a", @"f", @"g", @"c", @"d" ];
+        case '6': return @[ @"a", @"f", @"g", @"e", @"c", @"d" ];
+        case '7': return @[ @"a", @"b", @"c" ];
+        case '8': return @[ @"a", @"b", @"c", @"d", @"e", @"f", @"g" ];
+        case '9': return @[ @"a", @"b", @"c", @"d", @"f", @"g" ];
+        default: return @[];
+    }
+}
+
+- (void)appendSegment:(NSString *)segment x:(CGFloat)x top:(CGFloat)top width:(CGFloat)width height:(CGFloat)height toPath:(UIBezierPath *)path {
+    CGFloat midY = top + (height * 0.5);
+    CGPoint start = CGPointZero;
+    CGPoint end = CGPointZero;
+    if ([segment isEqualToString:@"a"]) { start = CGPointMake(x, top); end = CGPointMake(x + width, top); }
+    else if ([segment isEqualToString:@"b"]) { start = CGPointMake(x + width, top); end = CGPointMake(x + width, midY); }
+    else if ([segment isEqualToString:@"c"]) { start = CGPointMake(x + width, midY); end = CGPointMake(x + width, top + height); }
+    else if ([segment isEqualToString:@"d"]) { start = CGPointMake(x, top + height); end = CGPointMake(x + width, top + height); }
+    else if ([segment isEqualToString:@"e"]) { start = CGPointMake(x, midY); end = CGPointMake(x, top + height); }
+    else if ([segment isEqualToString:@"f"]) { start = CGPointMake(x, top); end = CGPointMake(x, midY); }
+    else { start = CGPointMake(x, midY); end = CGPointMake(x + width, midY); }
+    [path moveToPoint:start];
+    [path addLineToPoint:end];
+}
+
+- (UIBezierPath *)gridPathForWidth:(CGFloat)width height:(CGFloat)height {
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    for (CGFloat x = 0.0; x <= width; x += 17.0) {
+        [path moveToPoint:CGPointMake(x, 0.0)];
+        [path addLineToPoint:CGPointMake(x, height)];
+    }
+    for (CGFloat y = 0.0; y <= height; y += 17.0) {
+        [path moveToPoint:CGPointMake(0.0, y)];
+        [path addLineToPoint:CGPointMake(width, y)];
+    }
+    return path;
+}
+
+- (UIBezierPath *)leadPathForWidth:(CGFloat)width height:(CGFloat)height {
+    CGFloat baseline = height * 0.72;
+    CGFloat origin = 12.0;
+    CGFloat pulse = MIN(MAX(width * 0.22, 60.0), 88.0);
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(origin, baseline)];
+    [path addLineToPoint:CGPointMake(pulse - 24.0, baseline)];
+    [path addLineToPoint:CGPointMake(pulse - 16.0, baseline - 7.0)];
+    [path addLineToPoint:CGPointMake(pulse - 8.0, baseline)];
+    [path addLineToPoint:CGPointMake(pulse, baseline)];
+    [path addLineToPoint:CGPointMake(pulse + 7.0, baseline + 16.0)];
+    [path addLineToPoint:CGPointMake(pulse + 14.0, baseline - MIN(height * 0.45, 88.0))];
+    [path addLineToPoint:CGPointMake(pulse + 23.0, baseline + 23.0)];
+    [path addLineToPoint:CGPointMake(pulse + 34.0, baseline)];
+    [path addLineToPoint:CGPointMake(pulse + 52.0, baseline - 13.0)];
+    [path addLineToPoint:CGPointMake(pulse + 70.0, baseline)];
+    return path;
+}
+
+- (UIBezierPath *)timePathForDate:(NSDate *)date width:(CGFloat)width height:(CGFloat)height {
+    NSDateComponents *components = [NSCalendar.currentCalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:date];
+    NSString *digits = [NSString stringWithFormat:@"%02ld%02ld", (long)components.hour, (long)components.minute];
+    CGFloat digitHeight = MIN(MAX(height * 0.42, 72.0), 118.0);
+    CGFloat digitWidth = digitHeight * 0.44;
+    CGFloat top = MAX(12.0, (height * 0.12));
+    CGFloat colonWidth = digitWidth * 0.36;
+    CGFloat gap = digitWidth * 0.22;
+    CGFloat totalWidth = (digitWidth * 4.0) + (gap * 3.0) + colonWidth;
+    CGFloat startX = MAX(12.0, (width - totalWidth) * 0.5);
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    CGFloat x = startX;
+    for (NSUInteger index = 0; index < digits.length; index++) {
+        unichar digit = [digits characterAtIndex:index];
+        for (NSString *segment in [self segmentsForDigit:digit]) {
+            [self appendSegment:segment x:x top:top width:digitWidth height:digitHeight toPath:path];
+        }
+        x += digitWidth;
+        if (index == 1) {
+            CGFloat colonX = x + (colonWidth * 0.5);
+            CGFloat dot = MAX(2.0, self.strokeWidth * 0.8);
+            [path moveToPoint:CGPointMake(colonX - dot, top + (digitHeight * 0.33))];
+            [path addLineToPoint:CGPointMake(colonX + dot, top + (digitHeight * 0.33))];
+            [path moveToPoint:CGPointMake(colonX - dot, top + (digitHeight * 0.68))];
+            [path addLineToPoint:CGPointMake(colonX + dot, top + (digitHeight * 0.68))];
+            x += colonWidth;
+        } else if (index < digits.length - 1) {
+            x += gap;
+        }
+    }
+    return path;
+}
+
+- (void)animateLayer:(CAShapeLayer *)layer key:(NSString *)key beginTime:(CFTimeInterval)beginTime duration:(CFTimeInterval)duration {
+    if (UIAccessibilityIsReduceMotionEnabled()) {
+        return;
+    }
+    [layer removeAnimationForKey:key];
+    CABasicAnimation *draw = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    draw.fromValue = @0.0;
+    draw.toValue = @1.0;
+    draw.beginTime = beginTime;
+    draw.duration = duration;
+    draw.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    draw.fillMode = kCAFillModeBoth;
+    draw.removedOnCompletion = YES;
+    [layer addAnimation:draw forKey:key];
+}
+
+- (void)updateForDate:(NSDate *)date {
+    if (self.bounds.size.width < 120.0 || self.bounds.size.height < 100.0) {
+        return;
+    }
+    NSDateComponents *components = [NSCalendar.currentCalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:date];
+    NSString *timeKey = [NSString stringWithFormat:@"%02ld%02ld", (long)components.hour, (long)components.minute];
+    if ([timeKey isEqualToString:self.lastTimeKey]) {
+        return;
+    }
+    self.lastTimeKey = timeKey;
+    BOOL shouldAnimate = !UIAccessibilityIsReduceMotionEnabled();
+    self.hasRendered = YES;
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.gridLayer.path = [self gridPathForWidth:self.bounds.size.width height:self.bounds.size.height].CGPath;
+    self.leadLayer.path = [self leadPathForWidth:self.bounds.size.width height:self.bounds.size.height].CGPath;
+    self.timeLayer.path = [self timePathForDate:date width:self.bounds.size.width height:self.bounds.size.height].CGPath;
+    self.leadLayer.strokeEnd = 1.0;
+    self.timeLayer.strokeEnd = 1.0;
+    [CATransaction commit];
+    if (shouldAnimate) {
+        CFTimeInterval now = CACurrentMediaTime();
+        [self animateLayer:self.leadLayer key:@"speciallock.ecg.lead" beginTime:now duration:(self.animationDuration * 0.42)];
+        [self animateLayer:self.timeLayer key:@"speciallock.ecg.time" beginTime:(now + (self.animationDuration * 0.30)) duration:(self.animationDuration * 0.70)];
+    }
+}
+
+@end
+
 @interface LPNativeThemeElement : NSObject
 @property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, copy) NSString *type;
@@ -339,6 +550,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 
 @interface LPNativeThemeRenderer ()
 @property (nonatomic, strong) NSMutableArray<LPNativeThemeElement *> *elements;
+@property (nonatomic, strong) NSMutableArray<LPECGTimeView *> *ecgTimeViews;
 @property (nonatomic, strong) NSTimer *updateTimer;
 @end
 
@@ -351,6 +563,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         self.opaque = NO;
         self.userInteractionEnabled = NO;
         self.elements = [NSMutableArray array];
+        self.ecgTimeViews = [NSMutableArray array];
         [self reloadWithThemeJSONString:themeJSONString];
     }
     return self;
@@ -396,6 +609,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         [view removeFromSuperview];
     }
     [self.elements removeAllObjects];
+    [self.ecgTimeViews removeAllObjects];
 
     NSData *data = [themeJSONString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *theme = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
@@ -475,6 +689,27 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
                 ]];
             }
             [self applyVisualAnimationFromProperties:properties toView:imageView];
+            continue;
+        }
+        if ([type isEqualToString:@"ecg-time"]) {
+            UIColor *traceColor = [self colorFromCSS:properties[@"color"] fallback:UIColor.systemGreenColor];
+            UIColor *gridColor = [self colorFromCSS:properties[@"grid-color"] fallback:[UIColor colorWithRed:0.04 green:0.16 blue:0.17 alpha:1.0]];
+            CGFloat top = [self cssNumber:properties[@"top"] defaultValue:200.0];
+            CGFloat width = MIN(MAX([self cssNumber:properties[@"width"] defaultValue:340.0], 120.0), 360.0);
+            CGFloat height = MIN(MAX([self cssNumber:properties[@"height"] defaultValue:260.0], 100.0), 440.0);
+            CGFloat strokeWidth = [self cssNumber:properties[@"stroke-width"] defaultValue:3.0];
+            CGFloat animationDuration = [self cssNumber:properties[@"animation-duration"] defaultValue:3.0];
+            LPECGTimeView *ecgTime = [[LPECGTimeView alloc] initWithTraceColor:traceColor gridColor:gridColor strokeWidth:strokeWidth animationDuration:animationDuration];
+            ecgTime.translatesAutoresizingMaskIntoConstraints = NO;
+            ecgTime.layer.zPosition = [self cssNumber:properties[@"z-index"] defaultValue:0.0];
+            [self addSubview:ecgTime];
+            [NSLayoutConstraint activateConstraints:@[
+                [ecgTime.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+                [ecgTime.topAnchor constraintEqualToAnchor:self.topAnchor constant:top],
+                [ecgTime.widthAnchor constraintEqualToConstant:width],
+                [ecgTime.heightAnchor constraintEqualToConstant:height],
+            ]];
+            [self.ecgTimeViews addObject:ecgTime];
             continue;
         }
         if ([type isEqualToString:@"ring"]) {
@@ -627,6 +862,9 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
             }
             [self applyText:text toElement:element];
         }
+    }
+    for (LPECGTimeView *ecgTimeView in self.ecgTimeViews) {
+        [ecgTimeView updateForDate:now];
     }
 }
 
