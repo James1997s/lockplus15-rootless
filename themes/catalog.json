@@ -143,11 +143,6 @@
       "url": "minimallock/station-watch-clock.json"
     },
     {
-      "id": "minimallock-ios-26-big-text-clock",
-      "name": "iOS 26 Big Text Clock",
-      "url": "minimallock/ios-26-big-text-clock.json"
-    },
-    {
       "id": "minimallock-lava-lamp-clock",
       "name": "Lava Lamp Clock",
       "url": "minimallock/lava-lamp-clock.json"
@@ -251,26 +246,6 @@
       "id": "minimallock-mooner",
       "name": "Mooner",
       "url": "minimallock/mooner.json"
-    },
-    {
-      "id": "minimallock-locktime26",
-      "name": "LockTime26 Framed Liquid Glass",
-      "url": "minimallock/locktime26.json"
-    },
-    {
-      "id": "minimallock-locktime26-liquid-glass-v2",
-      "name": "LockTime26 Framed Liquid Glass (Fresh)",
-      "url": "minimallock/locktime26-liquid-glass-v2.json"
-    },
-    {
-      "id": "minimallock-locktime26-iphone7-capsule",
-      "name": "LockTime26 iPhone 7 Capsule UI",
-      "url": "minimallock/locktime26-iphone7-capsule.json"
-    },
-    {
-      "id": "minimallock-locktime26-iphone7-liquidglass",
-      "name": "LockTime26 iPhone 7 Liquid Glass",
-      "url": "minimallock/locktime26-iphone7-liquidglass.json"
     }
   ]
 }
