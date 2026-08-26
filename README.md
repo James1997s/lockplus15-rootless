@@ -56,15 +56,15 @@ python3 tools/migrate_assets.py /path/to/Library/LockPlus
 
 The argument must contain both `LockPlus/` and `Creator/` directories. The tool copies only static resources, preserves the new public themes, rewrites the known rootful file URLs, and does **not** copy or execute Mach-O binaries. Review the resulting local changes before packaging and do not publish materials without the appropriate rights.
 
-## Repository configuration after creation
+## Trusted public theme catalog
 
-Before compiling a release, replace `CHANGE_ME` in `LPThemeCatalog.m` with the GitHub account or organisation that owns this repository. For example, if the project is published at `https://github.com/example/lockplus15-rootless`, set the catalog URL to:
+The initial build is configured to synchronize from the catalog in this repository:
 
-```objc
-https://raw.githubusercontent.com/example/lockplus15-rootless/main/themes/catalog.json
+```text
+https://raw.githubusercontent.com/James1997s/lockplus15-rootless/main/themes/catalog.json
 ```
 
-This is the only trusted remote theme catalog used by the synchronizer.
+This is the only trusted remote theme catalog used by the synchronizer. When adding or removing a theme, update both the JSON file and `themes/catalog.json` in the same commit.
 
 ## Limitations and next work
 
