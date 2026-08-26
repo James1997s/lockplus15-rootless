@@ -251,6 +251,11 @@
       "id": "minimallock-giant-stretched-clock",
       "name": "Giant Stretched Clock iPhone 7",
       "url": "minimallock/giant-stretched-clock.json"
+    },
+    {
+      "id": "minimallock-giant-stretched-clock-v2",
+      "name": "Giant Stretched Clock iPhone 7 (Fresh)",
+      "url": "minimallock/giant-stretched-clock-v2.json"
     }
   ]
 }
