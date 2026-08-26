@@ -2,7 +2,7 @@
   "assets": [
     {
       "id": "earth-texture",
-      "url": "assets/earth-texture.png"
+      "url": "assets/planet-globe/earth-texture.png"
     }
   ],
   "placedElements": {
@@ -13,7 +13,7 @@
       "top": "0",
       "width": "100%",
       "height": "100%",
-      "texture-url": "assets/earth-texture.png",
+      "texture-url": "assets/planet-globe/earth-texture.png",
       "scale": "0.82",
       "z-index": "1"
     },
