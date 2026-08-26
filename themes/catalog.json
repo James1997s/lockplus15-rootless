@@ -38,6 +38,11 @@
       "url": "framed-parking.json"
     },
     {
+      "id": "move-the-image",
+      "name": "Move the Image",
+      "url": "move-the-image.json"
+    },
+    {
       "id": "liquid-lava-lamp",
       "name": "Liquid Lava Lamp",
       "url": "liquid-lava-lamp.json"
