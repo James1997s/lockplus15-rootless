@@ -3,6 +3,7 @@
 @interface LPNativeThemeElement : NSObject
 @property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, copy) NSString *type;
+@property (nonatomic, strong) NSDictionary<NSString *, NSString *> *properties;
 @property (nonatomic, strong) UILabel *label;
 @end
 
@@ -45,19 +46,12 @@
     [self.elements removeAllObjects];
 
     NSData *data = [themeJSONString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error = nil;
-    NSDictionary *theme = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:&error] : nil;
+    NSDictionary *theme = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
     NSDictionary *placedElements = [theme isKindOfClass:NSDictionary.class] ? theme[@"placedElements"] : nil;
     if (![placedElements isKindOfClass:NSDictionary.class] || placedElements.count == 0) {
         placedElements = @{
-            @"clock": @{
-                @"type": @"clock", @"top": @"72px", @"color": @"#FFFFFF",
-                @"font-size": @"60px", @"font-weight": @"700"
-            },
-            @"todaystrings": @{
-                @"type": @"date", @"top": @"144px", @"color": @"#FFFFFF",
-                @"font-size": @"16px", @"font-weight": @"500"
-            }
+            @"clock": @{ @"type": @"clock", @"top": @"72px", @"color": @"#FFFFFF", @"font-size": @"60px", @"font-weight": @"700" },
+            @"todaystrings": @{ @"type": @"date", @"top": @"144px", @"color": @"#FFFFFF", @"font-size": @"16px", @"font-weight": @"500" }
         };
     }
 
@@ -77,37 +71,22 @@
             continue;
         }
 
+        NSString *type = [properties[@"type"] isKindOfClass:NSString.class] ? properties[@"type"] : @"text";
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
         label.textAlignment = NSTextAlignmentCenter;
         label.numberOfLines = 2;
         label.userInteractionEnabled = NO;
         label.adjustsFontSizeToFitWidth = YES;
-        label.minimumScaleFactor = 0.6;
+        label.minimumScaleFactor = 0.55;
         label.translatesAutoresizingMaskIntoConstraints = NO;
-        label.textColor = [self colorFromCSS:properties[@"color"] fallback:UIColor.whiteColor];
-        label.backgroundColor = [self colorFromCSS:properties[@"background-color"] fallback:UIColor.clearColor];
-
-        CGFloat size = [self cssNumber:properties[@"font-size"] defaultValue:identifier.length ? 16.0 : 16.0];
-        NSString *fontName = [properties[@"font-family"] isKindOfClass:NSString.class] ? properties[@"font-family"] : nil;
-        UIFontWeight weight = [self fontWeight:properties[@"font-weight"]];
-        UIFont *font = fontName.length ? [UIFont fontWithName:fontName size:size] : nil;
-        label.font = font ?: [UIFont systemFontOfSize:size weight:weight];
-
-        NSString *type = [properties[@"type"] isKindOfClass:NSString.class] ? properties[@"type"] : @"text";
-        if ([type isEqualToString:@"text"]) {
-            label.text = [properties[@"innerHTML"] isKindOfClass:NSString.class] ? properties[@"innerHTML"] : @"";
-        }
-
-        CGFloat radius = [self cssNumber:properties[@"border-radius"] defaultValue:0.0];
-        if (radius > 0.0) {
-            label.layer.cornerRadius = radius;
-            label.layer.masksToBounds = YES;
-        }
+        [self applyAppearanceFromProperties:properties toLabel:label];
 
         [self addSubview:label];
+        CGFloat padding = [self cssNumber:properties[@"padding"] defaultValue:0.0];
         CGFloat top = [self cssNumber:properties[@"top"] defaultValue:72.0];
-        CGFloat width = [self cssNumber:properties[@"width"] defaultValue:320.0];
-        CGFloat height = [self cssNumber:properties[@"height"] defaultValue:([type isEqualToString:@"clock"] ? 76.0 : 34.0)];
+        CGFloat defaultHeight = [type isEqualToString:@"clock"] ? 76.0 : 34.0;
+        CGFloat width = [self cssNumber:properties[@"width"] defaultValue:320.0] + (padding * 2.0);
+        CGFloat height = [self cssNumber:properties[@"height"] defaultValue:defaultHeight] + (padding * 2.0);
         [NSLayoutConstraint activateConstraints:@[
             [label.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
             [label.topAnchor constraintEqualToAnchor:self.topAnchor constant:top],
@@ -118,8 +97,12 @@
         LPNativeThemeElement *element = [[LPNativeThemeElement alloc] init];
         element.identifier = identifier;
         element.type = type;
+        element.properties = properties;
         element.label = label;
         [self.elements addObject:element];
+        if ([type isEqualToString:@"text"]) {
+            [self applyText:[properties[@"innerHTML"] isKindOfClass:NSString.class] ? properties[@"innerHTML"] : @"" toElement:element];
+        }
     }
 
     [self updateDynamicLabels];
@@ -136,14 +119,61 @@
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.locale = NSLocale.currentLocale;
             formatter.dateFormat = @"HH:mm";
-            element.label.text = [formatter stringFromDate:now];
+            [self applyText:[formatter stringFromDate:now] toElement:element];
         } else if ([element.type isEqualToString:@"date"]) {
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.locale = NSLocale.currentLocale;
             formatter.dateFormat = @"EEEE, MMMM d";
-            element.label.text = [formatter stringFromDate:now];
+            [self applyText:[formatter stringFromDate:now] toElement:element];
         }
     }
+}
+
+- (void)applyText:(NSString *)text toElement:(LPNativeThemeElement *)element {
+    NSMutableAttributedString *attributed = [[NSMutableAttributedString alloc] initWithString:text ?: @""];
+    if (attributed.length > 0) {
+        [attributed addAttribute:NSFontAttributeName value:element.label.font range:NSMakeRange(0, attributed.length)];
+        [attributed addAttribute:NSForegroundColorAttributeName value:element.label.textColor range:NSMakeRange(0, attributed.length)];
+        CGFloat kern = [self cssNumber:element.properties[@"letter-spacing"] defaultValue:0.0];
+        if (kern != 0.0) {
+            [attributed addAttribute:NSKernAttributeName value:@(kern) range:NSMakeRange(0, attributed.length)];
+        }
+    }
+    element.label.attributedText = attributed;
+}
+
+- (void)applyAppearanceFromProperties:(NSDictionary<NSString *, NSString *> *)properties toLabel:(UILabel *)label {
+    CGFloat fontSize = [self cssNumber:properties[@"font-size"] defaultValue:16.0];
+    NSString *fontName = properties[@"font-family"];
+    UIFont *font = [fontName isKindOfClass:NSString.class] ? [UIFont fontWithName:fontName size:fontSize] : nil;
+    label.font = font ?: [UIFont systemFontOfSize:fontSize weight:[self fontWeight:properties[@"font-weight"]]];
+    label.textColor = [self colorFromCSS:properties[@"color"] fallback:UIColor.whiteColor];
+    label.backgroundColor = [self colorFromCSS:properties[@"background-color"] fallback:UIColor.clearColor];
+
+    CGFloat cornerRadius = [self cssNumber:properties[@"border-radius"] defaultValue:0.0];
+    if (cornerRadius > 0.0) {
+        label.layer.cornerRadius = cornerRadius;
+        label.layer.masksToBounds = YES;
+    }
+
+    NSString *border = properties[@"border"];
+    if ([border isKindOfClass:NSString.class]) {
+        label.layer.borderWidth = [self cssNumber:border defaultValue:0.0];
+        label.layer.borderColor = [self colorEmbeddedInCSS:border fallback:UIColor.clearColor].CGColor;
+    }
+
+    NSString *shadow = properties[@"text-shadow"] ?: properties[@"box-shadow"];
+    if ([shadow isKindOfClass:NSString.class]) {
+        UIColor *shadowColor = [self colorEmbeddedInCSS:shadow fallback:UIColor.clearColor];
+        if (shadowColor != UIColor.clearColor) {
+            label.layer.shadowColor = shadowColor.CGColor;
+            label.layer.shadowOpacity = 1.0;
+            label.layer.shadowRadius = MAX(2.0, [self cssNumber:shadow defaultValue:5.0]);
+            label.layer.shadowOffset = CGSizeMake(0.0, 1.0);
+            label.layer.masksToBounds = NO;
+        }
+    }
+    label.layer.zPosition = [self cssNumber:properties[@"z-index"] defaultValue:0.0];
 }
 
 - (CGFloat)cssNumber:(id)value defaultValue:(CGFloat)defaultValue {
@@ -163,6 +193,24 @@
     return UIFontWeightRegular;
 }
 
+- (UIColor *)colorEmbeddedInCSS:(NSString *)css fallback:(UIColor *)fallback {
+    if (![css isKindOfClass:NSString.class]) {
+        return fallback;
+    }
+    NSRange rgbaStart = [css rangeOfString:@"rgba("];
+    if (rgbaStart.location != NSNotFound) {
+        NSRange close = [css rangeOfString:@")" options:0 range:NSMakeRange(rgbaStart.location, css.length - rgbaStart.location)];
+        if (close.location != NSNotFound) {
+            return [self colorFromCSS:[css substringWithRange:NSMakeRange(rgbaStart.location, NSMaxRange(close) - rgbaStart.location)] fallback:fallback];
+        }
+    }
+    NSRange hexStart = [css rangeOfString:@"#"];
+    if (hexStart.location != NSNotFound && css.length >= hexStart.location + 7) {
+        return [self colorFromCSS:[css substringWithRange:NSMakeRange(hexStart.location, 7)] fallback:fallback];
+    }
+    return fallback;
+}
+
 - (UIColor *)colorFromCSS:(id)value fallback:(UIColor *)fallback {
     if (![value isKindOfClass:NSString.class]) {
         return fallback;
@@ -171,10 +219,7 @@
     if ([css hasPrefix:@"#"] && css.length == 7) {
         unsigned int rgb = 0;
         [[NSScanner scannerWithString:[css substringFromIndex:1]] scanHexInt:&rgb];
-        return [UIColor colorWithRed:((rgb >> 16) & 0xFF) / 255.0
-                               green:((rgb >> 8) & 0xFF) / 255.0
-                                blue:(rgb & 0xFF) / 255.0
-                               alpha:1.0];
+        return [UIColor colorWithRed:((rgb >> 16) & 0xFF) / 255.0 green:((rgb >> 8) & 0xFF) / 255.0 blue:(rgb & 0xFF) / 255.0 alpha:1.0];
     }
     if ([css hasPrefix:@"rgba("] && [css hasSuffix:@")"]) {
         NSString *body = [css substringWithRange:NSMakeRange(5, css.length - 6)];

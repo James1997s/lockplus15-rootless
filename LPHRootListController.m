@@ -4,6 +4,9 @@
 #import <notify.h>
 #import <rootless.h>
 
+static NSString * const kLPThemeDirectory = @"/Library/LockPlus15/Themes";
+static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus15/Themes";
+
 @interface LPHRootListController : PSListController
 @end
 
@@ -12,45 +15,63 @@
 - (NSArray *)specifiers {
     if (_specifiers == nil) {
         _specifiers = [self loadSpecifiersFromPlistName:@"Root" target:self];
+        for (PSSpecifier *specifier in _specifiers) {
+            if ([[specifier propertyForKey:@"key"] isEqualToString:@"theme"]) {
+                [specifier setProperty:[self themeTitles] forKey:@"validTitles"];
+                [specifier setProperty:[self themeValues] forKey:@"validValues"];
+            }
+        }
     }
     return _specifiers;
 }
 
-- (NSArray<NSString *> *)themeValues {
-    NSMutableSet<NSString *> *themeIDs = [NSMutableSet set];
-    NSArray<NSString *> *directories = @[
-        ROOT_PATH_NS(@"/Library/LockPlus15/Themes"),
-        ROOT_PATH_NS(@"/var/mobile/Library/LockPlus15/Themes"),
-    ];
-    for (NSString *directory in directories) {
-        NSArray<NSString *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:nil];
-        for (NSString *file in files) {
-            if ([file.pathExtension isEqualToString:@"json"] && ![file isEqualToString:@"catalog.json"]) {
-                NSString *themeID = file.stringByDeletingPathExtension;
-                if (themeID.length > 0 && themeID.length <= 48) {
-                    [themeIDs addObject:themeID];
-                }
-            }
+- (NSArray<NSDictionary *> *)availableThemeRecords {
+    NSString *catalogPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
+    NSData *catalogData = [NSData dataWithContentsOfFile:catalogPath];
+    NSDictionary *catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
+    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : @[];
+
+    NSMutableArray<NSDictionary *> *available = [NSMutableArray array];
+    for (NSDictionary *record in records) {
+        NSString *themeID = [record[@"id"] isKindOfClass:NSString.class] ? record[@"id"] : nil;
+        NSString *name = [record[@"name"] isKindOfClass:NSString.class] ? record[@"name"] : nil;
+        NSString *relativePath = [record[@"url"] isKindOfClass:NSString.class] ? record[@"url"] : nil;
+        if (themeID.length == 0 || name.length == 0 || relativePath.length == 0) {
+            continue;
+        }
+
+        NSString *bundledPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:relativePath]);
+        NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
+        if ([[NSFileManager defaultManager] fileExistsAtPath:bundledPath] || [[NSFileManager defaultManager] fileExistsAtPath:cachedPath]) {
+            [available addObject:@{ @"id": themeID, @"name": name }];
         }
     }
-    if (themeIDs.count == 0) {
-        [themeIDs addObject:@"aurora"];
+
+    return [available sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *left, NSDictionary *right) {
+        return [left[@"name"] localizedCaseInsensitiveCompare:right[@"name"]];
+    }];
+}
+
+- (NSArray<NSString *> *)themeValues {
+    NSMutableArray<NSString *> *values = [NSMutableArray array];
+    for (NSDictionary *record in [self availableThemeRecords]) {
+        [values addObject:record[@"id"]];
     }
-    return [[themeIDs allObjects] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    return values.count > 0 ? values : @[ @"aurora" ];
 }
 
 - (NSArray<NSString *> *)themeTitles {
     NSMutableArray<NSString *> *titles = [NSMutableArray array];
-    for (NSString *themeID in [self themeValues]) {
-        [titles addObject:[[themeID stringByReplacingOccurrencesOfString:@"-" withString:@" "] capitalizedString]];
+    for (NSDictionary *record in [self availableThemeRecords]) {
+        [titles addObject:record[@"name"]];
     }
-    return titles;
+    return titles.count > 0 ? titles : @[ @"Aurora" ];
 }
 
 - (void)syncThemes {
     notify_post("com.example.lockplus15/preferences.changed");
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Theme Sync Started"
-                                                                   message:@"SpringBoard will download every valid theme listed in the configured GitHub catalog. Reopen this pane after the sync to see newly available themes."
+                                                                   message:@"SpringBoard is downloading every compatible GitHub theme. Close and reopen this page after a few seconds to refresh the selector."
                                                             preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];

@@ -9,6 +9,12 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parents[1] / 'themes'
 CATALOG = ROOT / 'catalog.json'
 SUPPORTED_TYPES = {'clock', 'date', 'text'}
+SUPPORTED_PROPERTIES = {
+    'type', 'position', 'left', 'top', 'transform', 'color', 'font-family',
+    'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
+    'innerHTML', 'background-color', 'border', 'border-radius', 'box-shadow',
+    'padding', 'width', 'height',
+}
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},
     'date': {'top', 'color', 'font-size'},
@@ -73,6 +79,15 @@ def main() -> None:
                 errors.append(f'{identifier}/{element_id}: missing required renderer keys {sorted(missing)}.')
             if any(not isinstance(key, str) or not isinstance(value, str) for key, value in properties.items()):
                 errors.append(f'{identifier}/{element_id}: all properties must be strings.')
+            unsupported = set(properties) - SUPPORTED_PROPERTIES
+            if unsupported:
+                errors.append(f'{identifier}/{element_id}: unsupported renderer properties {sorted(unsupported)}.')
+            if properties.get('position') not in {None, 'absolute'}:
+                errors.append(f'{identifier}/{element_id}: unsupported position mode.')
+            if properties.get('left') not in {None, '50%'}:
+                errors.append(f'{identifier}/{element_id}: only centered left positioning is supported.')
+            if properties.get('transform') not in {None, 'translateX(-50%)'}:
+                errors.append(f'{identifier}/{element_id}: unsupported transform.')
             if 'javascript:' in ' '.join(str(value).lower() for value in properties.values()):
                 errors.append(f'{identifier}/{element_id}: unsafe URI value.')
         theme_count += 1
