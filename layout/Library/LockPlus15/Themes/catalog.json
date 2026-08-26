@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "catalogName": "LockPlus 15 Community Themes",
+  "themes": [
+    {
+      "id": "aurora",
+      "name": "Aurora",
+      "url": "aurora.json"
+    },
+    {
+      "id": "midnight",
+      "name": "Midnight",
+      "url": "midnight.json"
+    },
+    {
+      "id": "sunset",
+      "name": "Sunset",
+      "url": "sunset.json"
+    }
+  ]
+}

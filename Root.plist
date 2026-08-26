@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>title</key>
+    <string>LockPlus 15</string>
+    <key>items</key>
+    <array>
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>footerText</key>
+            <string>iOS 15 rootless port for Dopamine/ElleKit. The initial overlay is visual-only and leaves the stock lock and unlock gestures under SpringBoard control.</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <false/>
+            <key>defaults</key>
+            <string>com.example.lockplus15</string>
+            <key>key</key>
+            <string>enabled</string>
+            <key>label</key>
+            <string>Enable LockPlus 15</string>
+            <key>PostNotification</key>
+            <string>com.example.lockplus15/preferences.changed</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSLinkListCell</string>
+            <key>default</key>
+            <string>aurora</string>
+            <key>defaults</key>
+            <string>com.example.lockplus15</string>
+            <key>key</key>
+            <string>theme</string>
+            <key>label</key>
+            <string>Theme</string>
+            <key>PostNotification</key>
+            <string>com.example.lockplus15/preferences.changed</string>
+            <key>titlesDataSource</key>
+            <string>themeTitles</string>
+            <key>valuesDataSource</key>
+            <string>themeValues</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSButtonCell</string>
+            <key>label</key>
+            <string>Sync All Themes from GitHub</string>
+            <key>action</key>
+            <string>syncThemes</string>
+        </dict>
+    </array>
+</dict>
+</plist>

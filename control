@@ -1,0 +1,9 @@
+Package: com.example.lockplus15
+Name: LockPlus 15 Rootless
+Version: 0.1.0
+Architecture: iphoneos-arm64
+Description: Visual-only LockPlus migration for iOS 15 rootless Dopamine and ElleKit.
+Maintainer: Local Build
+Author: Local Build
+Section: Tweaks
+Depends: firmware (>= 15.0), ellekit, preferenceloader

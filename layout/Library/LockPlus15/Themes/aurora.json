@@ -1,0 +1,45 @@
+{
+  "placedElements": {
+    "clock": {
+      "type": "clock",
+      "position": "absolute",
+      "left": "50%",
+      "top": "74px",
+      "transform": "translateX(-50%)",
+      "color": "#EAFBFF",
+      "font-family": "HelveticaNeue-UltraLight",
+      "font-size": "64px",
+      "font-weight": "200",
+      "letter-spacing": "-2px",
+      "text-shadow": "0 0 16px rgba(106,220,255,0.55)",
+      "z-index": "10"
+    },
+    "todaystrings": {
+      "type": "date",
+      "position": "absolute",
+      "left": "50%",
+      "top": "144px",
+      "transform": "translateX(-50%)",
+      "color": "rgba(225,250,255,0.92)",
+      "font-family": "HelveticaNeue",
+      "font-size": "18px",
+      "font-weight": "400",
+      "letter-spacing": "0.3px",
+      "z-index": "10"
+    },
+    "textAurora": {
+      "type": "text",
+      "position": "absolute",
+      "left": "50%",
+      "top": "180px",
+      "transform": "translateX(-50%)",
+      "innerHTML": "A U R O R A",
+      "color": "rgba(128,231,255,0.78)",
+      "font-family": "HelveticaNeue",
+      "font-size": "10px",
+      "font-weight": "600",
+      "letter-spacing": "5px",
+      "z-index": "10"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+# Theos build output
+.theos/
+packages/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# User-supplied legacy web assets are local-only.
+layout/Library/LockPlus15/LockPlus/
+layout/Library/LockPlus15/Creator/
+
+# Local device/export material
+*.deb
+.DS_Store
