@@ -523,16 +523,22 @@ static NSString * const kLPThemePreferencesDomain = @"com.example.lockplus15";
 - (void)updateDynamicLabels {
     NSDate *now = [NSDate date];
     for (LPNativeThemeElement *element in self.elements) {
-        if ([element.type isEqualToString:@"clock"]) {
+        if ([element.type isEqualToString:@"clock"] || [element.type isEqualToString:@"date"]) {
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.locale = NSLocale.currentLocale;
-            formatter.dateFormat = @"HH:mm";
-            [self applyText:[formatter stringFromDate:now] toElement:element];
-        } else if ([element.type isEqualToString:@"date"]) {
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.locale = NSLocale.currentLocale;
-            formatter.dateFormat = @"EEEE, MMMM d";
-            [self applyText:[formatter stringFromDate:now] toElement:element];
+            NSString *defaultFormat = [element.type isEqualToString:@"clock"] ? @"HH:mm" : @"EEEE, MMMM d";
+            NSString *format = [element.properties[@"time-format"] isKindOfClass:NSString.class] ? element.properties[@"time-format"] : defaultFormat;
+            // Restrict formatting input to normal Unicode date pattern characters.
+            NSCharacterSet *allowed = [NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz :/,-."];
+            if (format.length == 0 || format.length > 48 || [[format stringByTrimmingCharactersInSet:allowed] length] != 0) {
+                format = defaultFormat;
+            }
+            formatter.dateFormat = format;
+            NSString *text = [formatter stringFromDate:now];
+            if ([element.properties[@"uppercase"] isEqualToString:@"true"]) {
+                text = text.uppercaseString;
+            }
+            [self applyText:text toElement:element];
         }
     }
 }

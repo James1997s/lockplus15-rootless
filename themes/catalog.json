@@ -23,6 +23,11 @@
       "url": "catalog-refresh-test.json"
     },
     {
+      "id": "split-numeral",
+      "name": "Split Numeral",
+      "url": "split-numeral.json"
+    },
+    {
       "id": "liquid-lava-lamp",
       "name": "Liquid Lava Lamp",
       "url": "liquid-lava-lamp.json"

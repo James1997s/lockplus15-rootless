@@ -17,7 +17,7 @@ SUPPORTED_PROPERTIES = {
     'padding', 'width', 'height', 'gradient', 'animation', 'animation-duration',
     'x', 'size', 'opacity', 'motion', 'motion-distance', 'motion-duration',
     'diameter', 'stroke-width', 'arc-start', 'arc-length', 'dash', 'rotation-duration', 'rotation-direction',
-    'asset-id', 'image-role',
+    'asset-id', 'image-role', 'time-format', 'uppercase',
 }
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},
