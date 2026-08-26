@@ -1,0 +1,211 @@
+#import "LPHThemeManagerController.h"
+
+#import <notify.h>
+#import <rootless.h>
+
+#import "LPThemeCatalog.h"
+
+static NSString * const kLPPreferencesDomain = @"com.example.lockplus15";
+static NSString * const kLPPreferencesChanged = @"com.example.lockplus15/preferences.changed";
+static NSString * const kLPThemeDirectory = @"/Library/LockPlus15/Themes";
+static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus15/Themes";
+
+@interface LPHThemeManagerController ()
+@property (nonatomic, copy) NSArray<NSDictionary *> *themeRecords;
+@property (nonatomic, strong) UILabel *statusLabel;
+@property (nonatomic, strong) UIProgressView *progressView;
+@property (nonatomic, strong) UIBarButtonItem *refreshButton;
+@property (nonatomic, assign, getter=isSynchronizing) BOOL synchronizing;
+@end
+
+@implementation LPHThemeManagerController
+
+- (instancetype)init {
+    return [super initWithStyle:UITableViewStyleInsetGrouped];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title = @"Theme Manager";
+    self.tableView.rowHeight = 54.0;
+    self.tableView.refreshControl = [[UIRefreshControl alloc] init];
+    [self.tableView.refreshControl addTarget:self action:@selector(refreshThemes) forControlEvents:UIControlEventValueChanged];
+
+    self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshThemes)];
+    self.navigationItem.rightBarButtonItem = self.refreshButton;
+
+    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.bounds.size.width, 96.0)];
+    UILabel *status = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 16.0, MAX(1.0, self.view.bounds.size.width - 48.0), 42.0)];
+    status.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    status.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    status.textColor = UIColor.secondaryLabelColor;
+    status.numberOfLines = 2;
+    status.textAlignment = NSTextAlignmentCenter;
+    [header addSubview:status];
+
+    UIProgressView *progress = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+    progress.frame = CGRectMake(32.0, 72.0, MAX(1.0, self.view.bounds.size.width - 64.0), 2.0);
+    progress.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    progress.hidden = YES;
+    [header addSubview:progress];
+
+    self.statusLabel = status;
+    self.progressView = progress;
+    self.tableView.tableHeaderView = header;
+    [self reloadThemeRecords];
+    [self showIdleStatus];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (!self.isSynchronizing) {
+        [self reloadThemeRecords];
+    }
+}
+
+- (void)showIdleStatus {
+    self.statusLabel.text = @"Themes in the local cache. Tap Refresh to download the current GitHub catalog.";
+    self.progressView.hidden = YES;
+}
+
+- (void)reloadThemeRecords {
+    NSString *cachedCatalogPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
+    NSString *bundledCatalogPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
+    NSData *catalogData = [NSData dataWithContentsOfFile:cachedCatalogPath];
+    NSDictionary *catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
+    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : nil;
+    if (records.count == 0) {
+        catalogData = [NSData dataWithContentsOfFile:bundledCatalogPath];
+        catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
+        records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : @[];
+    }
+
+    NSMutableArray<NSDictionary *> *available = [NSMutableArray array];
+    for (id candidate in records) {
+        NSDictionary *record = [candidate isKindOfClass:NSDictionary.class] ? candidate : nil;
+        NSString *themeID = [record[@"id"] isKindOfClass:NSString.class] ? record[@"id"] : nil;
+        NSString *name = [record[@"name"] isKindOfClass:NSString.class] ? record[@"name"] : nil;
+        NSString *relativePath = [record[@"url"] isKindOfClass:NSString.class] ? record[@"url"] : nil;
+        if (themeID.length == 0 || name.length == 0 || relativePath.length == 0) {
+            continue;
+        }
+        NSString *bundledPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:relativePath]);
+        NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
+        if ([[NSFileManager defaultManager] fileExistsAtPath:bundledPath] || [[NSFileManager defaultManager] fileExistsAtPath:cachedPath]) {
+            [available addObject:@{ @"id": themeID, @"name": name }];
+        }
+    }
+
+    self.themeRecords = [available sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *left, NSDictionary *right) {
+        return [left[@"name"] localizedCaseInsensitiveCompare:right[@"name"]];
+    }];
+    [self.tableView reloadData];
+}
+
+- (void)refreshThemes {
+    if (self.isSynchronizing) {
+        return;
+    }
+    self.synchronizing = YES;
+    self.refreshButton.enabled = NO;
+    self.progressView.hidden = NO;
+    self.progressView.progress = 0.0;
+    self.statusLabel.text = @"Downloading and validating the GitHub catalog…";
+
+    __weak typeof(self) weakSelf = self;
+    [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithProgress:^(NSUInteger completed, NSUInteger total) {
+        __strong typeof(weakSelf) self = weakSelf;
+        if (self == nil) {
+            return;
+        }
+        float fraction = total > 0 ? (float)completed / (float)total : 0.0f;
+        [self.progressView setProgress:fraction animated:YES];
+        self.statusLabel.text = [NSString stringWithFormat:@"Downloading and validating %lu of %lu themes…", (unsigned long)completed, (unsigned long)total];
+    } completion:^(BOOL success, BOOL activeThemeUpdated) {
+        __strong typeof(weakSelf) self = weakSelf;
+        if (self == nil) {
+            return;
+        }
+        self.synchronizing = NO;
+        self.refreshButton.enabled = YES;
+        [self.tableView.refreshControl endRefreshing];
+        if (!success) {
+            self.progressView.hidden = YES;
+            self.statusLabel.text = @"Sync did not complete. Your previous complete cache was retained. Check GitHub/network access and try again.";
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Theme Sync Failed"
+                                                                           message:@"The full catalog could not be downloaded and validated, so no partial catalog was applied. Your existing themes remain available."
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+            [self presentViewController:alert animated:YES completion:nil];
+            return;
+        }
+
+        [self reloadThemeRecords];
+        self.progressView.hidden = YES;
+        self.statusLabel.text = [NSString stringWithFormat:@"Sync complete. %lu GitHub themes are ready to apply.", (unsigned long)self.themeRecords.count];
+        // The cache is now complete; notify SpringBoard only after it is safe to reload.
+        notify_post(kLPPreferencesChanged.UTF8String);
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Themes Ready"
+                                                                       message:@"The complete GitHub catalog is now cached. Tap any theme to apply it."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+    }];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.themeRecords.count;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    return @"Available Themes";
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString * const reuseIdentifier = @"ThemeCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
+    NSDictionary *record = self.themeRecords[indexPath.row];
+    NSString *selectedThemeID = [self selectedThemeID];
+    cell.textLabel.text = record[@"name"];
+    cell.detailTextLabel.text = [record[@"id"] isEqualToString:selectedThemeID] ? @"Selected" : @"Tap to apply";
+    cell.accessoryType = [record[@"id"] isEqualToString:selectedThemeID] ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (self.isSynchronizing) {
+        return;
+    }
+    NSString *themeID = self.themeRecords[indexPath.row][@"id"];
+    if (themeID.length == 0) {
+        return;
+    }
+    CFPreferencesSetAppValue(CFSTR("theme"), (__bridge CFPropertyListRef)themeID, (__bridge CFStringRef)kLPPreferencesDomain);
+    CFPreferencesAppSynchronize((__bridge CFStringRef)kLPPreferencesDomain);
+    notify_post(kLPPreferencesChanged.UTF8String);
+    self.statusLabel.text = [NSString stringWithFormat:@"%@ applied. Lock the device to view the new theme.", self.themeRecords[indexPath.row][@"name"]];
+    [self.tableView reloadData];
+}
+
+- (NSString *)selectedThemeID {
+    CFPropertyListRef value = CFPreferencesCopyAppValue(CFSTR("theme"), (__bridge CFStringRef)kLPPreferencesDomain);
+    NSString *themeID = nil;
+    if (value != NULL && CFGetTypeID(value) == CFStringGetTypeID()) {
+        themeID = [(__bridge NSString *)value copy];
+    }
+    if (value != NULL) {
+        CFRelease(value);
+    }
+    return themeID ?: @"aurora";
+}
+
+@end

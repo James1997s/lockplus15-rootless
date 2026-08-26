@@ -5,6 +5,7 @@
 #import <notify.h>
 #import <rootless.h>
 #import "LPHThemePickerController.h"
+#import "LPHThemeManagerController.h"
 
 static NSString * const kLPPreferencesDomain = @"com.example.lockplus15";
 static NSString * const kLPPreferencesChanged = @"com.example.lockplus15/preferences.changed";
@@ -54,14 +55,14 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
     theme.buttonAction = @selector(openThemePicker);
     [specifiers addObject:theme];
 
-    PSSpecifier *sync = [PSSpecifier preferenceSpecifierNamed:@"Sync Themes from GitHub"
+    PSSpecifier *sync = [PSSpecifier preferenceSpecifierNamed:@"Theme Manager"
                                                        target:self
                                                           set:nil
                                                           get:nil
                                                        detail:nil
                                                          cell:PSButtonCell
                                                          edit:nil];
-    sync.buttonAction = @selector(syncThemes);
+    sync.buttonAction = @selector(openThemeManager);
     [specifiers addObject:sync];
 
     _specifiers = [specifiers copy];
@@ -160,13 +161,9 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
     return specifier;
 }
 
-- (void)syncThemes {
-    notify_post(kLPPreferencesChanged.UTF8String);
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Theme Sync Started"
-                                                                   message:@"SpringBoard is downloading every compatible GitHub theme. Close and reopen this page after a few seconds to refresh the selector."
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-    [self presentViewController:alert animated:YES completion:nil];
+- (void)openThemeManager {
+    LPHThemeManagerController *manager = [[LPHThemeManagerController alloc] init];
+    [self.navigationController pushViewController:manager animated:YES];
 }
 
 @end
