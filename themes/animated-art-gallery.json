@@ -4,6 +4,11 @@
       "id": "animated-painting-gallery",
       "url": "assets/art-gallery/animated-painting-gallery.gif",
       "sha256": "605f4f1739063c3039522a23019d740eaea0f997309c7207976d91dedc61acd8"
+    },
+    {
+      "id": "artist-writing-sprite",
+      "url": "assets/art-gallery/artist-writing-sprite.gif",
+      "sha256": "ea4d783aca6be99c170b92a4be04ac64e4c7bd8380bb5481afa54b757e42f1a0"
     }
   ],
   "placedElements": {
@@ -66,10 +71,10 @@
       "type": "panel",
       "position": "absolute",
       "left": "50%",
-      "top": "520px",
+      "top": "505px",
       "transform": "translateX(-50%)",
       "width": "302px",
-      "height": "100px",
+      "height": "132px",
       "padding": "0px",
       "background-color": "#FBF7EE",
       "border": "1px solid #B78A43",
@@ -82,14 +87,14 @@
       "type": "clock",
       "position": "absolute",
       "left": "50%",
-      "top": "527px",
+      "top": "509px",
       "transform": "translateX(-50%)",
       "width": "270px",
-      "height": "50px",
+      "height": "42px",
       "time-format": "h:mm",
       "color": "#4B2D1E",
       "font-family": "SnellRoundhand-Bold",
-      "font-size": "45px",
+      "font-size": "40px",
       "font-weight": "700",
       "letter-spacing": "0.2px",
       "z-index": "20"
@@ -98,16 +103,30 @@
       "type": "date",
       "position": "absolute",
       "left": "50%",
-      "top": "580px",
+      "top": "552px",
       "transform": "translateX(-50%)",
       "width": "276px",
-      "height": "24px",
+      "height": "22px",
       "time-format": "EEEE, MMMM d",
       "color": "#765440",
       "font-family": "SnellRoundhand-Bold",
-      "font-size": "19px",
+      "font-size": "17px",
       "font-weight": "700",
       "letter-spacing": "0.3px",
+      "z-index": "20"
+    },
+    "artistWritingSprite": {
+      "type": "image",
+      "position": "absolute",
+      "left": "50%",
+      "top": "578px",
+      "transform": "translateX(-50%)",
+      "asset-id": "artist-writing-sprite",
+      "image-role": "panel",
+      "width": "72px",
+      "height": "52px",
+      "opacity": "1.0",
+      "border-radius": "0px",
       "z-index": "20"
     }
   }
