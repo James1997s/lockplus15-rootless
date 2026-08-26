@@ -13,7 +13,7 @@ SUPPORTED_PROPERTIES = {
     'type', 'position', 'left', 'top', 'transform', 'color', 'font-family',
     'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
     'innerHTML', 'background-color', 'border', 'border-radius', 'box-shadow',
-    'padding', 'width', 'height', 'gradient',
+    'padding', 'width', 'height', 'gradient', 'animation', 'animation-duration',
 }
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},

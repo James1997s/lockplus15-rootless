@@ -2,6 +2,7 @@
 
 @interface LPGradientWallpaperView : UIView
 @property (nonatomic, strong) CAGradientLayer *gradientLayer;
+- (void)applyVisualAnimationFromProperties:(NSDictionary<NSString *, NSString *> *)properties;
 @end
 
 @implementation LPGradientWallpaperView
@@ -26,6 +27,23 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.gradientLayer.frame = self.bounds;
+}
+
+- (void)applyVisualAnimationFromProperties:(NSDictionary<NSString *, NSString *> *)properties {
+    NSString *animation = [properties[@"animation"] isKindOfClass:NSString.class] ? properties[@"animation"] : nil;
+    if (UIAccessibilityIsReduceMotionEnabled() || ![animation isEqualToString:@"gradient-shift"]) {
+        return;
+    }
+    CGFloat duration = [properties[@"animation-duration"] doubleValue];
+    duration = MIN(MAX(duration > 0.0 ? duration : 8.0, 2.0), 16.0);
+    CABasicAnimation *shift = [CABasicAnimation animationWithKeyPath:@"startPoint"];
+    shift.fromValue = [NSValue valueWithCGPoint:CGPointMake(0.10, 0.0)];
+    shift.toValue = [NSValue valueWithCGPoint:CGPointMake(0.90, 0.15)];
+    shift.duration = duration;
+    shift.autoreverses = YES;
+    shift.repeatCount = HUGE_VALF;
+    shift.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [self.gradientLayer addAnimation:shift forKey:@"lockplus.gradient-shift"];
 }
 
 @end
@@ -112,6 +130,7 @@
                 [wallpaper.topAnchor constraintEqualToAnchor:self.topAnchor],
                 [wallpaper.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
             ]];
+            [wallpaper applyVisualAnimationFromProperties:properties];
             continue;
         }
 
@@ -123,6 +142,7 @@
         label.minimumScaleFactor = 0.55;
         label.translatesAutoresizingMaskIntoConstraints = NO;
         [self applyAppearanceFromProperties:properties toLabel:label];
+        [self applyVisualAnimationFromProperties:properties toView:label];
 
         [self addSubview:label];
         CGFloat padding = [self cssNumber:properties[@"padding"] defaultValue:0.0];
@@ -244,6 +264,37 @@
         }
     }
     label.layer.zPosition = [self cssNumber:properties[@"z-index"] defaultValue:0.0];
+}
+
+- (void)applyVisualAnimationFromProperties:(NSDictionary<NSString *, NSString *> *)properties toView:(UIView *)view {
+    NSString *animation = [properties[@"animation"] isKindOfClass:NSString.class] ? properties[@"animation"] : nil;
+    if (UIAccessibilityIsReduceMotionEnabled() || animation.length == 0) {
+        return;
+    }
+    CGFloat duration = [self cssNumber:properties[@"animation-duration"] defaultValue:3.2];
+    duration = MIN(MAX(duration, 1.2), 12.0);
+    CABasicAnimation *effect = nil;
+    if ([animation isEqualToString:@"pulse"] || [animation isEqualToString:@"breathe"]) {
+        effect = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        effect.fromValue = @1.0;
+        effect.toValue = @0.58;
+    } else if ([animation isEqualToString:@"float"]) {
+        effect = [CABasicAnimation animationWithKeyPath:@"transform.translation.y"];
+        effect.fromValue = @(-4.0);
+        effect.toValue = @(4.0);
+    } else if ([animation isEqualToString:@"glow"]) {
+        effect = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
+        effect.fromValue = @(view.layer.shadowOpacity > 0.0 ? view.layer.shadowOpacity : 0.35);
+        effect.toValue = @1.0;
+    }
+    if (effect == nil) {
+        return;
+    }
+    effect.duration = duration;
+    effect.autoreverses = YES;
+    effect.repeatCount = HUGE_VALF;
+    effect.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [view.layer addAnimation:effect forKey:[@"lockplus." stringByAppendingString:animation]];
 }
 
 - (CGFloat)cssNumber:(id)value defaultValue:(CGFloat)defaultValue {
