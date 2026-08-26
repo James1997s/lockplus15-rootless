@@ -266,6 +266,11 @@
       "id": "minimallock-locktime26-iphone7-capsule",
       "name": "LockTime26 iPhone 7 Capsule UI",
       "url": "minimallock/locktime26-iphone7-capsule.json"
+    },
+    {
+      "id": "minimallock-locktime26-iphone7-liquidglass",
+      "name": "LockTime26 iPhone 7 Liquid Glass",
+      "url": "minimallock/locktime26-iphone7-liquidglass.json"
     }
   ]
 }

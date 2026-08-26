@@ -1,0 +1,89 @@
+{
+  "placedElements": {
+    "background": {
+      "type": "panel",
+      "position": "fixed",
+      "left": "0px",
+      "top": "0px",
+      "width": "100%",
+      "height": "100%",
+      "background-image": "url(assets/locktime26-liquid-glass-wallpaper.png)",
+      "background-size": "cover",
+      "background-position": "center center",
+      "background-repeat": "no-repeat",
+      "z-index": "0",
+      "pointer-events": "none"
+    },
+    "glassTop": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "18px",
+      "transform": "translateX(-50%)",
+      "width": "92%",
+      "height": "290px",
+      "background": "linear-gradient(180deg, rgba(230,252,251,0.34), rgba(111,200,202,0.18))",
+      "border": "2px solid rgba(235,255,255,0.7)",
+      "border-radius": "42px",
+      "box-shadow": "inset 0 2px 12px rgba(255,255,255,0.4), inset 0 -14px 24px rgba(8,45,57,0.28), 0 10px 26px rgba(4,24,36,0.34)",
+      "backdrop-filter": "blur(18px)",
+      "-webkit-backdrop-filter": "blur(18px)",
+      "z-index": "2"
+    },
+    "todaystrings": {
+      "type": "date",
+      "position": "absolute",
+      "left": "50%",
+      "top": "68px",
+      "transform": "translateX(-50%)",
+      "color": "rgba(244,255,255,0.92)",
+      "font-family": "HelveticaNeue-Medium",
+      "font-size": "15px",
+      "font-weight": "500",
+      "letter-spacing": "0.2px",
+      "text-shadow": "0 1px 5px rgba(0,35,48,0.35)",
+      "z-index": "5"
+    },
+    "clock": {
+      "type": "clock",
+      "position": "absolute",
+      "left": "50%",
+      "top": "93px",
+      "transform": "translateX(-50%)",
+      "color": "rgba(239,255,255,0.96)",
+      "font-family": "HelveticaNeue-UltraLight, LockTime26Stencil, Arial, sans-serif",
+      "font-size": "112px",
+      "font-weight": "200",
+      "letter-spacing": "-4px",
+      "line-height": "0.9",
+      "text-shadow": "0 2px 5px rgba(0,40,55,0.32), 0 0 14px rgba(215,255,255,0.32)",
+      "z-index": "5"
+    },
+    "glassBottom": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "304px",
+      "transform": "translateX(-50%)",
+      "width": "92%",
+      "height": "300px",
+      "background": "linear-gradient(180deg, rgba(177,239,235,0.25), rgba(32,100,115,0.22))",
+      "border": "2px solid rgba(210,249,247,0.58)",
+      "border-radius": "42px",
+      "box-shadow": "inset 0 10px 24px rgba(255,255,255,0.25), inset 0 -16px 24px rgba(4,37,55,0.3), 0 12px 24px rgba(3,25,39,0.28)",
+      "backdrop-filter": "blur(20px)",
+      "-webkit-backdrop-filter": "blur(20px)",
+      "z-index": "2"
+    }
+  },
+  "twentyFourHour": false,
+  "metadata": {
+    "name": "LockTime26 iPhone 7 Liquid Glass",
+    "author": "Adapted from LockTime26 by iVintageLover",
+    "source": "https://github.com/iVintageLover/LockTime26",
+    "description": "iPhone 7-sized blue Liquid Glass framed lock screen with wide upper and lower glass panels, giant clock, and date."
+  },
+  "id": "minimallock-locktime26-iphone7-liquidglass",
+  "name": "LockTime26 iPhone 7 Liquid Glass",
+  "version": "3.0.0"
+}
