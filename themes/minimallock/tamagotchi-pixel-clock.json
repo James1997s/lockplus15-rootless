@@ -1,0 +1,45 @@
+{
+  "placedElements": {
+    "clock": {
+      "type": "clock",
+      "position": "absolute",
+      "left": "50%",
+      "top": "72px",
+      "transform": "translateX(-50%)",
+      "color": "#B5FF4B",
+      "font-family": "HelveticaNeue-UltraLight",
+      "font-size": "62px",
+      "font-weight": "200",
+      "letter-spacing": "-1px",
+      "text-shadow": "0 0 15px #B5FF4B99",
+      "z-index": "20"
+    },
+    "todaystrings": {
+      "type": "date",
+      "position": "absolute",
+      "left": "50%",
+      "top": "142px",
+      "transform": "translateX(-50%)",
+      "color": "rgba(255,255,255,0.92)",
+      "font-family": "HelveticaNeue-Medium",
+      "font-size": "16px",
+      "font-weight": "500",
+      "letter-spacing": "0.4px",
+      "z-index": "20"
+    },
+    "themeLabel": {
+      "type": "text",
+      "position": "absolute",
+      "left": "50%",
+      "top": "184px",
+      "transform": "translateX(-50%)",
+      "innerHTML": "TAMAGOTCHI PIXEL CLOCK",
+      "color": "#B5FF4B",
+      "font-family": "HelveticaNeue-Bold",
+      "font-size": "10px",
+      "font-weight": "700",
+      "letter-spacing": "3px",
+      "z-index": "20"
+    }
+  }
+}

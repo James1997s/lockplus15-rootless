@@ -1,8 +1,8 @@
 #import "LPOverlayCoordinator.h"
 #import "LPThemeCatalog.h"
+#import "LPNativeThemeRenderer.h"
 
 #import <UIKit/UIKit.h>
-#import <WebKit/WebKit.h>
 #import <rootless.h>
 
 static NSString * const kLPPrefsDomain = @"com.example.lockplus15";
@@ -14,10 +14,12 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
                                          const void *object,
                                          CFDictionaryRef userInfo);
 
-@interface LPOverlayCoordinator () <WKNavigationDelegate>
+@interface LPOverlayCoordinator ()
 @property (nonatomic, weak) UIView *hostView;
+@property (nonatomic, weak) UIView *stockDateView;
+@property (nonatomic, assign) BOOL applyingStockDateVisibility;
 @property (nonatomic, strong) UIView *overlayView;
-@property (nonatomic, strong) WKWebView *webView;
+@property (nonatomic, strong) LPNativeThemeRenderer *themeRenderer;
 @end
 
 @implementation LPOverlayCoordinator
@@ -36,8 +38,8 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     if (self) {
         CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                         (__bridge const void *)self,
-                                        LPPreferencesChanged,
                                         LPPreferencesChangedCallback,
+                                        kLPPreferencesChanged,
                                         NULL,
                                         CFNotificationSuspensionBehaviorDeliverImmediately);
     }
@@ -72,7 +74,23 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     return enabled;
 }
 
+- (BOOL)isApplyingStockDateVisibility {
+    return _applyingStockDateVisibility;
+}
+
+- (void)applyStockDateVisibility {
+    UIView *stockDateView = self.stockDateView;
+    if (stockDateView == nil) {
+        return;
+    }
+    _applyingStockDateVisibility = YES;
+    stockDateView.hidden = self.isEnabled;
+    _applyingStockDateVisibility = NO;
+}
+
 - (void)refreshForPreferences {
+    [self applyStockDateVisibility];
+
     UIView *host = self.hostView;
     [self detachFromHostView:host];
     if (host != nil && self.isEnabled) {
@@ -81,6 +99,17 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
         [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithCompletion:^(BOOL activeThemeUpdated) {
             // The catalog cache has been refreshed. It will be rendered the next time the host attaches.
         }];
+    }
+}
+
+- (void)registerStockDateView:(UIView *)dateView {
+    self.stockDateView = dateView;
+    [self applyStockDateVisibility];
+}
+
+- (void)unregisterStockDateView:(UIView *)dateView {
+    if (dateView == self.stockDateView) {
+        self.stockDateView = nil;
     }
 }
 
@@ -99,49 +128,36 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     UIView *overlay = [[UIView alloc] initWithFrame:CGRectZero];
     overlay.backgroundColor = UIColor.clearColor;
     overlay.opaque = NO;
-    // The port is visual-only by default. It must not consume the system lock/unlock gestures.
+    // Keep the visual layer in the host view's normal z-order. This prevents it
+    // from sitting above SpringBoard's passcode and unlock presentation layers.
+    overlay.layer.zPosition = 0.0;
+    // The port is visual-only. It must never consume SpringBoard lock, unlock, notification, camera, or flashlight gestures.
     overlay.userInteractionEnabled = NO;
     overlay.translatesAutoresizingMaskIntoConstraints = NO;
 
-    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-    configuration.userContentController = [[WKUserContentController alloc] init];
-    WKUserScript *bootstrap = [[WKUserScript alloc] initWithSource:[self bootstrapJavaScript]
-                                                     injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-                                                  forMainFrameOnly:YES];
-    [configuration.userContentController addUserScript:bootstrap];
+    NSString *themeJSON = [self activeThemeJSON];
+    LPNativeThemeRenderer *renderer = [[LPNativeThemeRenderer alloc] initWithThemeJSONString:themeJSON];
+    renderer.translatesAutoresizingMaskIntoConstraints = NO;
 
-    WKWebView *webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:configuration];
-    webView.navigationDelegate = self;
-    webView.opaque = NO;
-    webView.backgroundColor = UIColor.clearColor;
-    webView.userInteractionEnabled = NO;
-    webView.scrollView.scrollEnabled = NO;
-    webView.scrollView.bounces = NO;
-    webView.scrollView.backgroundColor = UIColor.clearColor;
-    webView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [overlay addSubview:webView];
+    [overlay addSubview:renderer];
     [hostView addSubview:overlay];
     [NSLayoutConstraint activateConstraints:@[
         [overlay.leadingAnchor constraintEqualToAnchor:hostView.leadingAnchor],
         [overlay.trailingAnchor constraintEqualToAnchor:hostView.trailingAnchor],
         [overlay.topAnchor constraintEqualToAnchor:hostView.topAnchor],
         [overlay.bottomAnchor constraintEqualToAnchor:hostView.bottomAnchor],
-        [webView.leadingAnchor constraintEqualToAnchor:overlay.leadingAnchor],
-        [webView.trailingAnchor constraintEqualToAnchor:overlay.trailingAnchor],
-        [webView.topAnchor constraintEqualToAnchor:overlay.topAnchor],
-        [webView.bottomAnchor constraintEqualToAnchor:overlay.bottomAnchor],
+        [renderer.leadingAnchor constraintEqualToAnchor:overlay.leadingAnchor],
+        [renderer.trailingAnchor constraintEqualToAnchor:overlay.trailingAnchor],
+        [renderer.topAnchor constraintEqualToAnchor:overlay.topAnchor],
+        [renderer.bottomAnchor constraintEqualToAnchor:overlay.bottomAnchor],
     ]];
 
     self.overlayView = overlay;
-    self.webView = webView;
+    self.themeRenderer = renderer;
 
-    NSURL *indexURL = [NSURL fileURLWithPath:ROOT_PATH_NS(@"/Library/LockPlus15/LockPlus/index.html")];
-    NSURL *readAccessURL = [NSURL fileURLWithPath:ROOT_PATH_NS(@"/Library/LockPlus15") isDirectory:YES];
-    [webView loadFileURL:indexURL allowingReadAccessToURL:readAccessURL];
     [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithCompletion:^(BOOL activeThemeUpdated) {
-        if (activeThemeUpdated && self.webView == webView) {
-            [webView reload];
+        if (activeThemeUpdated && self.themeRenderer == renderer) {
+            [renderer reloadWithThemeJSONString:[self activeThemeJSON]];
         }
     }];
 }
@@ -150,19 +166,23 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     if (hostView == nil || hostView != self.hostView) {
         return;
     }
-    [self.webView stopLoading];
+    [self detachCurrentOverlay];
+}
+
+- (void)detachCurrentOverlay {
+    [self.themeRenderer stopRendering];
     [self.overlayView removeFromSuperview];
-    self.webView = nil;
+    self.themeRenderer = nil;
     self.overlayView = nil;
     self.hostView = nil;
 }
 
-- (NSString *)bootstrapJavaScript {
+- (NSString *)activeThemeJSON {
     NSString *themeJSON = [[LPThemeCatalog sharedCatalog] activeThemeJSON];
     if (themeJSON.length == 0) {
-        themeJSON = @"{\"placedElements\":{\"clock\":{\"type\":\"clock\",\"position\":\"absolute\",\"left\":\"50%\",\"top\":\"74px\",\"transform\":\"translateX(-50%)\",\"color\":\"#FFFFFF\",\"font-family\":\"HelveticaNeue-UltraLight\",\"font-size\":\"64px\",\"font-weight\":\"200\",\"z-index\":\"10\"}}}";
+        themeJSON = @"{\"placedElements\":{\"clock\":{\"type\":\"clock\",\"top\":\"72px\",\"color\":\"#FFFFFF\",\"font-size\":\"60px\",\"font-weight\":\"700\"},\"todaystrings\":{\"type\":\"date\",\"top\":\"144px\",\"color\":\"#FFFFFF\",\"font-size\":\"16px\"}}}";
     }
-    return [NSString stringWithFormat:@"(function () {window.LockPlus15 = window.LockPlus15 || {};window.LockPlus15.artworkURL = 'file:///var/jb/var/mobile/Library/LockPlus15/Artwork.jpg';localStorage.setItem('placedElements', JSON.stringify(%@));})();", themeJSON];
+    return themeJSON;
 }
 
 @end

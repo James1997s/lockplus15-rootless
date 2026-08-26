@@ -30,7 +30,7 @@
             <key>cell</key>
             <string>PSLinkListCell</string>
             <key>default</key>
-            <string>aurora</string>
+            <string>test</string>
             <key>defaults</key>
             <string>com.example.lockplus15</string>
             <key>key</key>

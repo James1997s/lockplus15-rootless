@@ -1,0 +1,50 @@
+{
+  "placedElements": {
+    "testPanel": {
+      "type": "text",
+      "position": "absolute",
+      "left": "50%",
+      "top": "208px",
+      "transform": "translateX(-50%)",
+      "width": "320px",
+      "padding": "12px 10px",
+      "border-radius": "14px",
+      "background-color": "rgba(255, 0, 102, 0.94)",
+      "border": "2px solid #FFFFFF",
+      "box-shadow": "0 0 22px rgba(255, 0, 102, 0.95)",
+      "innerHTML": "LOCKPLUS TEST THEME LOADED",
+      "color": "#FFFFFF",
+      "font-family": "HelveticaNeue-Bold",
+      "font-size": "14px",
+      "font-weight": "700",
+      "letter-spacing": "1.4px",
+      "z-index": "9999"
+    },
+    "clock": {
+      "type": "clock",
+      "position": "absolute",
+      "left": "50%",
+      "top": "270px",
+      "transform": "translateX(-50%)",
+      "color": "#FF0066",
+      "font-family": "HelveticaNeue-Bold",
+      "font-size": "54px",
+      "font-weight": "700",
+      "text-shadow": "0 0 14px rgba(255, 0, 102, 0.95)",
+      "z-index": "9999"
+    },
+    "todaystrings": {
+      "type": "date",
+      "position": "absolute",
+      "left": "50%",
+      "top": "336px",
+      "transform": "translateX(-50%)",
+      "color": "#FFFFFF",
+      "font-family": "HelveticaNeue-Medium",
+      "font-size": "17px",
+      "font-weight": "600",
+      "text-shadow": "0 1px 5px rgba(0, 0, 0, 0.85)",
+      "z-index": "9999"
+    }
+  }
+}

@@ -3,7 +3,8 @@
 #import <rootless.h>
 
 static NSString * const kLPPrefsDomain = @"com.example.lockplus15";
-static NSString * const kLPDefaultThemeID = @"aurora";
+static NSString * const kLPDefaultThemeID = @"test";
+static BOOL const kLPForceBundledTestTheme = YES;
 static NSUInteger const kLPMaximumCatalogThemes = 64;
 // The public repository is the only trusted remote theme catalog.
 static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.com/James1997s/lockplus15-rootless/main/themes/catalog.json";
@@ -20,6 +21,9 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 }
 
 - (NSString *)selectedThemeID {
+    if (kLPForceBundledTestTheme) {
+        return kLPDefaultThemeID;
+    }
     CFPropertyListRef value = CFPreferencesCopyAppValue(CFSTR("theme"),
                                                         (__bridge CFStringRef)kLPPrefsDomain);
     NSString *themeID = nil;
