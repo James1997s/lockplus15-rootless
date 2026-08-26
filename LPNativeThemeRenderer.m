@@ -232,9 +232,15 @@
     CGFloat radius = MAX(8.0, (self.diameter - self.strokeWidth) * 0.5);
     CGFloat start = (self.arcStartDegrees - 90.0) * M_PI / 180.0;
     CGFloat end = start + (self.arcLengthDegrees * M_PI / 180.0);
-    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(centerX, centerY) radius:radius startAngle:start endAngle:end clockwise:YES];
-    self.ringLayer.frame = self.bounds;
+    // Use a ring-sized layer positioned at the actual ring center. Rotating a
+    // full-screen shape layer causes an incorrect pivot and can look static.
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.ringLayer.bounds = CGRectMake(0.0, 0.0, self.diameter, self.diameter);
+    self.ringLayer.position = CGPointMake(centerX, centerY);
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(self.diameter * 0.5, self.diameter * 0.5) radius:radius startAngle:start endAngle:end clockwise:YES];
     self.ringLayer.path = path.CGPath;
+    [CATransaction commit];
     if (!self.rotationStarted && self.bounds.size.width > 0.0) {
         self.rotationStarted = YES;
         [self startRotation];
@@ -245,11 +251,14 @@
     if (UIAccessibilityIsReduceMotionEnabled()) {
         return;
     }
-    CABasicAnimation *rotation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+    [self.ringLayer removeAnimationForKey:@"lockplus.orbit.rotation"];
+    CABasicAnimation *rotation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     rotation.fromValue = @0.0;
     rotation.toValue = @(self.clockwise ? (M_PI * 2.0) : -(M_PI * 2.0));
+    rotation.beginTime = 0.0;
     rotation.duration = self.rotationDuration;
     rotation.repeatCount = HUGE_VALF;
+    rotation.removedOnCompletion = NO;
     rotation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     [self.ringLayer addAnimation:rotation forKey:@"lockplus.orbit.rotation"];
 }
