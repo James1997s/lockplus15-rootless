@@ -16,7 +16,6 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 @property (nonatomic, strong) UILabel *statusLabel;
 @property (nonatomic, strong) UIProgressView *progressView;
 @property (nonatomic, strong) UIBarButtonItem *refreshButton;
-@property (nonatomic, strong) UIBarButtonItem *restoreButton;
 @property (nonatomic, assign, getter=isSynchronizing) BOOL synchronizing;
 @property (nonatomic, assign) BOOL hasCachedCatalog;
 @end
@@ -35,9 +34,8 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     [self.tableView.refreshControl addTarget:self action:@selector(refreshThemes) forControlEvents:UIControlEventValueChanged];
 
     self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshThemes)];
-    self.restoreButton = [[UIBarButtonItem alloc] initWithTitle:@"Restore" style:UIBarButtonItemStylePlain target:self action:@selector(restoreDeletedThemes)];
     // Do not set leftBarButtonItem here: Settings supplies the Back button there.
-    self.navigationItem.rightBarButtonItems = @[ self.refreshButton, self.restoreButton ];
+    self.navigationItem.rightBarButtonItem = self.refreshButton;
 
     UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.bounds.size.width, 96.0)];
     UILabel *status = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 16.0, MAX(1.0, self.view.bounds.size.width - 48.0), 42.0)];
@@ -80,7 +78,6 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     }
     self.synchronizing = YES;
     self.refreshButton.enabled = NO;
-    self.restoreButton.enabled = NO;
     self.statusLabel.text = @"Refreshing the GitHub theme list…";
     __weak typeof(self) weakSelf = self;
     [[LPThemeCatalog sharedCatalog] refreshCatalogWithCompletion:^(BOOL success) {
@@ -90,8 +87,7 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         }
         self.synchronizing = NO;
         self.refreshButton.enabled = YES;
-        self.restoreButton.enabled = YES;
-        if (!success) {
+            if (!success) {
             self.statusLabel.text = @"Could not refresh GitHub. Showing the last available catalog.";
             return;
         }
@@ -126,9 +122,10 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
         BOOL isBundled = [[NSFileManager defaultManager] fileExistsAtPath:bundledPath];
         BOOL isCached = [[NSFileManager defaultManager] fileExistsAtPath:cachedPath];
-        // A cached catalog lists all remote choices. JSON is downloaded only when
-        // the user taps a theme that is not already available locally.
-        [available addObject:@{ @"id": themeID, @"name": name, @"remoteOnly": @(!isBundled), @"cached": @(isCached || isBundled) }];
+        // With a GitHub catalog, only a cached JSON counts as downloaded. Bundled
+        // files are used solely as the offline fallback before any catalog exists.
+        BOOL locallyAvailable = self.hasCachedCatalog ? isCached : (isCached || isBundled);
+        [available addObject:@{ @"id": themeID, @"name": name, @"remoteOnly": @(!isBundled), @"cached": @(locallyAvailable) }];
     }
 
     self.themeRecords = [available sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *left, NSDictionary *right) {
@@ -143,10 +140,9 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     }
     self.synchronizing = YES;
     self.refreshButton.enabled = NO;
-    self.restoreButton.enabled = NO;
     self.progressView.hidden = NO;
     self.progressView.progress = 0.0;
-    self.statusLabel.text = @"Downloading and validating the GitHub catalog…";
+        self.statusLabel.text = @"Refreshing the GitHub theme list…";
 
     __weak typeof(self) weakSelf = self;
     [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithProgress:^(NSUInteger completed, NSUInteger total) {
@@ -156,7 +152,7 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         }
         float fraction = total > 0 ? (float)completed / (float)total : 0.0f;
         [self.progressView setProgress:fraction animated:YES];
-        self.statusLabel.text = [NSString stringWithFormat:@"Downloading and validating %lu of %lu themes…", (unsigned long)completed, (unsigned long)total];
+        self.statusLabel.text = completed == 0 ? @"Refreshing the GitHub theme list…" : @"GitHub theme list refreshed.";
     } completion:^(BOOL success, BOOL activeThemeUpdated) {
         __strong typeof(weakSelf) self = weakSelf;
         if (self == nil) {
@@ -164,8 +160,7 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         }
         self.synchronizing = NO;
         self.refreshButton.enabled = YES;
-        self.restoreButton.enabled = YES;
-        [self.tableView.refreshControl endRefreshing];
+            [self.tableView.refreshControl endRefreshing];
         if (!success) {
             self.progressView.hidden = YES;
             self.statusLabel.text = @"Catalog refresh did not complete. Existing theme choices were retained. Check GitHub/network access and try again.";
@@ -240,7 +235,6 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 
     self.synchronizing = YES;
     self.refreshButton.enabled = NO;
-    self.restoreButton.enabled = NO;
     self.progressView.hidden = NO;
     self.progressView.progress = 0.25;
     self.statusLabel.text = [NSString stringWithFormat:@"Downloading %@…", record[@"name"]];
@@ -252,8 +246,7 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         }
         self.synchronizing = NO;
         self.refreshButton.enabled = YES;
-        self.restoreButton.enabled = YES;
-        self.progressView.hidden = YES;
+            self.progressView.hidden = YES;
         if (!success) {
             self.statusLabel.text = @"Theme download failed. Try Refresh, then select the theme again.";
             return;
@@ -299,9 +292,8 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Rows are deletable only when they came from the on-device GitHub catalog.
-    // Bundled fallback records remain protected until a GitHub refresh creates a cache.
-    return !self.isSynchronizing && self.hasCachedCatalog && indexPath.row < self.themeRecords.count;
+    // Only an actual downloaded JSON can be removed. Available GitHub rows stay selectable.
+    return !self.isSynchronizing && self.hasCachedCatalog && indexPath.row < self.themeRecords.count && [self.themeRecords[indexPath.row][@"cached"] boolValue];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -340,15 +332,6 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         self.statusLabel.text = [NSString stringWithFormat:@"%@ was removed from the local cache. It remains available to download again.", themeName];
     }]];
     [self presentViewController:confirmation animated:YES completion:nil];
-}
-
-- (void)restoreDeletedThemes {
-    if (self.isSynchronizing) {
-        return;
-    }
-    [self saveHiddenThemeIDs:[NSSet set]];
-    self.statusLabel.text = @"Deleted GitHub themes restored to the download list. Refreshing…";
-    [self refreshThemes];
 }
 
 - (NSString *)selectedThemeID {
