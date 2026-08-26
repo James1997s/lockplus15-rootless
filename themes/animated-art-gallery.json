@@ -1,0 +1,114 @@
+{
+  "assets": [
+    {
+      "id": "animated-painting-gallery",
+      "url": "assets/art-gallery/animated-painting-gallery.gif",
+      "sha256": "605f4f1739063c3039522a23019d740eaea0f997309c7207976d91dedc61acd8"
+    }
+  ],
+  "placedElements": {
+    "wallpaper": {
+      "type": "wallpaper",
+      "position": "absolute",
+      "left": "50%",
+      "top": "0px",
+      "transform": "translateX(-50%)",
+      "gradient": "#FFFFFF|#FFFFFF",
+      "z-index": "-100"
+    },
+    "galleryHeader": {
+      "type": "text",
+      "position": "absolute",
+      "left": "50%",
+      "top": "42px",
+      "transform": "translateX(-50%)",
+      "width": "320px",
+      "height": "18px",
+      "innerHTML": "ANIMATED ART GALLERY",
+      "color": "#36241B",
+      "font-family": "HelveticaNeue-Bold",
+      "font-size": "11px",
+      "font-weight": "700",
+      "letter-spacing": "2.5px",
+      "z-index": "20"
+    },
+    "gallerySubhead": {
+      "type": "text",
+      "position": "absolute",
+      "left": "50%",
+      "top": "63px",
+      "transform": "translateX(-50%)",
+      "width": "320px",
+      "height": "16px",
+      "innerHTML": "VAN GOGH · DA VINCI · MONET · HOKUSAI",
+      "color": "#8A7565",
+      "font-family": "HelveticaNeue-Medium",
+      "font-size": "8px",
+      "font-weight": "700",
+      "letter-spacing": "1.1px",
+      "z-index": "20"
+    },
+    "galleryAnimation": {
+      "type": "image",
+      "position": "absolute",
+      "left": "50%",
+      "top": "92px",
+      "transform": "translateX(-50%)",
+      "asset-id": "animated-painting-gallery",
+      "image-role": "panel",
+      "width": "340px",
+      "height": "400px",
+      "opacity": "1.0",
+      "border-radius": "0px",
+      "z-index": "10"
+    },
+    "labelBacking": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "520px",
+      "transform": "translateX(-50%)",
+      "width": "302px",
+      "height": "100px",
+      "padding": "0px",
+      "background-color": "#FBF7EE",
+      "border": "1px solid #B78A43",
+      "border-radius": "2px",
+      "innerHTML": "",
+      "color": "#FBF7EE",
+      "z-index": "15"
+    },
+    "clock": {
+      "type": "clock",
+      "position": "absolute",
+      "left": "50%",
+      "top": "527px",
+      "transform": "translateX(-50%)",
+      "width": "270px",
+      "height": "50px",
+      "time-format": "h:mm",
+      "color": "#4B2D1E",
+      "font-family": "SnellRoundhand-Bold",
+      "font-size": "45px",
+      "font-weight": "700",
+      "letter-spacing": "0.2px",
+      "z-index": "20"
+    },
+    "date": {
+      "type": "date",
+      "position": "absolute",
+      "left": "50%",
+      "top": "580px",
+      "transform": "translateX(-50%)",
+      "width": "276px",
+      "height": "24px",
+      "time-format": "EEEE, MMMM d",
+      "color": "#765440",
+      "font-family": "SnellRoundhand-Bold",
+      "font-size": "19px",
+      "font-weight": "700",
+      "letter-spacing": "0.3px",
+      "z-index": "20"
+    }
+  }
+}

@@ -43,6 +43,11 @@
       "url": "move-the-image.json"
     },
     {
+      "id": "animated-art-gallery",
+      "name": "Animated Art Gallery",
+      "url": "animated-art-gallery.json"
+    },
+    {
       "id": "liquid-lava-lamp",
       "name": "Liquid Lava Lamp",
       "url": "liquid-lava-lamp.json"
