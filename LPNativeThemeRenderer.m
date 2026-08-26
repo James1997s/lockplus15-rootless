@@ -1,7 +1,66 @@
 #import "LPNativeThemeRenderer.h"
 #import <rootless.h>
+#import <ImageIO/ImageIO.h>
 
 static NSString * const kLPThemePreferencesDomain = @"com.example.lockplus15";
+
+static UIImage *LPImageFromThemeAssetData(NSData *data) {
+    if (data.length == 0) {
+        return nil;
+    }
+    const unsigned char *bytes = data.bytes;
+    BOOL isGIF = data.length >= 6 && bytes[0] == 'G' && bytes[1] == 'I' && bytes[2] == 'F' && bytes[3] == '8' && (bytes[4] == '7' || bytes[4] == '9') && bytes[5] == 'a';
+    if (!isGIF) {
+        return [UIImage imageWithData:data];
+    }
+    CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
+    if (source == NULL) {
+        return nil;
+    }
+    size_t frameCount = CGImageSourceGetCount(source);
+    NSDictionary *sourceProperties = CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
+    NSUInteger width = [sourceProperties[(NSString *)kCGImagePropertyPixelWidth] unsignedIntegerValue];
+    NSUInteger height = [sourceProperties[(NSString *)kCGImagePropertyPixelHeight] unsignedIntegerValue];
+    BOOL safeAnimatedDimensions = width > 0 && height > 0 && width <= 1024 && height <= 1024 && ((uint64_t)width * (uint64_t)height * (uint64_t)MIN(frameCount, (size_t)48) <= 8ULL * 1024ULL * 1024ULL);
+    if (frameCount == 0 || frameCount > 48 || !safeAnimatedDimensions) {
+        CFRelease(source);
+        return nil;
+    }
+    if (frameCount == 1) {
+        UIImage *staticImage = [UIImage imageWithData:data];
+        CFRelease(source);
+        return staticImage;
+    }
+    if (UIAccessibilityIsReduceMotionEnabled()) {
+        CGImageRef firstFrame = CGImageSourceCreateImageAtIndex(source, 0, NULL);
+        UIImage *staticImage = firstFrame ? [UIImage imageWithCGImage:firstFrame scale:UIScreen.mainScreen.scale orientation:UIImageOrientationUp] : nil;
+        if (firstFrame != NULL) {
+            CGImageRelease(firstFrame);
+        }
+        CFRelease(source);
+        return staticImage;
+    }
+    NSMutableArray<UIImage *> *frames = [NSMutableArray arrayWithCapacity:MIN(frameCount, (size_t)48)];
+    NSTimeInterval totalDuration = 0.0;
+    for (size_t index = 0; index < frameCount; index++) {
+        CGImageRef frame = CGImageSourceCreateImageAtIndex(source, index, NULL);
+        if (frame == NULL) {
+            continue;
+        }
+        NSDictionary *properties = CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, index, NULL));
+        NSDictionary *gifProperties = [properties[(NSString *)kCGImagePropertyGIFDictionary] isKindOfClass:NSDictionary.class] ? properties[(NSString *)kCGImagePropertyGIFDictionary] : @{};
+        NSTimeInterval delay = [gifProperties[(NSString *)kCGImagePropertyGIFUnclampedDelayTime] doubleValue];
+        if (delay < 0.04) {
+            delay = [gifProperties[(NSString *)kCGImagePropertyGIFDelayTime] doubleValue];
+        }
+        delay = MIN(MAX(delay, 0.04), 0.50);
+        totalDuration += delay;
+        [frames addObject:[UIImage imageWithCGImage:frame scale:UIScreen.mainScreen.scale orientation:UIImageOrientationUp]];
+        CGImageRelease(frame);
+    }
+    CFRelease(source);
+    return frames.count > 1 ? [UIImage animatedImageWithImages:frames duration:totalDuration] : frames.firstObject;
+}
 
 @interface LPGradientWallpaperView : UIView
 @property (nonatomic, strong) CAGradientLayer *gradientLayer;
@@ -328,7 +387,7 @@ static NSString * const kLPThemePreferencesDomain = @"com.example.lockplus15";
     }
     NSString *unrootedAssetPath = [[@"/var/mobile/Library/LockPlus15/Themes/Assets" stringByAppendingPathComponent:[self selectedThemeID]] stringByAppendingPathComponent:assetID];
     NSString *assetPath = ROOT_PATH_NS(unrootedAssetPath);
-    return [UIImage imageWithContentsOfFile:assetPath];
+    return LPImageFromThemeAssetData([NSData dataWithContentsOfFile:assetPath]);
 }
 
 - (void)reloadWithThemeJSONString:(NSString *)themeJSONString {
@@ -492,7 +551,7 @@ static NSString * const kLPThemePreferencesDomain = @"com.example.lockplus15";
         [self addSubview:label];
         CGFloat padding = [self cssNumber:properties[@"padding"] defaultValue:0.0];
         CGFloat top = [self cssNumber:properties[@"top"] defaultValue:72.0];
-        CGFloat defaultHeight = [type isEqualToString:@"clock"] ? 76.0 : (([type isEqualToString:@"panel"] || [type isEqualToString:@"widget"] || [type isEqualToString:@"overlay"]) ? 72.0 : 34.0);
+        CGFloat defaultHeight = [type isEqualToString:@"clock"] ? 76.0 : ([type isEqualToString:@"word-clock"] ? 84.0 : (([type isEqualToString:@"panel"] || [type isEqualToString:@"widget"] || [type isEqualToString:@"overlay"]) ? 72.0 : 34.0));
         CGFloat width = [self cssNumber:properties[@"width"] defaultValue:320.0] + (padding * 2.0);
         CGFloat height = [self cssNumber:properties[@"height"] defaultValue:defaultHeight] + (padding * 2.0);
         [NSLayoutConstraint activateConstraints:@[
@@ -520,10 +579,38 @@ static NSString * const kLPThemePreferencesDomain = @"com.example.lockplus15";
     }];
 }
 
+- (NSString *)wordClockTextForDate:(NSDate *)date {
+    NSDateComponents *components = [NSCalendar.currentCalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:date];
+    static NSArray<NSString *> *numbers;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        numbers = @[ @"TWELVE", @"ONE", @"TWO", @"THREE", @"FOUR", @"FIVE", @"SIX", @"SEVEN", @"EIGHT", @"NINE", @"TEN", @"ELEVEN" ];
+    });
+    NSInteger hour = components.hour % 12;
+    NSInteger minute = components.minute;
+    NSString *minuteWords = nil;
+    if (minute == 0) {
+        minuteWords = @"O'CLOCK";
+    } else if (minute < 10) {
+        minuteWords = [NSString stringWithFormat:@"OH %ld", (long)minute];
+    } else if (minute < 20) {
+        NSArray<NSString *> *teens = @[ @"TEN", @"ELEVEN", @"TWELVE", @"THIRTEEN", @"FOURTEEN", @"FIFTEEN", @"SIXTEEN", @"SEVENTEEN", @"EIGHTEEN", @"NINETEEN" ];
+        minuteWords = teens[(NSUInteger)(minute - 10)];
+    } else {
+        NSArray<NSString *> *tens = @[ @"", @"", @"TWENTY", @"THIRTY", @"FORTY", @"FIFTY" ];
+        NSString *tensWord = tens[(NSUInteger)(minute / 10)];
+        NSInteger remainder = minute % 10;
+        minuteWords = remainder == 0 ? tensWord : [NSString stringWithFormat:@"%@ %@", tensWord, numbers[(NSUInteger)remainder]];
+    }
+    return [NSString stringWithFormat:@"IT IS\n%@ %@", numbers[(NSUInteger)hour], minuteWords];
+}
+
 - (void)updateDynamicLabels {
     NSDate *now = [NSDate date];
     for (LPNativeThemeElement *element in self.elements) {
-        if ([element.type isEqualToString:@"clock"] || [element.type isEqualToString:@"date"]) {
+        if ([element.type isEqualToString:@"word-clock"]) {
+            [self applyText:[self wordClockTextForDate:now] toElement:element];
+        } else if ([element.type isEqualToString:@"clock"] || [element.type isEqualToString:@"date"]) {
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.locale = NSLocale.currentLocale;
             NSString *defaultFormat = [element.type isEqualToString:@"clock"] ? @"HH:mm" : @"EEEE, MMMM d";

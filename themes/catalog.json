@@ -28,6 +28,11 @@
       "url": "split-numeral.json"
     },
     {
+      "id": "white-word-wheel",
+      "name": "White Word Wheel",
+      "url": "white-word-wheel.json"
+    },
+    {
       "id": "liquid-lava-lamp",
       "name": "Liquid Lava Lamp",
       "url": "liquid-lava-lamp.json"

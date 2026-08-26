@@ -2,6 +2,7 @@
 
 #import <rootless.h>
 #import <UIKit/UIKit.h>
+#import <ImageIO/ImageIO.h>
 #import <CommonCrypto/CommonDigest.h>
 
 static NSString * const kLPPrefsDomain = @"com.example.lockplus15";
@@ -209,7 +210,8 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
         BOOL validResponse = error == nil && [response isKindOfClass:NSHTTPURLResponse.class] && ((NSHTTPURLResponse *)response).statusCode == 200;
         UIImage *image = validResponse && assetData.length <= (2 * 1024 * 1024) ? [UIImage imageWithData:assetData] : nil;
         BOOL validImage = image != nil && image.size.width > 0.0 && image.size.height > 0.0 && image.size.width <= 4096.0 && image.size.height <= 4096.0;
-        if (!validImage || ![[self sha256ForData:assetData] isEqualToString:expectedSHA256.lowercaseString]) {
+        BOOL validGIF = validResponse && [self isSafeGIFData:assetData];
+        if (!validImage || !validGIF || ![[self sha256ForData:assetData] isEqualToString:expectedSHA256.lowercaseString]) {
             completion(NO);
             return;
         }
@@ -288,9 +290,28 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     return relativeURL.length > 0 && [relativeURL hasSuffix:@".json"] && ![relativeURL containsString:@"://"] && ![relativeURL containsString:@".."] && ![relativeURL hasPrefix:@"/"];
 }
 
+- (BOOL)isSafeGIFData:(NSData *)data {
+    const unsigned char *bytes = data.bytes;
+    BOOL isGIF = data.length >= 6 && bytes[0] == 'G' && bytes[1] == 'I' && bytes[2] == 'F' && bytes[3] == '8' && (bytes[4] == '7' || bytes[4] == '9') && bytes[5] == 'a';
+    if (!isGIF) {
+        return YES;
+    }
+    CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
+    if (source == NULL) {
+        return NO;
+    }
+    size_t frameCount = CGImageSourceGetCount(source);
+    NSDictionary *properties = CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
+    NSUInteger width = [properties[(NSString *)kCGImagePropertyPixelWidth] unsignedIntegerValue];
+    NSUInteger height = [properties[(NSString *)kCGImagePropertyPixelHeight] unsignedIntegerValue];
+    BOOL safeGIF = frameCount > 0 && frameCount <= 48 && width > 0 && height > 0 && width <= 1024 && height <= 1024 && ((uint64_t)width * (uint64_t)height * (uint64_t)frameCount <= 8ULL * 1024ULL * 1024ULL);
+    CFRelease(source);
+    return safeGIF;
+}
+
 - (BOOL)isSafeAssetRelativeURL:(NSString *)relativeURL {
     NSString *extension = relativeURL.pathExtension.lowercaseString;
-    NSSet<NSString *> *allowedExtensions = [NSSet setWithArray:@[ @"jpg", @"jpeg", @"png" ]];
+    NSSet<NSString *> *allowedExtensions = [NSSet setWithArray:@[ @"jpg", @"jpeg", @"png", @"gif" ]];
     return relativeURL.length > 0 && [allowedExtensions containsObject:extension] && ![relativeURL containsString:@"://"] && ![relativeURL containsString:@".."] && ![relativeURL hasPrefix:@"/"];
 }
 
@@ -333,7 +354,7 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     for (id elementID in elements) {
         NSDictionary *properties = [elements[elementID] isKindOfClass:[NSDictionary class]] ? elements[elementID] : nil;
         NSString *type = [properties[@"type"] isKindOfClass:NSString.class] ? properties[@"type"] : nil;
-        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"text", @"panel", @"wallpaper", @"blob", @"particle", @"ring", @"image", @"widget", @"overlay" ]];
+        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"word-clock", @"text", @"panel", @"wallpaper", @"blob", @"particle", @"ring", @"image", @"widget", @"overlay" ]];
         if (![elementID isKindOfClass:[NSString class]] || properties == nil || ![supportedTypes containsObject:type]) {
             return nil;
         }

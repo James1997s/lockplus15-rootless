@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1] / 'themes'
 CATALOG = ROOT / 'catalog.json'
-SUPPORTED_TYPES = {'clock', 'date', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay'}
+SUPPORTED_TYPES = {'clock', 'date', 'word-clock', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay'}
 SUPPORTED_PROPERTIES = {
     'type', 'position', 'left', 'top', 'transform', 'color', 'font-family',
     'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
@@ -22,6 +22,7 @@ SUPPORTED_PROPERTIES = {
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},
     'date': {'top', 'color', 'font-size'},
+    'word-clock': {'top', 'color', 'font-size'},
     'text': {'top', 'color', 'font-size'},
     'panel': {'top', 'background-color', 'innerHTML'},
     'wallpaper': {'gradient'},
@@ -92,7 +93,7 @@ def main() -> None:
                     errors.append(f'{identifier}: duplicate asset id {asset_id}.')
                 else:
                     asset_ids.add(asset_id)
-                if not isinstance(asset_url, str) or Path(asset_url).suffix.lower() not in {'.jpg', '.jpeg', '.png'} or asset_url.startswith('/') or '..' in Path(asset_url).parts:
+                if not isinstance(asset_url, str) or Path(asset_url).suffix.lower() not in {'.jpg', '.jpeg', '.png', '.gif'} or asset_url.startswith('/') or '..' in Path(asset_url).parts:
                     errors.append(f'{identifier}: unsafe asset URL {asset_url!r}.')
                     continue
                 asset_path = ROOT / asset_url
