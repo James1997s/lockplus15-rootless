@@ -42,6 +42,10 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     return [NSURL fileURLWithPath:path];
 }
 
+- (NSURL *)cachedCatalogURL {
+    return [NSURL fileURLWithPath:ROOT_PATH_NS(@"/var/mobile/Library/LockPlus15/Themes/catalog.json")];
+}
+
 - (NSString *)activeThemeJSON {
     NSString *themeID = [self selectedThemeID];
     for (NSURL *url in @[[self cachedThemeURLForID:themeID], [self bundledThemeURLForID:themeID]]) {
@@ -85,12 +89,24 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
             if (![self isSafeThemeID:themeID] || ![self isSafeRelativeThemeURL:relativeURL] || [seenIDs containsObject:themeID]) {
                 continue;
             }
+            NSString *name = [candidate[@"name"] isKindOfClass:NSString.class] ? candidate[@"name"] : themeID;
+            if (name.length == 0 || name.length > 96) {
+                continue;
+            }
             [seenIDs addObject:themeID];
-            [records addObject:candidate];
+            [records addObject:@{ @"id": themeID, @"name": name, @"url": relativeURL }];
         }
         if (records.count == 0) {
             dispatch_async(dispatch_get_main_queue(), ^{ completion(NO); });
             return;
+        }
+
+        NSDictionary *cachedCatalog = @{ @"themes": records };
+        NSData *cachedCatalogData = [NSJSONSerialization dataWithJSONObject:cachedCatalog options:0 error:nil];
+        NSURL *cachedCatalogURL = [self cachedCatalogURL];
+        [[NSFileManager defaultManager] createDirectoryAtURL:[cachedCatalogURL URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
+        if (cachedCatalogData != nil) {
+            [cachedCatalogData writeToURL:cachedCatalogURL options:NSDataWritingAtomic error:nil];
         }
 
         dispatch_group_t group = dispatch_group_create();
@@ -163,7 +179,9 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 
     for (id elementID in elements) {
         NSDictionary *properties = [elements[elementID] isKindOfClass:[NSDictionary class]] ? elements[elementID] : nil;
-        if (![elementID isKindOfClass:[NSString class]] || properties == nil || [properties[@"type"] isEqualToString:@"widget"]) {
+        NSString *type = [properties[@"type"] isKindOfClass:NSString.class] ? properties[@"type"] : nil;
+        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"text", @"panel", @"wallpaper" ]];
+        if (![elementID isKindOfClass:[NSString class]] || properties == nil || ![supportedTypes containsObject:type]) {
             return nil;
         }
         for (id key in properties) {

@@ -69,10 +69,16 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
 }
 
 - (NSArray<NSDictionary *> *)availableThemeRecords {
-    NSString *catalogPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
-    NSData *catalogData = [NSData dataWithContentsOfFile:catalogPath];
+    NSString *bundledCatalogPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
+    NSString *cachedCatalogPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:@"catalog.json"]);
+    NSData *catalogData = [NSData dataWithContentsOfFile:cachedCatalogPath];
     NSDictionary *catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
-    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : @[];
+    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : nil;
+    if (records.count == 0) {
+        catalogData = [NSData dataWithContentsOfFile:bundledCatalogPath];
+        catalog = catalogData ? [NSJSONSerialization JSONObjectWithData:catalogData options:0 error:nil] : nil;
+        records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : @[];
+    }
 
     NSMutableArray<NSDictionary *> *available = [NSMutableArray array];
     for (NSDictionary *record in records) {
