@@ -5,10 +5,10 @@
 
 #import "LPThemeCatalog.h"
 
-static NSString * const kLPPreferencesDomain = @"com.example.lockplus15";
-static NSString * const kLPPreferencesChanged = @"com.example.lockplus15/preferences.changed";
-static NSString * const kLPThemeDirectory = @"/Library/LockPlus15/Themes";
-static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus15/Themes";
+static NSString * const kLPPreferencesDomain = @"com.example.speciallock";
+static NSString * const kLPPreferencesChanged = @"com.example.speciallock/preferences.changed";
+static NSString * const kLPThemeDirectory = @"/Library/SpecialLock/Themes";
+static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/SpecialLock/Themes";
 static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 
 @interface LPHThemeManagerController ()

@@ -2,7 +2,7 @@
 #import <rootless.h>
 #import <ImageIO/ImageIO.h>
 
-static NSString * const kLPThemePreferencesDomain = @"com.example.lockplus15";
+static NSString * const kLPThemePreferencesDomain = @"com.example.speciallock";
 
 static UIImage *LPImageFromThemeAssetData(NSData *data) {
     if (data.length == 0) {
@@ -385,7 +385,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     if ([[assetID stringByTrimmingCharactersInSet:allowed] length] != 0) {
         return nil;
     }
-    NSString *unrootedAssetPath = [[@"/var/mobile/Library/LockPlus15/Themes/Assets" stringByAppendingPathComponent:[self selectedThemeID]] stringByAppendingPathComponent:assetID];
+    NSString *unrootedAssetPath = [[@"/var/mobile/Library/SpecialLock/Themes/Assets" stringByAppendingPathComponent:[self selectedThemeID]] stringByAppendingPathComponent:assetID];
     NSString *assetPath = ROOT_PATH_NS(unrootedAssetPath);
     return LPImageFromThemeAssetData([NSData dataWithContentsOfFile:assetPath]);
 }

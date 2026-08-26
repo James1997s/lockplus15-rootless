@@ -5,7 +5,7 @@
     <key>entry</key>
     <dict>
         <key>bundle</key>
-        <string>LockPlus15Prefs</string>
+        <string>SpecialLockPrefs</string>
         <key>cell</key>
         <string>PSLinkCell</string>
         <key>detail</key>
@@ -13,7 +13,7 @@
         <key>isController</key>
         <true/>
         <key>label</key>
-        <string>LockPlus 15</string>
+        <string>SpecialLock</string>
     </dict>
 </dict>
 </plist>

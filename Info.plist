@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>com.example.lockplus15.prefs</string>
+    <string>com.example.speciallock.prefs</string>
     <key>CFBundleName</key>
-    <string>LockPlus15Prefs</string>
+    <string>SpecialLockPrefs</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleVersion</key>
@@ -13,7 +13,7 @@
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>CFBundleExecutable</key>
-    <string>LockPlus15Prefs</string>
+    <string>SpecialLockPrefs</string>
     <key>NSPrincipalClass</key>
     <string>LPHRootListController</string>
 </dict>

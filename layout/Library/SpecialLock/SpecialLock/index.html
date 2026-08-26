@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <title>SpecialLock</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body, #lp-root { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: transparent; }
+    #lp-root { position: relative; pointer-events: none; -webkit-user-select: none; user-select: none; }
+    .lp-element { position: absolute; white-space: nowrap; text-align: center; -webkit-font-smoothing: antialiased; }
+    .lp-clock, .lp-date { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <main id="lp-root" aria-hidden="true"></main>
+  <script>
+    (function () {
+      'use strict';
+
+      var root = document.getElementById('lp-root');
+      var currentTheme = null;
+
+      function pad(value) {
+        return value < 10 ? '0' + value : String(value);
+      }
+
+      function timeString(now) {
+        var hours = now.getHours();
+        var minutes = pad(now.getMinutes());
+        var is24Hour = !!(currentTheme && currentTheme.twentyFourHour);
+        if (is24Hour) {
+          return pad(hours) + ':' + minutes;
+        }
+        var displayHour = hours % 12 || 12;
+        return displayHour + ':' + minutes;
+      }
+
+      function dateString(now, style) {
+        if (style === 'todaystrings') {
+          return now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+        }
+        if (style === 'daydatemonth') {
+          return now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+        return now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+      }
+
+      function applyProperties(element, properties) {
+        Object.keys(properties).forEach(function (key) {
+          var value = properties[key];
+          if (key === 'type' || key === 'innerHTML') {
+            return;
+          }
+          if (key.indexOf('data-') === 0) {
+            element.setAttribute(key, value);
+            return;
+          }
+          try {
+            element.style.setProperty(key, value);
+          } catch (ignore) {}
+        });
+      }
+
+      function render(theme) {
+        currentTheme = theme || { placedElements: {} };
+        root.textContent = '';
+        var elements = currentTheme.placedElements || {};
+
+        Object.keys(elements).forEach(function (identifier) {
+          var properties = elements[identifier] || {};
+          var element = document.createElement('div');
+          var type = properties.type || 'text';
+          element.id = identifier;
+          element.className = 'lp-element lp-' + type;
+          element.setAttribute('data-lp-type', type);
+          applyProperties(element, properties);
+          if (type === 'text' && typeof properties.innerHTML === 'string') {
+            element.textContent = properties.innerHTML;
+          }
+          root.appendChild(element);
+        });
+        updateDynamicValues();
+      }
+
+      function updateDynamicValues() {
+        var now = new Date();
+        var elements = root.querySelectorAll('[data-lp-type]');
+        for (var index = 0; index < elements.length; index += 1) {
+          var element = elements[index];
+          var type = element.getAttribute('data-lp-type');
+          if (type === 'clock') {
+            element.textContent = timeString(now);
+          } else if (type === 'date') {
+            element.textContent = dateString(now, element.id);
+          }
+        }
+      }
+
+      window.LockPlus15 = window.LockPlus15 || {};
+      window.LockPlus15.applyTheme = function (theme) {
+        render(theme);
+      };
+
+      var initialTheme = window.LockPlus15.theme;
+      if (!initialTheme) {
+        try {
+          initialTheme = JSON.parse(localStorage.getItem('placedElements') || '{}');
+        } catch (ignore) {
+          initialTheme = {};
+        }
+      }
+      render(initialTheme);
+      window.setInterval(updateDynamicValues, 1000);
+    }());
+  </script>
+</body>
+</html>

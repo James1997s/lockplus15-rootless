@@ -7,10 +7,10 @@
 #import "LPHThemePickerController.h"
 #import "LPHThemeManagerController.h"
 
-static NSString * const kLPPreferencesDomain = @"com.example.lockplus15";
-static NSString * const kLPPreferencesChanged = @"com.example.lockplus15/preferences.changed";
-static NSString * const kLPThemeDirectory = @"/Library/LockPlus15/Themes";
-static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus15/Themes";
+static NSString * const kLPPreferencesDomain = @"com.example.speciallock";
+static NSString * const kLPPreferencesChanged = @"com.example.speciallock/preferences.changed";
+static NSString * const kLPThemeDirectory = @"/Library/SpecialLock/Themes";
+static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/SpecialLock/Themes";
 
 @interface LPHRootListController : PSListController
 @end
@@ -22,14 +22,14 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/LockPlus
         return _specifiers;
     }
 
-    self.title = @"LockPlus 15";
+    self.title = @"SpecialLock";
     NSMutableArray<PSSpecifier *> *specifiers = [NSMutableArray array];
 
     PSSpecifier *intro = [PSSpecifier groupSpecifierWithName:nil];
-    [intro setProperty:@"Select a bundled or GitHub-synced theme. Changes are sent to SpringBoard immediately." forKey:@"footerText"];
+    [intro setProperty:@"Select a downloaded GitHub theme. Changes are sent to SpringBoard immediately." forKey:@"footerText"];
     [specifiers addObject:intro];
 
-    PSSpecifier *enabled = [PSSpecifier preferenceSpecifierNamed:@"Enable LockPlus 15"
+    PSSpecifier *enabled = [PSSpecifier preferenceSpecifierNamed:@"Enable SpecialLock"
                                                           target:self
                                                              set:@selector(writePreferenceValue:specifier:)
                                                              get:@selector(readPreferenceValue:)

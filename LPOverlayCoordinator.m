@@ -5,8 +5,8 @@
 #import <UIKit/UIKit.h>
 #import <rootless.h>
 
-static NSString * const kLPPrefsDomain = @"com.example.lockplus15";
-static CFStringRef const kLPPreferencesChanged = CFSTR("com.example.lockplus15/preferences.changed");
+static NSString * const kLPPrefsDomain = @"com.example.speciallock";
+static CFStringRef const kLPPreferencesChanged = CFSTR("com.example.speciallock/preferences.changed");
 
 static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
                                          void *observer,

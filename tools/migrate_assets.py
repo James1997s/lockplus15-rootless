@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Copy user-supplied LockPlus web assets into the rootless Theos layout.
+"""Copy user-supplied legacy web assets into the SpecialLock rootless Theos layout.
 
-The public repository contains no legacy LockPlus assets or binaries. This tool
+The public repository contains no legacy web assets or binaries. This tool
 uses a local, user-supplied asset directory and only copies static HTML,
 JavaScript, styles, images, fonts, and media. It never copies or executes
 Mach-O binaries.
@@ -13,7 +13,7 @@ import shutil
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[1]
-DESTINATION = PROJECT / 'layout/Library/LockPlus15'
+DESTINATION = PROJECT / 'layout/Library/SpecialLock'
 BUNDLED_THEMES = PROJECT / 'themes'
 
 
@@ -55,13 +55,13 @@ def main() -> None:
         if path.name in {'index.html', 'Wallpaper.html'} and path.parent.name == 'LockPlus':
             content = content.replace(
                 'artworkPreload.src = "file:///var/mobile/Library/LockPlus/Artwork.jpg?" +',
-                'artworkPreload.src = window.LockPlus15.artworkURL + "?" +',
+                'artworkPreload.src = window.SpecialLock.artworkURL + "?" +',
             )
             content = content.replace(
                 "'url(\"file:///var/mobile/Library/LockPlus/Artwork.jpg?' + new Date().getMilliseconds() + '\")'",
-                "'url(\"' + window.LockPlus15.artworkURL + '?' + new Date().getMilliseconds() + '\")'",
+                "'url(\"' + window.SpecialLock.artworkURL + '?' + new Date().getMilliseconds() + '\")'",
             )
-        content = content.replace('/Library/LockPlus/fonts/', '/var/jb/Library/LockPlus15/fonts/')
+        content = content.replace('/Library/LockPlus/fonts/', '/var/jb/Library/SpecialLock/fonts/')
 
         if path.name == 'index.html' and path.parent.name == 'Creator':
             content = content.replace('file:///Library/LockPlus/LockPlus/index.html', '../LockPlus/index.html')

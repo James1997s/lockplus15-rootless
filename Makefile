@@ -6,18 +6,18 @@ INSTALL_TARGET_PROCESSES = SpringBoard
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = LockPlus15
-LockPlus15_FILES = Tweak.xm LPOverlayCoordinator.m LPThemeCatalog.m LPNativeThemeRenderer.m
-LockPlus15_CFLAGS = -fobjc-arc
-LockPlus15_FRAMEWORKS = UIKit ImageIO
+TWEAK_NAME = SpecialLock
+SpecialLock_FILES = Tweak.xm LPOverlayCoordinator.m LPThemeCatalog.m LPNativeThemeRenderer.m
+SpecialLock_CFLAGS = -fobjc-arc
+SpecialLock_FRAMEWORKS = UIKit ImageIO
 
-BUNDLE_NAME = LockPlus15Prefs
-LockPlus15Prefs_FILES = LPHRootListController.m LPHThemePickerController.m LPHThemeManagerController.m LPThemeCatalog.m
-LockPlus15Prefs_CFLAGS = -fobjc-arc
-LockPlus15Prefs_FRAMEWORKS = UIKit Foundation ImageIO
-LockPlus15Prefs_PRIVATE_FRAMEWORKS = Preferences
-LockPlus15Prefs_RESOURCE_FILES = Root.plist Info.plist
-LockPlus15Prefs_INSTALL_PATH = /Library/PreferenceBundles
+BUNDLE_NAME = SpecialLockPrefs
+SpecialLockPrefs_FILES = LPHRootListController.m LPHThemePickerController.m LPHThemeManagerController.m LPThemeCatalog.m
+SpecialLockPrefs_CFLAGS = -fobjc-arc
+SpecialLockPrefs_FRAMEWORKS = UIKit Foundation ImageIO
+SpecialLockPrefs_PRIVATE_FRAMEWORKS = Preferences
+SpecialLockPrefs_RESOURCE_FILES = Root.plist Info.plist
+SpecialLockPrefs_INSTALL_PATH = /Library/PreferenceBundles
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 include $(THEOS_MAKE_PATH)/bundle.mk

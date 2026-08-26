@@ -5,7 +5,7 @@
 #import <ImageIO/ImageIO.h>
 #import <CommonCrypto/CommonDigest.h>
 
-static NSString * const kLPPrefsDomain = @"com.example.lockplus15";
+static NSString * const kLPPrefsDomain = @"com.example.speciallock";
 static NSString * const kLPDefaultThemeID = @"aurora";
 static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 static NSUInteger const kLPMaximumCatalogThemes = 64;
@@ -56,21 +56,21 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 }
 
 - (NSURL *)bundledThemeURLForID:(NSString *)themeID {
-    NSString *path = ROOT_PATH_NS([@"/Library/LockPlus15/Themes/" stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
+    NSString *path = ROOT_PATH_NS([@"/Library/SpecialLock/Themes/" stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
     return [NSURL fileURLWithPath:path];
 }
 
 - (NSURL *)cachedThemeURLForID:(NSString *)themeID {
-    NSString *path = ROOT_PATH_NS([@"/var/mobile/Library/LockPlus15/Themes/" stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
+    NSString *path = ROOT_PATH_NS([@"/var/mobile/Library/SpecialLock/Themes/" stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
     return [NSURL fileURLWithPath:path];
 }
 
 - (NSURL *)cachedCatalogURL {
-    return [NSURL fileURLWithPath:ROOT_PATH_NS(@"/var/mobile/Library/LockPlus15/Themes/catalog.json")];
+    return [NSURL fileURLWithPath:ROOT_PATH_NS(@"/var/mobile/Library/SpecialLock/Themes/catalog.json")];
 }
 
 - (NSURL *)cachedAssetURLForThemeID:(NSString *)themeID assetID:(NSString *)assetID {
-    NSString *path = ROOT_PATH_NS([@"/var/mobile/Library/LockPlus15/Themes/Assets" stringByAppendingPathComponent:themeID]);
+    NSString *path = ROOT_PATH_NS([@"/var/mobile/Library/SpecialLock/Themes/Assets" stringByAppendingPathComponent:themeID]);
     return [NSURL fileURLWithPath:[path stringByAppendingPathComponent:assetID]];
 }
 

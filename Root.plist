@@ -6,7 +6,7 @@
         <key>cell</key>
         <string>PSGroupCell</string>
         <key>footerText</key>
-        <string>Choose a local or GitHub-synced LockPlus theme. Theme changes are applied to SpringBoard immediately.</string>
+        <string>Choose a local or GitHub-synced SpecialLock theme. Theme changes are applied to SpringBoard immediately.</string>
     </dict>
     <dict>
         <key>cell</key>
@@ -14,13 +14,13 @@
         <key>default</key>
         <false/>
         <key>defaults</key>
-        <string>com.example.lockplus15</string>
+        <string>com.example.speciallock</string>
         <key>key</key>
         <string>enabled</string>
         <key>label</key>
-        <string>Enable LockPlus 15</string>
+        <string>Enable SpecialLock</string>
         <key>PostNotification</key>
-        <string>com.example.lockplus15/preferences.changed</string>
+        <string>com.example.speciallock/preferences.changed</string>
     </dict>
     <dict>
         <key>cell</key>
@@ -28,13 +28,13 @@
         <key>default</key>
         <string>aurora</string>
         <key>defaults</key>
-        <string>com.example.lockplus15</string>
+        <string>com.example.speciallock</string>
         <key>key</key>
         <string>theme</string>
         <key>label</key>
         <string>Theme</string>
         <key>PostNotification</key>
-        <string>com.example.lockplus15/preferences.changed</string>
+        <string>com.example.speciallock/preferences.changed</string>
         <key>titlesDataSource</key>
         <string>themeTitles</string>
         <key>valuesDataSource</key>
