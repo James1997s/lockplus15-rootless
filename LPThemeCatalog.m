@@ -92,29 +92,46 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 - (void)synchronizeCatalogWithProgress:(void (^)(NSUInteger completed, NSUInteger total))progress
                             completion:(void (^)(BOOL success, BOOL activeThemeUpdated))completion {
     NSString *previousActiveTheme = [self activeThemeJSON] ?: @"";
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (progress != nil) {
+            progress(0, 1);
+        }
+    });
+    [self refreshCatalogWithCompletion:^(BOOL success) {
+        if (progress != nil) {
+            progress(1, 1);
+        }
+        NSString *currentActiveTheme = [self activeThemeJSON] ?: @"";
+        BOOL activeThemeUpdated = success && ![previousActiveTheme isEqualToString:currentActiveTheme];
+        if (completion != nil) {
+            completion(success, activeThemeUpdated);
+        }
+    }];
+}
+
+- (void)refreshCatalogWithCompletion:(void (^)(BOOL success))completion {
     NSURL *catalogURL = [NSURL URLWithString:kLPDefaultCatalogURL];
-    void (^finish)(BOOL, BOOL) = ^(BOOL success, BOOL activeThemeUpdated) {
+    void (^finish)(BOOL) = ^(BOOL success) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (completion != nil) {
-                completion(success, activeThemeUpdated);
+                completion(success);
             }
         });
     };
     if (![self isTrustedCatalogURL:catalogURL]) {
-        finish(NO, NO);
+        finish(NO);
         return;
     }
 
     [[[NSURLSession sharedSession] dataTaskWithURL:catalogURL completionHandler:^(NSData *catalogData, NSURLResponse *response, NSError *error) {
         if (error != nil || ![response isKindOfClass:[NSHTTPURLResponse class]] || ((NSHTTPURLResponse *)response).statusCode != 200) {
-            finish(NO, NO);
+            finish(NO);
             return;
         }
-
         NSDictionary *catalog = [self JSONObjectFromData:catalogData];
         NSArray *allRecords = [catalog[@"themes"] isKindOfClass:[NSArray class]] ? catalog[@"themes"] : nil;
         if (allRecords.count == 0 || allRecords.count > kLPMaximumCatalogThemes) {
-            finish(NO, NO);
+            finish(NO);
             return;
         }
 
@@ -127,83 +144,50 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
             }
             NSString *themeID = [candidate[@"id"] isKindOfClass:[NSString class]] ? candidate[@"id"] : nil;
             NSString *relativeURL = [candidate[@"url"] isKindOfClass:[NSString class]] ? candidate[@"url"] : nil;
-            if (![self isSafeThemeID:themeID] || ![self isSafeRelativeThemeURL:relativeURL] || [seenIDs containsObject:themeID] || [hiddenThemeIDs containsObject:themeID]) {
-                continue;
-            }
             NSString *name = [candidate[@"name"] isKindOfClass:NSString.class] ? candidate[@"name"] : themeID;
-            if (name.length == 0 || name.length > 96) {
+            if (![self isSafeThemeID:themeID] || ![self isSafeRelativeThemeURL:relativeURL] || [seenIDs containsObject:themeID] || [hiddenThemeIDs containsObject:themeID] || name.length == 0 || name.length > 96) {
                 continue;
             }
             [seenIDs addObject:themeID];
             [records addObject:@{ @"id": themeID, @"name": name, @"url": relativeURL }];
         }
-        if (records.count == 0) {
-            finish(NO, NO);
-            return;
-        }
 
-        const NSUInteger totalRecords = records.count;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (progress != nil) {
-                progress(0, totalRecords);
-            }
-        });
-
-        dispatch_group_t group = dispatch_group_create();
-        NSObject *downloadStateLock = [[NSObject alloc] init];
-        __block BOOL allDownloadsSucceeded = YES;
-        __block NSUInteger completedDownloads = 0;
-        for (NSDictionary *record in records) {
-            dispatch_group_enter(group);
-            [self downloadThemeRecord:record fromCatalogURL:catalogURL completion:^(BOOL success) {
-                NSUInteger completedNow = 0;
-                @synchronized (downloadStateLock) {
-                    if (!success) {
-                        allDownloadsSucceeded = NO;
-                    }
-                    completedDownloads += 1;
-                    completedNow = completedDownloads;
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (progress != nil) {
-                        progress(completedNow, totalRecords);
-                    }
-                });
-                dispatch_group_leave(group);
-            }];
-        }
-        dispatch_group_notify(group, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
-            BOOL downloadsSucceeded = NO;
-            @synchronized (downloadStateLock) {
-                downloadsSucceeded = allDownloadsSucceeded;
-            }
-            if (!downloadsSucceeded) {
-                // Keep the last complete catalog visible; do not expose a new record
-                // until its validated JSON is already present in the local cache.
-                finish(NO, NO);
-                return;
-            }
-
-            NSDictionary *cachedCatalog = @{ @"themes": records };
-            NSData *cachedCatalogData = [NSJSONSerialization dataWithJSONObject:cachedCatalog options:0 error:nil];
-            NSURL *cachedCatalogURL = [self cachedCatalogURL];
-            NSError *directoryError = nil;
-            NSError *writeError = nil;
-            BOOL madeDirectory = [[NSFileManager defaultManager] createDirectoryAtURL:[cachedCatalogURL URLByDeletingLastPathComponent]
-                                                          withIntermediateDirectories:YES
-                                                                           attributes:nil
-                                                                                error:&directoryError];
-            BOOL wroteCatalog = madeDirectory && cachedCatalogData != nil && [cachedCatalogData writeToURL:cachedCatalogURL options:NSDataWritingAtomic error:&writeError];
-            if (!wroteCatalog) {
-                finish(NO, NO);
-                return;
-            }
-
-            NSString *currentActiveTheme = [self activeThemeJSON] ?: @"";
-            BOOL activeThemeUpdated = ![previousActiveTheme isEqualToString:currentActiveTheme];
-            finish(YES, activeThemeUpdated);
-        });
+        NSDictionary *cachedCatalog = @{ @"themes": records };
+        NSData *cachedCatalogData = [NSJSONSerialization dataWithJSONObject:cachedCatalog options:0 error:nil];
+        NSURL *cachedCatalogURL = [self cachedCatalogURL];
+        NSError *directoryError = nil;
+        NSError *writeError = nil;
+        BOOL madeDirectory = [[NSFileManager defaultManager] createDirectoryAtURL:[cachedCatalogURL URLByDeletingLastPathComponent]
+                                                      withIntermediateDirectories:YES
+                                                                       attributes:nil
+                                                                            error:&directoryError];
+        BOOL wroteCatalog = madeDirectory && cachedCatalogData != nil && [cachedCatalogData writeToURL:cachedCatalogURL options:NSDataWritingAtomic error:&writeError];
+        finish(wroteCatalog);
     }] resume];
+}
+
+- (void)downloadThemeWithID:(NSString *)themeID completion:(void (^)(BOOL success))completion {
+    if (![self isSafeThemeID:themeID]) {
+        dispatch_async(dispatch_get_main_queue(), ^{ if (completion != nil) completion(NO); });
+        return;
+    }
+    NSDictionary *catalog = [self JSONObjectFromData:[NSData dataWithContentsOfURL:[self cachedCatalogURL]]];
+    NSArray *records = [catalog[@"themes"] isKindOfClass:NSArray.class] ? catalog[@"themes"] : nil;
+    NSDictionary *selectedRecord = nil;
+    for (id candidate in records) {
+        if ([candidate isKindOfClass:NSDictionary.class] && [candidate[@"id"] isEqualToString:themeID]) {
+            selectedRecord = candidate;
+            break;
+        }
+    }
+    NSURL *catalogURL = [NSURL URLWithString:kLPDefaultCatalogURL];
+    if (selectedRecord == nil || ![self isTrustedCatalogURL:catalogURL]) {
+        dispatch_async(dispatch_get_main_queue(), ^{ if (completion != nil) completion(NO); });
+        return;
+    }
+    [self downloadThemeRecord:selectedRecord fromCatalogURL:catalogURL completion:^(BOOL success) {
+        dispatch_async(dispatch_get_main_queue(), ^{ if (completion != nil) completion(success); });
+    }];
 }
 
 - (void)downloadThemeRecord:(NSDictionary *)record fromCatalogURL:(NSURL *)catalogURL completion:(void (^)(BOOL success))completion {

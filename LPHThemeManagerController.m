@@ -97,11 +97,11 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         }
         NSString *bundledPath = ROOT_PATH_NS([kLPThemeDirectory stringByAppendingPathComponent:relativePath]);
         NSString *cachedPath = ROOT_PATH_NS([kLPCachedThemeDirectory stringByAppendingPathComponent:[themeID stringByAppendingPathExtension:@"json"]]);
-        if ([[NSFileManager defaultManager] fileExistsAtPath:bundledPath] || [[NSFileManager defaultManager] fileExistsAtPath:cachedPath]) {
-            BOOL isBundled = [[NSFileManager defaultManager] fileExistsAtPath:bundledPath];
-            BOOL isCached = [[NSFileManager defaultManager] fileExistsAtPath:cachedPath];
-            [available addObject:@{ @"id": themeID, @"name": name, @"remoteOnly": @(!isBundled), @"cached": @(isCached) }];
-        }
+        BOOL isBundled = [[NSFileManager defaultManager] fileExistsAtPath:bundledPath];
+        BOOL isCached = [[NSFileManager defaultManager] fileExistsAtPath:cachedPath];
+        // A cached catalog lists all remote choices. JSON is downloaded only when
+        // the user taps a theme that is not already available locally.
+        [available addObject:@{ @"id": themeID, @"name": name, @"remoteOnly": @(!isBundled), @"cached": @(isCached || isBundled) }];
     }
 
     self.themeRecords = [available sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *left, NSDictionary *right) {
@@ -141,9 +141,9 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
         [self.tableView.refreshControl endRefreshing];
         if (!success) {
             self.progressView.hidden = YES;
-            self.statusLabel.text = @"Sync did not complete. Your previous complete cache was retained. Check GitHub/network access and try again.";
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Theme Sync Failed"
-                                                                           message:@"The full catalog could not be downloaded and validated, so no partial catalog was applied. Your existing themes remain available."
+            self.statusLabel.text = @"Catalog refresh did not complete. Existing theme choices were retained. Check GitHub/network access and try again.";
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Catalog Refresh Failed"
+                                                                           message:@"The GitHub theme list could not be refreshed. Existing choices remain available."
                                                                     preferredStyle:UIAlertControllerStyleAlert];
             [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
             [self presentViewController:alert animated:YES completion:nil];
@@ -152,11 +152,9 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 
         [self reloadThemeRecords];
         self.progressView.hidden = YES;
-        self.statusLabel.text = [NSString stringWithFormat:@"Sync complete. %lu GitHub themes are ready to apply.", (unsigned long)self.themeRecords.count];
-        // The cache is now complete; notify SpringBoard only after it is safe to reload.
-        notify_post(kLPPreferencesChanged.UTF8String);
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Themes Ready"
-                                                                       message:@"The complete GitHub catalog is now cached. Tap any theme to apply it."
+        self.statusLabel.text = [NSString stringWithFormat:@"Catalog refreshed. Choose one of %lu GitHub themes to download.", (unsigned long)self.themeRecords.count];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Catalog Ready"
+                                                                       message:@"No theme files were downloaded. Tap a theme to download and apply only that theme."
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:alert animated:YES completion:nil];
@@ -187,8 +185,10 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     cell.textLabel.text = record[@"name"];
     if ([record[@"id"] isEqualToString:selectedThemeID]) {
         cell.detailTextLabel.text = @"Selected";
+    } else if ([record[@"cached"] boolValue]) {
+        cell.detailTextLabel.text = @"Downloaded • Tap to apply • Swipe to delete";
     } else if (self.hasCachedCatalog) {
-        cell.detailTextLabel.text = @"Cached GitHub theme • Swipe to delete";
+        cell.detailTextLabel.text = @"Available on GitHub • Tap to download";
     } else {
         cell.detailTextLabel.text = @"Bundled fallback • Tap to apply";
     }
@@ -201,14 +201,46 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     if (self.isSynchronizing) {
         return;
     }
-    NSString *themeID = self.themeRecords[indexPath.row][@"id"];
+    NSDictionary *record = self.themeRecords[indexPath.row];
+    NSString *themeID = record[@"id"];
     if (themeID.length == 0) {
         return;
     }
+    if ([record[@"cached"] boolValue]) {
+        [self applyThemeID:themeID name:record[@"name"]];
+        return;
+    }
+
+    self.synchronizing = YES;
+    self.refreshButton.enabled = NO;
+    self.restoreButton.enabled = NO;
+    self.progressView.hidden = NO;
+    self.progressView.progress = 0.25;
+    self.statusLabel.text = [NSString stringWithFormat:@"Downloading %@…", record[@"name"]];
+    __weak typeof(self) weakSelf = self;
+    [[LPThemeCatalog sharedCatalog] downloadThemeWithID:themeID completion:^(BOOL success) {
+        __strong typeof(weakSelf) self = weakSelf;
+        if (self == nil) {
+            return;
+        }
+        self.synchronizing = NO;
+        self.refreshButton.enabled = YES;
+        self.restoreButton.enabled = YES;
+        self.progressView.hidden = YES;
+        if (!success) {
+            self.statusLabel.text = @"Theme download failed. Try Refresh, then select the theme again.";
+            return;
+        }
+        [self reloadThemeRecords];
+        [self applyThemeID:themeID name:record[@"name"]];
+    }];
+}
+
+- (void)applyThemeID:(NSString *)themeID name:(NSString *)name {
     CFPreferencesSetAppValue(CFSTR("theme"), (__bridge CFPropertyListRef)themeID, (__bridge CFStringRef)kLPPreferencesDomain);
     CFPreferencesAppSynchronize((__bridge CFStringRef)kLPPreferencesDomain);
     notify_post(kLPPreferencesChanged.UTF8String);
-    self.statusLabel.text = [NSString stringWithFormat:@"%@ applied. Lock the device to view the new theme.", self.themeRecords[indexPath.row][@"name"]];
+    self.statusLabel.text = [NSString stringWithFormat:@"%@ applied. Lock the device to view the new theme.", name ?: @"Theme"];
     [self.tableView reloadData];
 }
 

@@ -7,4 +7,6 @@
 - (void)synchronizeCatalogWithResult:(void (^)(BOOL success, BOOL activeThemeUpdated))completion;
 - (void)synchronizeCatalogWithProgress:(void (^)(NSUInteger completed, NSUInteger total))progress
                             completion:(void (^)(BOOL success, BOOL activeThemeUpdated))completion;
+- (void)refreshCatalogWithCompletion:(void (^)(BOOL success))completion;
+- (void)downloadThemeWithID:(NSString *)themeID completion:(void (^)(BOOL success))completion;
 @end
