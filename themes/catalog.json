@@ -251,6 +251,11 @@
       "id": "minimallock-mooner",
       "name": "Mooner",
       "url": "minimallock/mooner.json"
+    },
+    {
+      "id": "minimallock-locktime26",
+      "name": "LockTime26 Tall Clock",
+      "url": "minimallock/locktime26.json"
     }
   ]
 }
