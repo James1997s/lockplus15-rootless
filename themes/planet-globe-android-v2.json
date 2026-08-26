@@ -2,7 +2,8 @@
   "assets": [
     {
       "id": "earth-texture",
-      "url": "assets/planet-globe/earth-texture-v2.png"
+      "url": "assets/planet-globe/earth-texture-v2.png",
+      "sha256": "d18e94df7449ab948341b35e6f65e4972e66ad985a51b9d1f817ca27a3933b5e"
     }
   ],
   "placedElements": {
