@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+# Run once when upgrading to the clean GitHub-only theme client. Keep the
+# catalog manifest so Theme Manager can list all remote themes immediately,
+# but remove every local downloaded JSON/image payload.
+base="/var/jb/var/mobile/Library/LockPlus15"
+cache="$base/Themes"
+marker="$base/.github-theme-client-v1"
+
+if [ ! -e "$marker" ]; then
+    mkdir -p "$cache"
+    find "$cache" -maxdepth 1 -type f -name '*.json' ! -name 'catalog.json' -delete 2>/dev/null || true
+    rm -rf "$cache/Assets"
+    : > "$marker"
+    chown -R mobile:mobile "$base" 2>/dev/null || true
+fi
+
+exit 0

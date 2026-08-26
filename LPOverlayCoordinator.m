@@ -71,7 +71,9 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     if (value != NULL) {
         CFRelease(value);
     }
-    return enabled;
+    // A clean install has no selected cached theme. Keep SpringBoard's stock
+    // date/clock visible until the user explicitly downloads and selects one.
+    return enabled && [[LPThemeCatalog sharedCatalog] activeThemeJSON].length > 0;
 }
 
 - (BOOL)isApplyingStockDateVisibility {
@@ -178,11 +180,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 }
 
 - (NSString *)activeThemeJSON {
-    NSString *themeJSON = [[LPThemeCatalog sharedCatalog] activeThemeJSON];
-    if (themeJSON.length == 0) {
-        themeJSON = @"{\"placedElements\":{\"clock\":{\"type\":\"clock\",\"top\":\"72px\",\"color\":\"#FFFFFF\",\"font-size\":\"60px\",\"font-weight\":\"700\"},\"todaystrings\":{\"type\":\"date\",\"top\":\"144px\",\"color\":\"#FFFFFF\",\"font-size\":\"16px\"}}}";
-    }
-    return themeJSON;
+    return [[LPThemeCatalog sharedCatalog] activeThemeJSON];
 }
 
 @end
