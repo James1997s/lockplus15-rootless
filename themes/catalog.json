@@ -33,9 +33,9 @@
       "url": "brushstroke-time.json"
     },
     {
-      "id": "planet-globe-3d-lock-v4",
-      "name": "Planet Globe 3D Lock (Loader Fix)",
-      "url": "planet-globe-android-v4.json"
+      "id": "planet-globe-3d-lock-v5",
+      "name": "Planet Globe 3D Lock (SpecialLock Compatible)",
+      "url": "planet-globe-android-v5.json"
     }
   ]
 }
