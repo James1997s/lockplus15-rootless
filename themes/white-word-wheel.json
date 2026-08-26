@@ -64,21 +64,6 @@
       "letter-spacing": "1.0px",
       "z-index": "20"
     },
-    "divider": {
-      "type": "overlay",
-      "position": "absolute",
-      "left": "50%",
-      "top": "245px",
-      "transform": "translateX(-50%)",
-      "width": "46px",
-      "height": "2px",
-      "padding": "0px",
-      "background-color": "#151515",
-      "border-radius": "2px",
-      "innerHTML": "",
-      "color": "rgba(0,0,0,0)",
-      "z-index": "15"
-    },
     "hamsterWheel": {
       "type": "image",
       "position": "absolute",
