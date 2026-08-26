@@ -35,9 +35,9 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     [self.tableView.refreshControl addTarget:self action:@selector(refreshThemes) forControlEvents:UIControlEventValueChanged];
 
     self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshThemes)];
-    self.navigationItem.rightBarButtonItem = self.refreshButton;
     self.restoreButton = [[UIBarButtonItem alloc] initWithTitle:@"Restore" style:UIBarButtonItemStylePlain target:self action:@selector(restoreDeletedThemes)];
-    self.navigationItem.leftBarButtonItem = self.restoreButton;
+    // Do not set leftBarButtonItem here: Settings supplies the Back button there.
+    self.navigationItem.rightBarButtonItems = @[ self.refreshButton, self.restoreButton ];
 
     UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.bounds.size.width, 96.0)];
     UILabel *status = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 16.0, MAX(1.0, self.view.bounds.size.width - 48.0), 42.0)];
