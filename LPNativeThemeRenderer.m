@@ -514,25 +514,43 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     [layer addAnimation:draw forKey:key];
 }
 
-- (void)startContinuousHeartbeat {
+- (void)startFullSequenceLoop {
     [self.heartbeatLayer removeAnimationForKey:@"speciallock.ecg.heartbeat"];
+    [self.timeLayer removeAnimationForKey:@"speciallock.ecg.time-loop"];
     if (UIAccessibilityIsReduceMotionEnabled()) {
         self.heartbeatLayer.hidden = YES;
+        self.timeLayer.hidden = NO;
         return;
     }
     self.heartbeatLayer.hidden = NO;
-    CAKeyframeAnimation *strokeEnd = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
-    strokeEnd.values = @[ @0.0, @1.0, @1.0 ];
-    strokeEnd.keyTimes = @[ @0.0, @0.46, @1.0 ];
-    CAKeyframeAnimation *strokeStart = [CAKeyframeAnimation animationWithKeyPath:@"strokeStart"];
-    strokeStart.values = @[ @0.0, @0.0, @1.0 ];
-    strokeStart.keyTimes = @[ @0.0, @0.56, @1.0 ];
+    self.timeLayer.hidden = NO;
+    CFTimeInterval cycleDuration = MIN(MAX(self.animationDuration, 2.4), 5.0);
+
+    CAKeyframeAnimation *leadEnd = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+    leadEnd.values = @[ @0.0, @1.0, @1.0 ];
+    leadEnd.keyTimes = @[ @0.0, @0.38, @1.0 ];
+    CAKeyframeAnimation *leadStart = [CAKeyframeAnimation animationWithKeyPath:@"strokeStart"];
+    leadStart.values = @[ @0.0, @0.0, @1.0 ];
+    leadStart.keyTimes = @[ @0.0, @0.49, @1.0 ];
     CAAnimationGroup *heartbeat = [CAAnimationGroup animation];
-    heartbeat.animations = @[ strokeEnd, strokeStart ];
-    heartbeat.duration = MIN(MAX(self.animationDuration, 1.6), 4.4);
+    heartbeat.animations = @[ leadEnd, leadStart ];
+    heartbeat.duration = cycleDuration;
     heartbeat.repeatCount = HUGE_VALF;
     heartbeat.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     [self.heartbeatLayer addAnimation:heartbeat forKey:@"speciallock.ecg.heartbeat"];
+
+    CAKeyframeAnimation *timeEnd = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+    timeEnd.values = @[ @0.0, @0.0, @1.0, @1.0, @1.0 ];
+    timeEnd.keyTimes = @[ @0.0, @0.36, @0.72, @0.88, @1.0 ];
+    CAKeyframeAnimation *timeStart = [CAKeyframeAnimation animationWithKeyPath:@"strokeStart"];
+    timeStart.values = @[ @0.0, @0.0, @0.0, @0.0, @1.0 ];
+    timeStart.keyTimes = @[ @0.0, @0.36, @0.79, @0.91, @1.0 ];
+    CAAnimationGroup *timeLoop = [CAAnimationGroup animation];
+    timeLoop.animations = @[ timeEnd, timeStart ];
+    timeLoop.duration = cycleDuration;
+    timeLoop.repeatCount = HUGE_VALF;
+    timeLoop.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [self.timeLayer addAnimation:timeLoop forKey:@"speciallock.ecg.time-loop"];
 }
 
 - (void)updateForDate:(NSDate *)date {
@@ -545,7 +563,6 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         return;
     }
     self.lastTimeKey = timeKey;
-    BOOL shouldAnimate = !UIAccessibilityIsReduceMotionEnabled();
     self.hasRendered = YES;
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
@@ -560,13 +577,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     self.heartbeatLayer.strokeEnd = 1.0;
     self.timeLayer.strokeEnd = 1.0;
     [CATransaction commit];
-    if (shouldAnimate) {
-        CFTimeInterval now = CACurrentMediaTime();
-        [self animateLayer:self.timeLayer key:@"speciallock.ecg.time" beginTime:(now + (self.animationDuration * 0.30)) duration:(self.animationDuration * 0.70)];
-        [self startContinuousHeartbeat];
-    } else {
-        [self startContinuousHeartbeat];
-    }
+    [self startFullSequenceLoop];
 }
 
 @end
