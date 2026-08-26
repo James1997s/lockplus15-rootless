@@ -1,6 +1,8 @@
 #import "LPThemeCatalog.h"
 
 #import <rootless.h>
+#import <UIKit/UIKit.h>
+#import <CommonCrypto/CommonDigest.h>
 
 static NSString * const kLPPrefsDomain = @"com.example.lockplus15";
 static NSString * const kLPDefaultThemeID = @"aurora";
@@ -64,6 +66,11 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 
 - (NSURL *)cachedCatalogURL {
     return [NSURL fileURLWithPath:ROOT_PATH_NS(@"/var/mobile/Library/LockPlus15/Themes/catalog.json")];
+}
+
+- (NSURL *)cachedAssetURLForThemeID:(NSString *)themeID assetID:(NSString *)assetID {
+    NSString *path = ROOT_PATH_NS([@"/var/mobile/Library/LockPlus15/Themes/Assets" stringByAppendingPathComponent:themeID]);
+    return [NSURL fileURLWithPath:[path stringByAppendingPathComponent:assetID]];
 }
 
 - (NSString *)activeThemeJSON {
@@ -189,11 +196,38 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     }];
 }
 
+- (void)downloadThemeAsset:(NSDictionary *)asset themeID:(NSString *)themeID fromCatalogURL:(NSURL *)catalogURL completion:(void (^)(BOOL success))completion {
+    NSString *assetID = [asset[@"id"] isKindOfClass:NSString.class] ? asset[@"id"] : nil;
+    NSString *relativeURL = [asset[@"url"] isKindOfClass:NSString.class] ? asset[@"url"] : nil;
+    NSString *expectedSHA256 = [asset[@"sha256"] isKindOfClass:NSString.class] ? asset[@"sha256"] : nil;
+    NSURL *assetURL = [[catalogURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:relativeURL];
+    if (![self isSafeThemeID:assetID] || ![self isSafeAssetRelativeURL:relativeURL] || ![self isValidSHA256:expectedSHA256] || ![assetURL.scheme.lowercaseString isEqualToString:@"https"] || ![assetURL.host isEqualToString:catalogURL.host]) {
+        completion(NO);
+        return;
+    }
+    [[[NSURLSession sharedSession] dataTaskWithURL:assetURL completionHandler:^(NSData *assetData, NSURLResponse *response, NSError *error) {
+        BOOL validResponse = error == nil && [response isKindOfClass:NSHTTPURLResponse.class] && ((NSHTTPURLResponse *)response).statusCode == 200;
+        UIImage *image = validResponse && assetData.length <= (2 * 1024 * 1024) ? [UIImage imageWithData:assetData] : nil;
+        BOOL validImage = image != nil && image.size.width > 0.0 && image.size.height > 0.0 && image.size.width <= 4096.0 && image.size.height <= 4096.0;
+        if (!validImage || ![[self sha256ForData:assetData] isEqualToString:expectedSHA256.lowercaseString]) {
+            completion(NO);
+            return;
+        }
+        NSURL *cacheURL = [self cachedAssetURLForThemeID:themeID assetID:assetID];
+        NSError *directoryError = nil;
+        BOOL madeDirectory = [[NSFileManager defaultManager] createDirectoryAtURL:[cacheURL URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&directoryError];
+        NSData *existing = [NSData dataWithContentsOfURL:cacheURL];
+        NSError *writeError = nil;
+        BOOL wroteAsset = [existing isEqualToData:assetData] || [assetData writeToURL:cacheURL options:NSDataWritingAtomic error:&writeError];
+        completion(madeDirectory && wroteAsset);
+    }] resume];
+}
+
 - (void)downloadThemeRecord:(NSDictionary *)record fromCatalogURL:(NSURL *)catalogURL completion:(void (^)(BOOL success))completion {
     NSString *themeID = record[@"id"];
     NSString *relativeURL = record[@"url"];
     NSURL *themeURL = [[catalogURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:relativeURL];
-    if (![themeURL.scheme.lowercaseString isEqualToString:@"https"] || ![themeURL.host isEqualToString:catalogURL.host]) {
+    if (![self isSafeThemeID:themeID] || ![themeURL.scheme.lowercaseString isEqualToString:@"https"] || ![themeURL.host isEqualToString:catalogURL.host]) {
         completion(NO);
         return;
     }
@@ -204,17 +238,37 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
             completion(NO);
             return;
         }
-
-        NSURL *cacheURL = [self cachedThemeURLForID:themeID];
-        NSError *directoryError = nil;
-        BOOL madeDirectory = [[NSFileManager defaultManager] createDirectoryAtURL:[cacheURL URLByDeletingLastPathComponent]
-                                                       withIntermediateDirectories:YES
-                                                                        attributes:nil
-                                                                             error:&directoryError];
-        NSData *existing = [NSData dataWithContentsOfURL:cacheURL];
-        NSError *writeError = nil;
-        BOOL wroteTheme = [existing isEqualToData:themeData] || [themeData writeToURL:cacheURL options:NSDataWritingAtomic error:&writeError];
-        completion(madeDirectory && wroteTheme);
+        NSDictionary *theme = [self JSONObjectFromData:themeData];
+        NSArray *assets = [theme[@"assets"] isKindOfClass:NSArray.class] ? theme[@"assets"] : @[];
+        dispatch_group_t assetGroup = dispatch_group_create();
+        __block BOOL allAssetsSucceeded = YES;
+        NSObject *assetLock = [[NSObject alloc] init];
+        for (NSDictionary *asset in assets) {
+            dispatch_group_enter(assetGroup);
+            [self downloadThemeAsset:asset themeID:themeID fromCatalogURL:catalogURL completion:^(BOOL success) {
+                @synchronized (assetLock) {
+                    allAssetsSucceeded = allAssetsSucceeded && success;
+                }
+                dispatch_group_leave(assetGroup);
+            }];
+        }
+        dispatch_group_notify(assetGroup, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+            BOOL assetsSucceeded = NO;
+            @synchronized (assetLock) {
+                assetsSucceeded = allAssetsSucceeded;
+            }
+            if (!assetsSucceeded) {
+                completion(NO);
+                return;
+            }
+            NSURL *cacheURL = [self cachedThemeURLForID:themeID];
+            NSError *directoryError = nil;
+            BOOL madeDirectory = [[NSFileManager defaultManager] createDirectoryAtURL:[cacheURL URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&directoryError];
+            NSData *existing = [NSData dataWithContentsOfURL:cacheURL];
+            NSError *writeError = nil;
+            BOOL wroteTheme = [existing isEqualToData:themeData] || [themeData writeToURL:cacheURL options:NSDataWritingAtomic error:&writeError];
+            completion(madeDirectory && wroteTheme);
+        });
     }] resume];
 }
 
@@ -232,6 +286,33 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 
 - (BOOL)isSafeRelativeThemeURL:(NSString *)relativeURL {
     return relativeURL.length > 0 && [relativeURL hasSuffix:@".json"] && ![relativeURL containsString:@"://"] && ![relativeURL containsString:@".."] && ![relativeURL hasPrefix:@"/"];
+}
+
+- (BOOL)isSafeAssetRelativeURL:(NSString *)relativeURL {
+    NSString *extension = relativeURL.pathExtension.lowercaseString;
+    NSSet<NSString *> *allowedExtensions = [NSSet setWithArray:@[ @"jpg", @"jpeg", @"png" ]];
+    return relativeURL.length > 0 && [allowedExtensions containsObject:extension] && ![relativeURL containsString:@"://"] && ![relativeURL containsString:@".."] && ![relativeURL hasPrefix:@"/"];
+}
+
+- (BOOL)isValidSHA256:(NSString *)hashValue {
+    if (hashValue.length != 64) {
+        return NO;
+    }
+    NSCharacterSet *hex = [NSCharacterSet characterSetWithCharactersInString:@"0123456789abcdef"];
+    return [[hashValue lowercaseString] stringByTrimmingCharactersInSet:hex].length == 0;
+}
+
+- (NSString *)sha256ForData:(NSData *)data {
+    if (data.length == 0) {
+        return nil;
+    }
+    unsigned char digest[CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
+    NSMutableString *result = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
+    for (NSUInteger index = 0; index < CC_SHA256_DIGEST_LENGTH; index++) {
+        [result appendFormat:@"%02x", digest[index]];
+    }
+    return result;
 }
 
 - (NSDictionary *)JSONObjectFromData:(NSData *)data {
@@ -252,7 +333,7 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     for (id elementID in elements) {
         NSDictionary *properties = [elements[elementID] isKindOfClass:[NSDictionary class]] ? elements[elementID] : nil;
         NSString *type = [properties[@"type"] isKindOfClass:NSString.class] ? properties[@"type"] : nil;
-        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"text", @"panel", @"wallpaper", @"blob", @"particle", @"ring" ]];
+        NSSet<NSString *> *supportedTypes = [NSSet setWithArray:@[ @"clock", @"date", @"text", @"panel", @"wallpaper", @"blob", @"particle", @"ring", @"image", @"widget", @"overlay" ]];
         if (![elementID isKindOfClass:[NSString class]] || properties == nil || ![supportedTypes containsObject:type]) {
             return nil;
         }
@@ -265,6 +346,22 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
                 return nil;
             }
         }
+    }
+
+    NSArray *assets = [theme[@"assets"] isKindOfClass:NSArray.class] ? theme[@"assets"] : @[];
+    if (assets.count > 6) {
+        return nil;
+    }
+    NSMutableSet<NSString *> *assetIDs = [NSMutableSet set];
+    for (id candidate in assets) {
+        NSDictionary *asset = [candidate isKindOfClass:NSDictionary.class] ? candidate : nil;
+        NSString *assetID = [asset[@"id"] isKindOfClass:NSString.class] ? asset[@"id"] : nil;
+        NSString *assetURL = [asset[@"url"] isKindOfClass:NSString.class] ? asset[@"url"] : nil;
+        NSString *sha256 = [asset[@"sha256"] isKindOfClass:NSString.class] ? asset[@"sha256"] : nil;
+        if (![self isSafeThemeID:assetID] || [assetIDs containsObject:assetID] || ![self isSafeAssetRelativeURL:assetURL] || ![self isValidSHA256:sha256]) {
+            return nil;
+        }
+        [assetIDs addObject:assetID];
     }
 
     NSData *canonicalData = [NSJSONSerialization dataWithJSONObject:theme options:0 error:nil];

@@ -1,4 +1,7 @@
 #import "LPNativeThemeRenderer.h"
+#import <rootless.h>
+
+static NSString * const kLPThemePreferencesDomain = @"com.example.lockplus15";
 
 @interface LPGradientWallpaperView : UIView
 @property (nonatomic, strong) CAGradientLayer *gradientLayer;
@@ -303,6 +306,31 @@
     self.updateTimer = nil;
 }
 
+- (NSString *)selectedThemeID {
+    CFPropertyListRef value = CFPreferencesCopyAppValue(CFSTR("theme"), (__bridge CFStringRef)kLPThemePreferencesDomain);
+    NSString *themeID = nil;
+    if (value != NULL && CFGetTypeID(value) == CFStringGetTypeID()) {
+        themeID = [(__bridge NSString *)value copy];
+    }
+    if (value != NULL) {
+        CFRelease(value);
+    }
+    return themeID.length > 0 ? themeID : @"aurora";
+}
+
+- (UIImage *)cachedImageAssetWithID:(NSString *)assetID {
+    if (assetID.length == 0 || assetID.length > 48) {
+        return nil;
+    }
+    NSCharacterSet *allowed = [NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"];
+    if ([[assetID stringByTrimmingCharactersInSet:allowed] length] != 0) {
+        return nil;
+    }
+    NSString *unrootedAssetPath = [[@"/var/mobile/Library/LockPlus15/Themes/Assets" stringByAppendingPathComponent:[self selectedThemeID]] stringByAppendingPathComponent:assetID];
+    NSString *assetPath = ROOT_PATH_NS(unrootedAssetPath);
+    return [UIImage imageWithContentsOfFile:assetPath];
+}
+
 - (void)reloadWithThemeJSONString:(NSString *)themeJSONString {
     [self stopRendering];
     for (UIView *view in self.subviews) {
@@ -348,6 +376,46 @@
                 [wallpaper.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
             ]];
             [wallpaper applyVisualAnimationFromProperties:properties];
+            continue;
+        }
+        if ([type isEqualToString:@"image"]) {
+            NSString *assetID = [properties[@"asset-id"] isKindOfClass:NSString.class] ? properties[@"asset-id"] : nil;
+            UIImage *image = [self cachedImageAssetWithID:assetID];
+            if (image == nil) {
+                continue;
+            }
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+            imageView.userInteractionEnabled = NO;
+            imageView.clipsToBounds = YES;
+            imageView.contentMode = UIViewContentModeScaleAspectFill;
+            imageView.alpha = MIN(MAX([self cssNumber:properties[@"opacity"] defaultValue:1.0], 0.05), 1.0);
+            imageView.translatesAutoresizingMaskIntoConstraints = NO;
+            CGFloat cornerRadius = [self cssNumber:properties[@"border-radius"] defaultValue:0.0];
+            imageView.layer.cornerRadius = MAX(0.0, MIN(cornerRadius, 90.0));
+            imageView.layer.masksToBounds = cornerRadius > 0.0;
+            imageView.layer.zPosition = [self cssNumber:properties[@"z-index"] defaultValue:0.0];
+            NSString *role = [properties[@"image-role"] isKindOfClass:NSString.class] ? properties[@"image-role"] : @"panel";
+            if ([role isEqualToString:@"wallpaper"]) {
+                [self insertSubview:imageView atIndex:MIN((NSUInteger)1, self.subviews.count)];
+                [NSLayoutConstraint activateConstraints:@[
+                    [imageView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+                    [imageView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+                    [imageView.topAnchor constraintEqualToAnchor:self.topAnchor],
+                    [imageView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+                ]];
+            } else {
+                [self addSubview:imageView];
+                CGFloat top = [self cssNumber:properties[@"top"] defaultValue:160.0];
+                CGFloat width = MIN(MAX([self cssNumber:properties[@"width"] defaultValue:320.0], 40.0), 360.0);
+                CGFloat height = MIN(MAX([self cssNumber:properties[@"height"] defaultValue:180.0], 24.0), 540.0);
+                [NSLayoutConstraint activateConstraints:@[
+                    [imageView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+                    [imageView.topAnchor constraintEqualToAnchor:self.topAnchor constant:top],
+                    [imageView.widthAnchor constraintEqualToConstant:width],
+                    [imageView.heightAnchor constraintEqualToConstant:height],
+                ]];
+            }
+            [self applyVisualAnimationFromProperties:properties toView:imageView];
             continue;
         }
         if ([type isEqualToString:@"ring"]) {
@@ -424,7 +492,7 @@
         [self addSubview:label];
         CGFloat padding = [self cssNumber:properties[@"padding"] defaultValue:0.0];
         CGFloat top = [self cssNumber:properties[@"top"] defaultValue:72.0];
-        CGFloat defaultHeight = [type isEqualToString:@"clock"] ? 76.0 : ([type isEqualToString:@"panel"] ? 72.0 : 34.0);
+        CGFloat defaultHeight = [type isEqualToString:@"clock"] ? 76.0 : (([type isEqualToString:@"panel"] || [type isEqualToString:@"widget"] || [type isEqualToString:@"overlay"]) ? 72.0 : 34.0);
         CGFloat width = [self cssNumber:properties[@"width"] defaultValue:320.0] + (padding * 2.0);
         CGFloat height = [self cssNumber:properties[@"height"] defaultValue:defaultHeight] + (padding * 2.0);
         [NSLayoutConstraint activateConstraints:@[
@@ -440,7 +508,7 @@
         element.properties = properties;
         element.label = label;
         [self.elements addObject:element];
-        if ([type isEqualToString:@"text"] || [type isEqualToString:@"panel"]) {
+        if ([type isEqualToString:@"text"] || [type isEqualToString:@"panel"] || [type isEqualToString:@"widget"] || [type isEqualToString:@"overlay"]) {
             [self applyText:[properties[@"innerHTML"] isKindOfClass:NSString.class] ? properties[@"innerHTML"] : @"" toElement:element];
         }
     }

@@ -13,6 +13,11 @@
       "url": "github-sync-test.json"
     },
     {
+      "id": "graffiti-street",
+      "name": "Graffiti Street",
+      "url": "graffiti-street.json"
+    },
+    {
       "id": "catalog-refresh-test",
       "name": "Catalog Refresh Test",
       "url": "catalog-refresh-test.json"

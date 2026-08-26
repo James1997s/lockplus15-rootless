@@ -2,13 +2,14 @@
 """Audit every LockPlus catalog theme against the native UIKit renderer contract."""
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1] / 'themes'
 CATALOG = ROOT / 'catalog.json'
-SUPPORTED_TYPES = {'clock', 'date', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring'}
+SUPPORTED_TYPES = {'clock', 'date', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay'}
 SUPPORTED_PROPERTIES = {
     'type', 'position', 'left', 'top', 'transform', 'color', 'font-family',
     'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
@@ -16,6 +17,7 @@ SUPPORTED_PROPERTIES = {
     'padding', 'width', 'height', 'gradient', 'animation', 'animation-duration',
     'x', 'size', 'opacity', 'motion', 'motion-distance', 'motion-duration',
     'diameter', 'stroke-width', 'arc-start', 'arc-length', 'dash', 'rotation-duration', 'rotation-direction',
+    'asset-id', 'image-role',
 }
 REQUIRED_BY_TYPE = {
     'clock': {'top', 'color', 'font-size'},
@@ -26,6 +28,9 @@ REQUIRED_BY_TYPE = {
     'blob': {'top', 'color', 'size', 'x'},
     'particle': {'top', 'color', 'size', 'x'},
     'ring': {'top', 'color', 'diameter', 'stroke-width'},
+    'image': {'asset-id'},
+    'widget': {'top', 'background-color', 'innerHTML'},
+    'overlay': {'top', 'background-color', 'innerHTML'},
 }
 
 
@@ -69,6 +74,33 @@ def main() -> None:
             errors.append(f'{identifier}: missing theme file {location}.')
             continue
         theme = json.loads(theme_path.read_text(encoding='utf-8'))
+        assets = theme.get('assets', [])
+        if not isinstance(assets, list) or len(assets) > 6:
+            errors.append(f'{identifier}: invalid assets collection.')
+        else:
+            asset_ids: set[str] = set()
+            for asset in assets:
+                if not isinstance(asset, dict):
+                    errors.append(f'{identifier}: invalid asset record.')
+                    continue
+                asset_id = asset.get('id')
+                asset_url = asset.get('url')
+                asset_hash = asset.get('sha256')
+                if not isinstance(asset_id, str) or not asset_id or len(asset_id) > 48 or not all(char.isalnum() or char in '_-' for char in asset_id):
+                    errors.append(f'{identifier}: invalid asset id {asset_id!r}.')
+                elif asset_id in asset_ids:
+                    errors.append(f'{identifier}: duplicate asset id {asset_id}.')
+                else:
+                    asset_ids.add(asset_id)
+                if not isinstance(asset_url, str) or Path(asset_url).suffix.lower() not in {'.jpg', '.jpeg', '.png'} or asset_url.startswith('/') or '..' in Path(asset_url).parts:
+                    errors.append(f'{identifier}: unsafe asset URL {asset_url!r}.')
+                    continue
+                asset_path = ROOT / asset_url
+                if not asset_path.is_file():
+                    errors.append(f'{identifier}: missing asset {asset_url}.')
+                elif not isinstance(asset_hash, str) or len(asset_hash) != 64 or hashlib.sha256(asset_path.read_bytes()).hexdigest() != asset_hash.lower():
+                    errors.append(f'{identifier}: asset SHA-256 mismatch for {asset_url}.')
+
         placed = theme.get('placedElements')
         if not isinstance(placed, dict) or not placed or len(placed) > 128:
             errors.append(f'{identifier}: invalid placedElements collection.')
