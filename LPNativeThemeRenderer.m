@@ -384,10 +384,9 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
             [path addCurveToPoint:CGPointMake(left + (width * 0.53), y + 2.0) controlPoint1:CGPointMake(left + (width * 0.02), y + (height * 0.22)) controlPoint2:CGPointMake(left + (width * 0.18), y + (height * 0.03))];
             break;
         case '1':
-            [path moveToPoint:CGPointMake(left + (width * 0.14), y + (height * 0.18))];
-            [path addCurveToPoint:CGPointMake(left + (width * 0.52), y + (height * 0.05)) controlPoint1:CGPointMake(left + (width * 0.31), y + (height * 0.15)) controlPoint2:CGPointMake(left + (width * 0.42), y + (height * 0.07))];
-            [path addCurveToPoint:CGPointMake(left + (width * 0.49), bottom - 2.0) controlPoint1:CGPointMake(left + (width * 0.54), middle) controlPoint2:CGPointMake(left + (width * 0.48), bottom - (height * 0.20))];
-            [path addCurveToPoint:CGPointMake(right - 2.0, bottom - 1.0) controlPoint1:CGPointMake(left + (width * 0.63), bottom) controlPoint2:CGPointMake(left + (width * 0.78), bottom - 2.0)];
+            [path moveToPoint:CGPointMake(left + (width * 0.18), y + (height * 0.20))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.50), y + (height * 0.06)) controlPoint1:CGPointMake(left + (width * 0.32), y + (height * 0.16)) controlPoint2:CGPointMake(left + (width * 0.43), y + (height * 0.07))];
+            [path addCurveToPoint:CGPointMake(left + (width * 0.50), bottom - 2.0) controlPoint1:CGPointMake(left + (width * 0.50), middle) controlPoint2:CGPointMake(left + (width * 0.50), bottom - (height * 0.22))];
             break;
         case '2':
             [path moveToPoint:CGPointMake(left + 1.0, y + (height * 0.25))];
@@ -505,7 +504,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     brush.contents = (__bridge id)self.brushImage.CGImage;
     brush.contentsGravity = kCAGravityResizeAspect;
     brush.contentsScale = UIScreen.mainScreen.scale;
-    brush.bounds = CGRectMake(0.0, 0.0, 112.0, 54.0);
+    brush.bounds = CGRectMake(0.0, 0.0, 200.0, 100.0);
     brush.anchorPoint = CGPointMake(0.03, 0.50);
     brush.opacity = 0.0;
     brush.shadowColor = UIColor.blackColor.CGColor;

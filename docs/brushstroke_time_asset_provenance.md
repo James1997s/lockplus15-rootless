@@ -6,4 +6,4 @@ The asset has no external source URL, does not represent a downloaded third-part
 
 | Asset ID | Dimensions | SHA-256 |
 | --- | ---: | --- |
-| `paintbrush` | 360 × 240 px | `cf9757072f207b7f8d6be0c1dc5d593ca1079dd21a1a3313828cadf4044cc3bd` |
+| `paintbrush` | 360 × 56 px | `1defbc446d6ff6d3a241eeef156144a8cc930b170f51d7a0b310b4598e7d54ee` |
