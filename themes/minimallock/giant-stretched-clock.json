@@ -1,0 +1,73 @@
+{
+  "placedElements": {
+    "capsuleTop": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "58px",
+      "transform": "translateX(-50%)",
+      "width": "92px",
+      "height": "270px",
+      "background": "transparent",
+      "border": "2px solid rgba(255,255,255,0.84)",
+      "border-radius": "48px",
+      "box-shadow": "0 1px 3px rgba(0,0,0,0.18)",
+      "z-index": "1",
+      "pointer-events": "none"
+    },
+    "todaystrings": {
+      "type": "date",
+      "position": "absolute",
+      "left": "50%",
+      "top": "82px",
+      "transform": "translateX(-50%)",
+      "color": "rgba(255,255,255,0.98)",
+      "font-family": "HelveticaNeue-Medium, Arial, sans-serif",
+      "font-size": "18px",
+      "font-weight": "500",
+      "letter-spacing": "0px",
+      "text-shadow": "0 1px 3px rgba(0,0,0,0.42)",
+      "z-index": "5"
+    },
+    "clock": {
+      "type": "clock",
+      "position": "absolute",
+      "left": "50%",
+      "top": "116px",
+      "transform": "translateX(-50%) scaleY(1.55)",
+      "transform-origin": "center top",
+      "color": "rgba(255,255,255,0.98)",
+      "font-family": "HelveticaNeue-UltraLight, Arial, sans-serif",
+      "font-size": "86px",
+      "font-weight": "200",
+      "letter-spacing": "-3px",
+      "line-height": "0.9",
+      "text-shadow": "0 2px 4px rgba(0,0,0,0.42)",
+      "z-index": "5"
+    },
+    "capsuleBottom": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "306px",
+      "transform": "translateX(-50%)",
+      "width": "92px",
+      "height": "235px",
+      "background": "transparent",
+      "border": "2px solid rgba(255,255,255,0.84)",
+      "border-radius": "48px",
+      "box-shadow": "0 1px 3px rgba(0,0,0,0.18)",
+      "z-index": "1",
+      "pointer-events": "none"
+    }
+  },
+  "twentyFourHour": false,
+  "metadata": {
+    "name": "Giant Stretched Clock iPhone 7",
+    "author": "SpecialLock community theme",
+    "description": "Wallpaper-transparent iPhone 7 overlay with a giant vertically stretched clock and capsule frame."
+  },
+  "id": "minimallock-giant-stretched-clock",
+  "name": "Giant Stretched Clock iPhone 7",
+  "version": "1.0.0"
+}

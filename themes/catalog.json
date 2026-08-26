@@ -246,6 +246,11 @@
       "id": "minimallock-mooner",
       "name": "Mooner",
       "url": "minimallock/mooner.json"
+    },
+    {
+      "id": "minimallock-giant-stretched-clock",
+      "name": "Giant Stretched Clock iPhone 7",
+      "url": "minimallock/giant-stretched-clock.json"
     }
   ]
 }
