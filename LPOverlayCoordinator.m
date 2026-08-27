@@ -15,8 +15,8 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
                                          CFDictionaryRef userInfo);
 
 @interface LPOverlayCoordinator ()
-@property (nonatomic, weak) UIView *hostView;
-@property (nonatomic, weak) UIView *stockDateView;
+@property (nonatomic, strong) UIView *hostView;
+@property (nonatomic, strong) UIView *stockDateView;
 @property (nonatomic, assign) BOOL applyingStockDateVisibility;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) LPNativeThemeRenderer *themeRenderer;
@@ -119,7 +119,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 }
 
 - (void)ensureOverlayAttachedToCurrentHost {
-    if (!self.isEnabled || self.stockDateView.window == nil) {
+    if (!self.isEnabled) {
         return;
     }
     UIView *currentHost = self.stockDateView.superview;
@@ -143,39 +143,36 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
         return;
     }
 
-    if (self.hostView == hostView && self.overlayView.superview == hostView) {
+    // XenHTML-style persistence: retain one renderer and move its visual host
+    // when SpringBoard rebuilds the lock-screen hierarchy. Do not stop the
+    // WebView just because its temporary parent changed during unlock.
+    if (self.overlayView != nil && self.themeRenderer != nil) {
+        if (self.overlayView.superview != hostView) {
+            [self.overlayView removeFromSuperview];
+            self.hostView = hostView;
+            self.overlayView.frame = hostView.bounds;
+            [hostView addSubview:self.overlayView];
+        }
+        [self startHostMonitor];
         return;
     }
 
-    [self detachFromHostView:self.hostView];
     self.hostView = hostView;
 
-    UIView *overlay = [[UIView alloc] initWithFrame:CGRectZero];
+    UIView *overlay = [[UIView alloc] initWithFrame:hostView.bounds];
     overlay.backgroundColor = UIColor.clearColor;
     overlay.opaque = NO;
-    // Keep the visual layer in the host view's normal z-order. This prevents it
-    // from sitting above SpringBoard's passcode and unlock presentation layers.
     overlay.layer.zPosition = 0.0;
-    // The port is visual-only. It must never consume SpringBoard lock, unlock, notification, camera, or flashlight gestures.
     overlay.userInteractionEnabled = NO;
-    overlay.translatesAutoresizingMaskIntoConstraints = NO;
+    overlay.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     NSString *themeJSON = [self activeThemeJSON];
     LPNativeThemeRenderer *renderer = [[LPNativeThemeRenderer alloc] initWithThemeJSONString:themeJSON];
-    renderer.translatesAutoresizingMaskIntoConstraints = NO;
+    renderer.frame = overlay.bounds;
+    renderer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [overlay addSubview:renderer];
     [hostView addSubview:overlay];
-    [NSLayoutConstraint activateConstraints:@[
-        [overlay.leadingAnchor constraintEqualToAnchor:hostView.leadingAnchor],
-        [overlay.trailingAnchor constraintEqualToAnchor:hostView.trailingAnchor],
-        [overlay.topAnchor constraintEqualToAnchor:hostView.topAnchor],
-        [overlay.bottomAnchor constraintEqualToAnchor:hostView.bottomAnchor],
-        [renderer.leadingAnchor constraintEqualToAnchor:overlay.leadingAnchor],
-        [renderer.trailingAnchor constraintEqualToAnchor:overlay.trailingAnchor],
-        [renderer.topAnchor constraintEqualToAnchor:overlay.topAnchor],
-        [renderer.bottomAnchor constraintEqualToAnchor:overlay.bottomAnchor],
-    ]];
 
     self.overlayView = overlay;
     self.themeRenderer = renderer;
@@ -187,7 +184,6 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
         }
     }];
 }
-
 - (void)detachFromHostView:(UIView *)hostView {
     if (hostView == nil || hostView != self.hostView) {
         return;

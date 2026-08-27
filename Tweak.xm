@@ -63,7 +63,8 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
             [coordinator attachToHostView:visualHost];
         }
     } else {
-        [coordinator unregisterStockDateView:self];
+        // Keep the date view reference across transient unlock removal. The
+        // coordinator will reuse the same renderer when the hierarchy returns.
     }
 }
 

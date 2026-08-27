@@ -1,6 +1,6 @@
 Package: com.example.speciallock
 Name: SpecialLock
-Version: 0.1.0-29+debug
+Version: 0.1.0-30+debug
 Architecture: iphoneos-arm64
 Description: Visual-only SpecialLock themes for iOS 15 rootless Dopamine and ElleKit.
 Maintainer: Local Build
