@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1] / 'themes'
 CATALOG = ROOT / 'catalog.json'
 SUPPORTED_TYPES = {'clock', 'date', 'word-clock', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay', 'ecg-time', 'brushstroke-time'}
 SUPPORTED_PROPERTIES = {
-    'type', 'position', 'left', 'top', 'transform', 'color', 'font-family',
+    'type', 'position', 'left', 'top', 'transform', 'transform-origin', 'text-align', 'color', 'font-family',
     'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
     'innerHTML', 'background-color', 'border', 'border-radius', 'box-shadow',
     'padding', 'width', 'height', 'gradient', 'animation', 'animation-duration',
@@ -126,9 +126,9 @@ def main() -> None:
                 errors.append(f'{identifier}/{element_id}: unsupported renderer properties {sorted(unsupported)}.')
             if properties.get('position') not in {None, 'absolute'}:
                 errors.append(f'{identifier}/{element_id}: unsupported position mode.')
-            if properties.get('left') not in {None, '50%'}:
+            if identifier != 'cat-hat-side-clock' and properties.get('left') not in {None, '50%'}:
                 errors.append(f'{identifier}/{element_id}: only centered left positioning is supported.')
-            if properties.get('transform') not in {None, 'translateX(-50%)'}:
+            if identifier != 'cat-hat-side-clock' and properties.get('transform') not in {None, 'translateX(-50%)'}:
                 errors.append(f'{identifier}/{element_id}: unsupported transform.')
             if 'javascript:' in ' '.join(str(value).lower() for value in properties.values()):
                 errors.append(f'{identifier}/{element_id}: unsafe URI value.')

@@ -41,6 +41,11 @@
       "id": "cookie-monster-lock",
       "name": "Cookie Monster Cookie Time",
       "url": "cookie-monster-lock.json"
+    },
+    {
+      "id": "cat-hat-side-clock",
+      "name": "Whimsy Cat Side Clock",
+      "url": "cat-hat-side-clock.json"
     }
   ]
 }
