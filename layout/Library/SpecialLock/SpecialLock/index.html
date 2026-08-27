@@ -96,6 +96,20 @@
         document.head.appendChild(style);
       }
 
+      function sanitizeHTML(markup) {
+        var template = document.createElement('template');
+        template.innerHTML = String(markup || '');
+        template.content.querySelectorAll('script,iframe,object,embed,link,meta,style').forEach(function (node) { node.remove(); });
+        template.content.querySelectorAll('*').forEach(function (node) {
+          Array.prototype.slice.call(node.attributes).forEach(function (attribute) {
+            var name = attribute.name.toLowerCase();
+            var value = String(attribute.value || '').toLowerCase();
+            if (name.indexOf('on') === 0 || ((name === 'href' || name === 'src' || name === 'xlink:href') && value.indexOf('javascript:') === 0)) node.removeAttribute(attribute.name);
+          });
+        });
+        return template.innerHTML;
+      }
+
       function render(theme) {
         currentTheme = theme || { placedElements: {} };
         root.textContent = '';
@@ -147,6 +161,9 @@
           }
           if (type === 'text' && typeof properties.innerHTML === 'string') {
             element.textContent = properties.innerHTML;
+          }
+          if (type === 'html' && typeof properties.innerHTML === 'string') {
+            element.innerHTML = sanitizeHTML(properties.innerHTML);
           }
           root.appendChild(element);
           if (isWebGLGlobe) { startGlobe(element, properties); }

@@ -1,7 +1,7 @@
 {
   "id": "cat-hat-side-clock",
   "name": "Whimsy Cat Side Clock",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "assets": [
     {
       "id": "cat-hat-animated-wallpaper",
@@ -45,13 +45,13 @@
       "z-index": "12"
     },
     "caption": {
-      "type": "text",
+      "type": "html",
       "position": "absolute",
       "left": "224px",
       "top": "78px",
       "width": "140px",
       "height": "24px",
-      "innerHTML": "TIME IS A FUNNY THING",
+      "innerHTML": "<span style=\"letter-spacing:1px\">TIME IS A FUNNY THING</span>",
       "color": "#F8E8C2",
       "font-family": "CookieCutout",
       "font-file": "fonts/CookieCutout.ttf",

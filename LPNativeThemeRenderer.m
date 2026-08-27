@@ -1269,7 +1269,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         element.properties = properties;
         element.label = label;
         [self.elements addObject:element];
-        if ([type isEqualToString:@"text"] || [type isEqualToString:@"panel"] || [type isEqualToString:@"widget"] || [type isEqualToString:@"overlay"]) {
+        if ([type isEqualToString:@"text"] || [type isEqualToString:@"html"] || [type isEqualToString:@"panel"] || [type isEqualToString:@"widget"] || [type isEqualToString:@"overlay"]) {
             [self applyText:[properties[@"innerHTML"] isKindOfClass:NSString.class] ? properties[@"innerHTML"] : @"" toElement:element];
         }
     }
