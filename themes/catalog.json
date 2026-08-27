@@ -46,6 +46,12 @@
       "id": "cat-hat-side-clock",
       "name": "Whimsy Cat Side Clock",
       "url": "cat-hat-side-clock.json"
+    },
+    {
+      "id": "xen-cat-side-clock-folder",
+      "name": "Whimsy Cat Folder Clock",
+      "url": "xen-cat-side-clock-folder.json",
+      "format": "folder"
     }
   ]
 }

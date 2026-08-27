@@ -52,6 +52,24 @@ def main() -> None:
         if not path.is_file():
             fail(f'Theme file missing: {location}')
         theme = json.loads(path.read_text(encoding='utf-8'))
+        if theme.get('format') == 'folder':
+            files = theme.get('files')
+            base_path = theme.get('basePath')
+            if not isinstance(base_path, str) or not base_path or base_path.startswith('/') or '://' in base_path or '..' in Path(base_path).parts or theme.get('entry') != 'LockBackground.html' or not isinstance(files, list) or not files or len(files) > 64:
+                fail(f'Theme {identifier} has an invalid folder manifest.')
+            paths = set()
+            for item in files:
+                if not isinstance(item, dict) or not isinstance(item.get('path'), str) or item['path'] in paths or item['path'].startswith('/') or '..' in Path(item['path']).parts:
+                    fail(f'Theme {identifier} has an unsafe folder path.')
+                paths.add(item['path'])
+                if not isinstance(item.get('sha256'), str) or len(item['sha256']) != 64:
+                    fail(f'Theme {identifier} has an invalid folder hash.')
+                local = path.parent / 'folder-themes' / identifier / item['path']
+                if not local.is_file() or __import__('hashlib').sha256(local.read_bytes()).hexdigest() != item['sha256'].lower():
+                    fail(f'Theme {identifier} folder hash mismatch: {item["path"]}.')
+            if 'LockBackground.html' not in paths:
+                fail(f'Theme {identifier} is missing LockBackground.html.')
+            continue
         elements = theme.get('placedElements')
         if not isinstance(elements, dict) or not elements:
             fail(f'Theme {identifier} lacks placedElements.')

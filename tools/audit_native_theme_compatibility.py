@@ -78,6 +78,27 @@ def main() -> None:
             errors.append(f'{identifier}: missing theme file {location}.')
             continue
         theme = json.loads(theme_path.read_text(encoding='utf-8'))
+        if theme.get('format') == 'folder':
+            files = theme.get('files', [])
+            base_path = theme.get('basePath')
+            if not isinstance(base_path, str) or not base_path or base_path.startswith('/') or '://' in base_path or '..' in Path(base_path).parts or theme.get('entry') != 'LockBackground.html' or not isinstance(files, list) or not files or len(files) > 64:
+                errors.append(f'{identifier}: invalid folder manifest.')
+                continue
+            paths: set[str] = set()
+            for item in files:
+                relative = item.get('path') if isinstance(item, dict) else None
+                digest = item.get('sha256') if isinstance(item, dict) else None
+                if not isinstance(relative, str) or not relative or relative.startswith('/') or '..' in Path(relative).parts or relative in paths:
+                    errors.append(f'{identifier}: unsafe or duplicate folder path {relative!r}.')
+                    continue
+                paths.add(relative)
+                local = theme_path.parent / 'folder-themes' / identifier / relative
+                if not local.is_file() or not isinstance(digest, str) or len(digest) != 64 or hashlib.sha256(local.read_bytes()).hexdigest() != digest.lower():
+                    errors.append(f'{identifier}: folder hash mismatch for {relative}.')
+            if 'LockBackground.html' not in paths:
+                errors.append(f'{identifier}: folder entry is missing LockBackground.html.')
+            theme_count += 1
+            continue
         assets = theme.get('assets', [])
         if not isinstance(assets, list) or len(assets) > 6:
             errors.append(f'{identifier}: invalid assets collection.')

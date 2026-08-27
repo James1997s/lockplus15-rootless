@@ -1,6 +1,7 @@
 #import "LPNativeThemeRenderer.h"
 #import <rootless.h>
 #import <ImageIO/ImageIO.h>
+#import <WebKit/WebKit.h>
 
 static NSString * const kLPThemePreferencesDomain = @"com.example.speciallock";
 
@@ -983,6 +984,8 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 @property (nonatomic, strong) NSMutableArray<LPECGTimeView *> *ecgTimeViews;
 @property (nonatomic, strong) NSMutableArray<LPBrushstrokeTimeView *> *brushstrokeTimeViews;
 @property (nonatomic, strong) NSTimer *updateTimer;
+@property (nonatomic, strong) WKWebView *folderWebView;
+@property (nonatomic, copy) NSString *folderReadRoot;
 @end
 
 @implementation LPNativeThemeRenderer
@@ -1008,6 +1011,46 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 - (void)stopRendering {
     [self.updateTimer invalidate];
     self.updateTimer = nil;
+    self.folderWebView.navigationDelegate = nil;
+    [self.folderWebView stopLoading];
+    [self.folderWebView removeFromSuperview];
+    self.folderWebView = nil;
+    self.folderReadRoot = nil;
+}
+
+- (void)loadFolderThemeWithID:(NSString *)themeID {
+    if (themeID.length == 0) return;
+    NSString *relativeRoot = [@"/var/mobile/Library/SpecialLock/Themes/Assets" stringByAppendingPathComponent:themeID];
+    NSString *rootPath = ROOT_PATH_NS(relativeRoot);
+    NSString *entryPath = [rootPath stringByAppendingPathComponent:@"LockBackground.html"];
+    BOOL isDirectory = NO;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:entryPath isDirectory:&isDirectory] || isDirectory) return;
+    self.folderReadRoot = rootPath;
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
+    configuration.allowsInlineMediaPlayback = NO;
+    configuration.suppressesIncrementalRendering = NO;
+    WKPreferences *preferences = [[WKPreferences alloc] init];
+    preferences.javaScriptEnabled = YES;
+    configuration.preferences = preferences;
+    WKWebView *webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:configuration];
+    webView.navigationDelegate = self;
+    webView.backgroundColor = UIColor.clearColor;
+    webView.opaque = NO;
+    webView.scrollView.scrollEnabled = NO;
+    webView.scrollView.bounces = NO;
+    webView.userInteractionEnabled = NO;
+    webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self addSubview:webView];
+    self.folderWebView = webView;
+    [webView loadFileURL:[NSURL fileURLWithPath:entryPath] allowingReadAccessToURL:[NSURL fileURLWithPath:rootPath isDirectory:YES]];
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    NSURL *URL = navigationAction.request.URL;
+    NSString *root = self.folderReadRoot ?: @"";
+    BOOL local = URL.isFileURL && root.length > 0 && [URL.path hasPrefix:[root stringByAppendingString:@"/"]];
+    decisionHandler(local ? WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel);
 }
 
 - (NSString *)selectedThemeID {
@@ -1046,6 +1089,10 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 
     NSData *data = [themeJSONString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *theme = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
+    if ([theme isKindOfClass:NSDictionary.class] && [theme[@"format"] isEqualToString:@"folder"]) {
+        [self loadFolderThemeWithID:[self selectedThemeID]];
+        return;
+    }
     NSDictionary *placedElements = [theme isKindOfClass:NSDictionary.class] ? theme[@"placedElements"] : nil;
     if (![placedElements isKindOfClass:NSDictionary.class] || placedElements.count == 0) {
         placedElements = @{

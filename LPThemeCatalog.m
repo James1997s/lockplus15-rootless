@@ -77,7 +77,12 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 - (NSString *)activeThemeJSON {
     NSString *themeID = [self selectedThemeID];
     for (NSURL *url in @[[self cachedThemeURLForID:themeID], [self bundledThemeURLForID:themeID]]) {
-        NSString *validatedJSON = [self validatedThemeJSONStringFromData:[NSData dataWithContentsOfURL:url]];
+        NSData *themeData = [NSData dataWithContentsOfURL:url];
+        NSDictionary *document = [self JSONObjectFromData:themeData];
+        if ([document[@"format"] isEqualToString:@"folder"] && [document[@"entry"] isEqualToString:@"LockBackground.html"] && [document[@"files"] isKindOfClass:NSArray.class]) {
+            return [[NSString alloc] initWithData:themeData encoding:NSUTF8StringEncoding];
+        }
+        NSString *validatedJSON = [self validatedThemeJSONStringFromData:themeData];
         if (validatedJSON != nil) {
             return validatedJSON;
         }
@@ -156,7 +161,11 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
                 continue;
             }
             [seenIDs addObject:themeID];
-            [records addObject:@{ @"id": themeID, @"name": name, @"url": relativeURL }];
+            NSString *format = [candidate[@"format"] isKindOfClass:NSString.class] ? candidate[@"format"].lowercaseString : @"json";
+            if (![format isEqualToString:@"json"] && ![format isEqualToString:@"folder"]) {
+                format = @"json";
+            }
+            [records addObject:@{ @"id": themeID, @"name": name, @"url": relativeURL, @"format": format }];
         }
 
         NSDictionary *cachedCatalog = @{ @"themes": records };
@@ -225,6 +234,72 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     }] resume];
 }
 
+- (BOOL)isSafeFolderRelativePath:(NSString *)relativePath {
+    if (![relativePath isKindOfClass:NSString.class] || relativePath.length == 0 || relativePath.length > 180 || [relativePath hasPrefix:@"/"] || [relativePath containsString:@".."] || [relativePath containsString:@"://"] || [relativePath containsString:@"\\0"]) {
+        return NO;
+    }
+    NSArray<NSString *> *parts = [relativePath componentsSeparatedByString:@"/"];
+    for (NSString *part in parts) {
+        if (part.length == 0 || [part isEqualToString:@"."]) return NO;
+    }
+    return YES;
+}
+
+- (void)downloadFolderFile:(NSDictionary *)file remoteBasePath:(NSString *)remoteBasePath themeID:(NSString *)themeID fromCatalogURL:(NSURL *)catalogURL completion:(void (^)(BOOL success))completion {
+    NSString *relativePath = [file[@"path"] isKindOfClass:NSString.class] ? file[@"path"] : nil;
+    NSString *expectedSHA256 = [file[@"sha256"] isKindOfClass:NSString.class] ? file[@"sha256"] : nil;
+    NSURL *fileURL = [[catalogURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:remoteBasePath];
+    fileURL = [fileURL URLByAppendingPathComponent:relativePath];
+    if (![self isSafeFolderRelativePath:relativePath] || ![self isSafeFolderRelativePath:remoteBasePath] || ![self isValidSHA256:expectedSHA256] || ![fileURL.scheme.lowercaseString isEqualToString:@"https"] || ![fileURL.host isEqualToString:catalogURL.host]) {
+        completion(NO); return;
+    }
+    [[[NSURLSession sharedSession] dataTaskWithURL:fileURL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        BOOL valid = error == nil && [response isKindOfClass:NSHTTPURLResponse.class] && ((NSHTTPURLResponse *)response).statusCode == 200 && data.length > 0 && data.length <= (8 * 1024 * 1024) && [[self sha256ForData:data] isEqualToString:expectedSHA256.lowercaseString];
+        if (!valid) { completion(NO); return; }
+        NSURL *cacheURL = [self cachedAssetURLForThemeID:themeID assetID:relativePath];
+        NSError *directoryError = nil;
+        BOOL madeDirectory = [[NSFileManager defaultManager] createDirectoryAtURL:[cacheURL URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&directoryError];
+        NSError *writeError = nil;
+        BOOL wrote = madeDirectory && [data writeToURL:cacheURL options:NSDataWritingAtomic error:&writeError];
+        completion(wrote);
+    }] resume];
+}
+
+- (void)downloadFolderThemeRecord:(NSDictionary *)theme themeData:(NSData *)themeData themeID:(NSString *)themeID fromCatalogURL:(NSURL *)catalogURL completion:(void (^)(BOOL success))completion {
+    NSArray *files = [theme[@"files"] isKindOfClass:NSArray.class] ? theme[@"files"] : @[];
+    NSString *remoteBasePath = [theme[@"basePath"] isKindOfClass:NSString.class] ? theme[@"basePath"] : nil;
+    if (![self isSafeFolderRelativePath:remoteBasePath]) {
+        completion(NO);
+        return;
+    }
+    NSURL *themeAssetRoot = [self cachedAssetURLForThemeID:themeID assetID:@"."];
+    [[NSFileManager defaultManager] removeItemAtURL:themeAssetRoot error:nil];
+    dispatch_group_t group = dispatch_group_create();
+    __block BOOL allSucceeded = YES;
+    NSObject *lock = [[NSObject alloc] init];
+    for (NSDictionary *file in files) {
+        dispatch_group_enter(group);
+        [self downloadFolderFile:file remoteBasePath:remoteBasePath themeID:themeID fromCatalogURL:catalogURL completion:^(BOOL success) {
+            @synchronized (lock) { allSucceeded = allSucceeded && success; }
+            dispatch_group_leave(group);
+        }];
+    }
+    dispatch_group_notify(group, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+        BOOL success = NO; @synchronized (lock) { success = allSucceeded; }
+        if (!success) {
+            [[NSFileManager defaultManager] removeItemAtURL:themeAssetRoot error:nil];
+            completion(NO);
+            return;
+        }
+        NSURL *cacheURL = [self cachedThemeURLForID:themeID];
+        NSError *directoryError = nil;
+        BOOL madeDirectory = [[NSFileManager defaultManager] createDirectoryAtURL:[cacheURL URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&directoryError];
+        NSError *writeError = nil;
+        BOOL wroteTheme = madeDirectory && [themeData writeToURL:cacheURL options:NSDataWritingAtomic error:&writeError];
+        completion(wroteTheme);
+    });
+}
+
 - (void)downloadThemeRecord:(NSDictionary *)record fromCatalogURL:(NSURL *)catalogURL completion:(void (^)(BOOL success))completion {
     NSString *themeID = record[@"id"];
     NSString *relativeURL = record[@"url"];
@@ -236,11 +311,29 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
 
     [[[NSURLSession sharedSession] dataTaskWithURL:themeURL completionHandler:^(NSData *themeData, NSURLResponse *response, NSError *error) {
         BOOL validResponse = error == nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse *)response).statusCode == 200;
-        if (!validResponse || [self validatedThemeJSONStringFromData:themeData] == nil) {
+        if (!validResponse) {
             completion(NO);
             return;
         }
         NSDictionary *theme = [self JSONObjectFromData:themeData];
+        if ([record[@"format"] isEqualToString:@"folder"] || [theme[@"format"] isEqualToString:@"folder"]) {
+            NSArray *files = [theme[@"files"] isKindOfClass:NSArray.class] ? theme[@"files"] : @[];
+            if (files.count == 0 || files.count > 64 || ![theme[@"entry"] isEqualToString:@"LockBackground.html"]) {
+                completion(NO);
+                return;
+            }
+            BOOL hasEntry = NO;
+            for (NSDictionary *file in files) {
+                if ([file isKindOfClass:NSDictionary.class] && [file[@"path"] isEqualToString:@"LockBackground.html"]) { hasEntry = YES; break; }
+            }
+            if (!hasEntry) { completion(NO); return; }
+            [self downloadFolderThemeRecord:theme themeData:themeData themeID:themeID fromCatalogURL:catalogURL completion:completion];
+            return;
+        }
+        if ([self validatedThemeJSONStringFromData:themeData] == nil) {
+            completion(NO);
+            return;
+        }
         NSArray *assets = [theme[@"assets"] isKindOfClass:NSArray.class] ? theme[@"assets"] : @[];
         dispatch_group_t assetGroup = dispatch_group_create();
         __block BOOL allAssetsSucceeded = YES;
