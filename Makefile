@@ -12,7 +12,7 @@ SpecialLock_CFLAGS = -fobjc-arc
 SpecialLock_FRAMEWORKS = UIKit ImageIO
 
 BUNDLE_NAME = SpecialLockPrefs
-SpecialLockPrefs_FILES = LPHRootListController.m LPHThemePickerController.m LPHThemeManagerController.m LPHWallpaperPickerController.m LPThemeCatalog.m
+SpecialLockPrefs_FILES = LPHRootListController.m LPHThemePickerController.m LPHThemeManagerController.m LPHWallpaperPickerController.m LPHLockScreenChangerController.m LPThemeCatalog.m
 SpecialLockPrefs_CFLAGS = -fobjc-arc
 SpecialLockPrefs_FRAMEWORKS = UIKit Foundation ImageIO
 SpecialLockPrefs_PRIVATE_FRAMEWORKS = Preferences

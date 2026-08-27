@@ -7,6 +7,7 @@
 #import "LPHThemePickerController.h"
 #import "LPHThemeManagerController.h"
 #import "LPHWallpaperPickerController.h"
+#import "LPHLockScreenChangerController.h"
 
 static NSString * const kLPPreferencesDomain = @"com.example.speciallock";
 static NSString * const kLPPreferencesChanged = @"com.example.speciallock/preferences.changed";
@@ -43,18 +44,15 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/SpecialL
     [enabled setProperty:kLPPreferencesChanged forKey:@"PostNotification"];
     [specifiers addObject:enabled];
 
-    PSSpecifier *theme = [PSSpecifier preferenceSpecifierNamed:@"Theme"
-                                                        target:self
-                                                           set:nil
-                                                           get:nil
-                                                        detail:nil
-                                                          cell:PSButtonCell
-                                                          edit:nil];
-    [theme setProperty:kLPPreferencesDomain forKey:@"defaults"];
-    [theme setProperty:@"theme" forKey:@"key"];
-    [theme setProperty:@"aurora" forKey:@"default"];
-    theme.buttonAction = @selector(openThemePicker);
-    [specifiers addObject:theme];
+    PSSpecifier *changer = [PSSpecifier preferenceSpecifierNamed:@"Lock Screen Changer"
+                                                           target:self
+                                                              set:nil
+                                                              get:nil
+                                                           detail:nil
+                                                             cell:PSButtonCell
+                                                             edit:nil];
+    changer.buttonAction = @selector(openLockScreenChanger);
+    [specifiers addObject:changer];
 
     PSSpecifier *sync = [PSSpecifier preferenceSpecifierNamed:@"Theme Manager"
                                                        target:self
@@ -65,16 +63,6 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/SpecialL
                                                          edit:nil];
     sync.buttonAction = @selector(openThemeManager);
     [specifiers addObject:sync];
-
-    PSSpecifier *wallpapers = [PSSpecifier preferenceSpecifierNamed:@"Wallpaper Selector"
-                                                             target:self
-                                                                set:nil
-                                                                get:nil
-                                                             detail:nil
-                                                               cell:PSButtonCell
-                                                               edit:nil];
-    wallpapers.buttonAction = @selector(openWallpaperPicker);
-    [specifiers addObject:wallpapers];
 
     _specifiers = [specifiers copy];
     return _specifiers;
@@ -152,6 +140,10 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/SpecialL
                              (__bridge CFStringRef)kLPPreferencesDomain);
     CFPreferencesAppSynchronize((__bridge CFStringRef)kLPPreferencesDomain);
     notify_post(kLPPreferencesChanged.UTF8String);
+}
+
+- (void)openLockScreenChanger {
+    [self.navigationController pushViewController:[[LPHLockScreenChangerController alloc] initWithStyle:UITableViewStyleInsetGrouped] animated:YES];
 }
 
 - (void)openThemePicker {
