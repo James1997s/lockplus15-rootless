@@ -6,6 +6,7 @@
 #import <rootless.h>
 #import "LPHThemePickerController.h"
 #import "LPHThemeManagerController.h"
+#import "LPHWallpaperPickerController.h"
 
 static NSString * const kLPPreferencesDomain = @"com.example.speciallock";
 static NSString * const kLPPreferencesChanged = @"com.example.speciallock/preferences.changed";
@@ -64,6 +65,16 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/SpecialL
                                                          edit:nil];
     sync.buttonAction = @selector(openThemeManager);
     [specifiers addObject:sync];
+
+    PSSpecifier *wallpapers = [PSSpecifier preferenceSpecifierNamed:@"Wallpaper Selector"
+                                                             target:self
+                                                                set:nil
+                                                                get:nil
+                                                             detail:nil
+                                                               cell:PSButtonCell
+                                                               edit:nil];
+    wallpapers.buttonAction = @selector(openWallpaperPicker);
+    [specifiers addObject:wallpapers];
 
     _specifiers = [specifiers copy];
     return _specifiers;
@@ -165,6 +176,12 @@ static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/SpecialL
 - (void)openThemeManager {
     LPHThemeManagerController *manager = [[LPHThemeManagerController alloc] init];
     [self.navigationController pushViewController:manager animated:YES];
+}
+
+- (void)openWallpaperPicker {
+    NSString *selectedThemeID = [self readPreferenceValue:[self themeSpecifier]] ?: @"aurora-glass";
+    LPHWallpaperPickerController *picker = [[LPHWallpaperPickerController alloc] initWithThemeID:selectedThemeID];
+    [self.navigationController pushViewController:picker animated:YES];
 }
 
 @end

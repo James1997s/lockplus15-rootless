@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "wallpapers": [
+    {"id":"aurora-glass","name":"Aurora Glass","description":"Soft aurora gradients with frosted light","url":"../themes/folder-themes/aurora-glass/wallpaper.jpg"},
+    {"id":"ink-garden","name":"Ink Garden","description":"Quiet botanical ink wash","url":"../themes/folder-themes/ink-garden/wallpaper.jpg"},
+    {"id":"desert-sun","name":"Desert Sun","description":"Warm desert light and sandy horizons","url":"../themes/folder-themes/desert-sun/wallpaper.jpg"},
+    {"id":"ocean-night","name":"Ocean Night","description":"Deep blue ocean atmosphere","url":"../themes/folder-themes/ocean-night/wallpaper.jpg"},
+    {"id":"neon-architecture","name":"Neon Architecture","description":"Electric lines over modern geometry","url":"../themes/folder-themes/neon-architecture/wallpaper.jpg"},
+    {"id":"ios26-glass","name":"Glass Blue","description":"Cool blue glass panels and soft bloom","url":"../themes/folder-themes/ios26-big-clock/wallpaper.jpg"},
+    {"id":"oneui-paper","name":"Paper Bloom","description":"Minimal pale panels with a calm editorial tone","url":"../themes/folder-themes/oneui8-adaptive-clock/wallpaper.jpg"},
+    {"id":"whimsy-cat","name":"Whimsy Cat","description":"Playful illustrated cat background","url":"../themes/folder-themes/xen-cat-side-clock-folder/wallpaper.jpg"}
+  ]
+}
