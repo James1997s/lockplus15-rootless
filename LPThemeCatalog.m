@@ -161,7 +161,8 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
                 continue;
             }
             [seenIDs addObject:themeID];
-            NSString *format = [candidate[@"format"] isKindOfClass:NSString.class] ? candidate[@"format"].lowercaseString : @"json";
+            NSString *formatValue = [candidate[@"format"] isKindOfClass:NSString.class] ? (NSString *)candidate[@"format"] : @"json";
+            NSString *format = formatValue.lowercaseString;
             if (![format isEqualToString:@"json"] && ![format isEqualToString:@"folder"]) {
                 format = @"json";
             }

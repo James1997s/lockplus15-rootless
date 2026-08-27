@@ -979,7 +979,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 @implementation LPNativeThemeElement
 @end
 
-@interface LPNativeThemeRenderer ()
+@interface LPNativeThemeRenderer () <WKNavigationDelegate>
 @property (nonatomic, strong) NSMutableArray<LPNativeThemeElement *> *elements;
 @property (nonatomic, strong) NSMutableArray<LPECGTimeView *> *ecgTimeViews;
 @property (nonatomic, strong) NSMutableArray<LPBrushstrokeTimeView *> *brushstrokeTimeViews;
@@ -1030,9 +1030,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     configuration.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
     configuration.allowsInlineMediaPlayback = NO;
     configuration.suppressesIncrementalRendering = NO;
-    WKPreferences *preferences = [[WKPreferences alloc] init];
-    preferences.javaScriptEnabled = YES;
-    configuration.preferences = preferences;
+    configuration.defaultWebpagePreferences.allowsContentJavaScript = YES;
     WKWebView *webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:configuration];
     webView.navigationDelegate = self;
     webView.backgroundColor = UIColor.clearColor;
