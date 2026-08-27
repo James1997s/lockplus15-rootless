@@ -56,6 +56,13 @@
       "description": "Dark geometric prism lock screen with cyan and pink indicators, a compact word clock, and a live date header.",
       "format": "folder",
       "url": "geometric-twenty-four.json"
+    },
+    {
+      "id": "purple-anime-stack-clock",
+      "name": "Purple Anime Stack Clock",
+      "description": "Vivid purple stacked-outline clock with a vertical date rail and lower anime-inspired artwork; no music-player panel.",
+      "format": "folder",
+      "url": "purple-anime-stack-clock.json"
     }
   ]
 }
