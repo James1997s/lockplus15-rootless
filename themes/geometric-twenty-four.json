@@ -21,10 +21,6 @@
     {
       "path": "wallpaper.jpg",
       "sha256": "12bcd5762881097c9980c8079372fc1d57b5b1687a8bd51de59decdcd8cdb7f5"
-    },
-    {
-      "path": "wallpaper_clean.jpg.jpeg.png",
-      "sha256": "477b24c00e992adca93cf8af5d9486783877671adfca28e8645628ccdbb8d1b5"
     }
   ]
 }
