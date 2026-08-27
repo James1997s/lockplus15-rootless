@@ -136,7 +136,11 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
         return;
     }
 
-    [[[NSURLSession sharedSession] dataTaskWithURL:catalogURL completionHandler:^(NSData *catalogData, NSURLResponse *response, NSError *error) {
+    NSMutableURLRequest *catalogRequest = [NSMutableURLRequest requestWithURL:catalogURL];
+    catalogRequest.cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+    catalogRequest.HTTPMethod = @"GET";
+    [catalogRequest setValue:@"no-cache" forHTTPHeaderField:@"Cache-Control"];
+    [[[NSURLSession sharedSession] dataTaskWithRequest:catalogRequest completionHandler:^(NSData *catalogData, NSURLResponse *response, NSError *error) {
         if (error != nil || ![response isKindOfClass:[NSHTTPURLResponse class]] || ((NSHTTPURLResponse *)response).statusCode != 200) {
             finish(NO);
             return;
