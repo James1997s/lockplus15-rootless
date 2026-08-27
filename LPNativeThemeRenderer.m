@@ -986,6 +986,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 @property (nonatomic, strong) NSTimer *updateTimer;
 @property (nonatomic, strong) WKWebView *folderWebView;
 @property (nonatomic, copy) NSString *folderReadRoot;
+@property (nonatomic, assign) NSUInteger folderLoadGeneration;
 @end
 
 @implementation LPNativeThemeRenderer
@@ -1011,11 +1012,22 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 - (void)stopRendering {
     [self.updateTimer invalidate];
     self.updateTimer = nil;
+    self.folderLoadGeneration += 1;
     self.folderWebView.navigationDelegate = nil;
     [self.folderWebView stopLoading];
     [self.folderWebView removeFromSuperview];
     self.folderWebView = nil;
     self.folderReadRoot = nil;
+}
+
+- (void)clearNativeRenderedContent {
+    [self stopRendering];
+    for (UIView *view in [self.subviews copy]) {
+        [view removeFromSuperview];
+    }
+    [self.elements removeAllObjects];
+    [self.ecgTimeViews removeAllObjects];
+    [self.brushstrokeTimeViews removeAllObjects];
 }
 
 - (void)loadFolderThemeWithID:(NSString *)themeID {
@@ -1068,11 +1080,17 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 
 - (void)reloadCurrentFolderDocument {
     NSString *themeID = [self selectedThemeID];
-    if (themeID.length == 0 || self.folderWebView == nil) {
+    WKWebView *webView = self.folderWebView;
+    NSUInteger generation = self.folderLoadGeneration;
+    if (themeID.length == 0 || webView == nil) {
         return;
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self loadFolderThemeWithID:themeID];
+        // Ignore a delayed callback from a folder that has already been
+        // replaced by a JSON/native theme.
+        if (self.folderWebView == webView && self.folderLoadGeneration == generation) {
+            [self loadFolderThemeWithID:themeID];
+        }
     });
 }
 
@@ -1127,13 +1145,10 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         return;
     }
 
-    [self stopRendering];
-    for (UIView *view in self.subviews) {
-        [view removeFromSuperview];
-    }
-    [self.elements removeAllObjects];
-    [self.ecgTimeViews removeAllObjects];
-    [self.brushstrokeTimeViews removeAllObjects];
+    // JSON/native mode must never share the renderer’s folder WebView or any
+    // elements left by the previous mode. Clear the complete content set in a
+    // single main-thread transaction before adding native views.
+    [self clearNativeRenderedContent];
     NSDictionary *placedElements = [theme isKindOfClass:NSDictionary.class] ? theme[@"placedElements"] : nil;
     if (![placedElements isKindOfClass:NSDictionary.class] || placedElements.count == 0) {
         placedElements = @{
