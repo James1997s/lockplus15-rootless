@@ -72,7 +72,7 @@
       function applyProperties(element, properties) {
         Object.keys(properties).forEach(function (key) {
           var value = properties[key];
-          if (key === 'type' || key === 'innerHTML' || key === 'text-texture-asset-id' || key === 'cookie-glyph-atlas-asset-id' || key === 'cookie-letter-glyph-atlas-asset-id' || key === 'cookie-number-glyph-atlas-asset-id') {
+          if (key === 'type' || key === 'innerHTML' || key === 'font-file' || key === 'text-texture-asset-id' || key === 'cookie-glyph-atlas-asset-id' || key === 'cookie-letter-glyph-atlas-asset-id' || key === 'cookie-number-glyph-atlas-asset-id') {
             return;
           }
           if (key.indexOf('data-') === 0) {
@@ -83,6 +83,17 @@
             element.style.setProperty(key, value);
           } catch (ignore) {}
         });
+      }
+
+      function ensureThemeFont(properties) {
+        if (!properties || !properties['font-file'] || !properties['font-family']) return;
+        var family = String(properties['font-family']).split(',')[0].trim().replace(/["']/g, '');
+        var path = 'file:///var/jb/Library/SpecialLock/SpecialLock/' + String(properties['font-file']).replace(/^\/+/, '');
+        var styleID = 'lp-theme-font-' + family.replace(/[^a-z0-9_-]/gi, '-');
+        if (document.getElementById(styleID)) return;
+        var style = document.createElement('style'); style.id = styleID;
+        style.textContent = '@font-face{font-family:"' + family + '";src:url("' + path + '") format("truetype");font-weight:100 900;font-style:normal;font-display:block;}';
+        document.head.appendChild(style);
       }
 
       function render(theme) {
@@ -105,6 +116,7 @@
           element.className = 'lp-element lp-' + type;
           if (isWebGLGlobe) { element.id = 'lp-globe'; }
           element.setAttribute('data-lp-type', type);
+          ensureThemeFont(properties);
           applyProperties(element, properties);
           if (type === 'clock' && properties['cookie-glyph-atlas-asset-id']) {
             element.setAttribute('data-cookie-atlas', properties['cookie-glyph-atlas-asset-id']);
