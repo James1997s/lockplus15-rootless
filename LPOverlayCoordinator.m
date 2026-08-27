@@ -14,6 +14,29 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
                                          const void *object,
                                          CFDictionaryRef userInfo);
 
+static UIView *LPFullLockScreenHostForView(UIView *view) {
+    if (view == nil) {
+        return nil;
+    }
+
+    // The date view's immediate superview can be only the upper lock-screen
+    // content panel. Walk upward, but stop below UIWindow so the renderer does
+    // not cover passcode/alert presentation layers. Choose the largest host
+    // in the chain; this gives folder HTML a full lock-screen-sized canvas.
+    UIView *best = view;
+    CGFloat bestArea = MAX(0.0, view.bounds.size.width * view.bounds.size.height);
+    UIView *cursor = view;
+    while (cursor.superview != nil && ![cursor.superview isKindOfClass:UIWindow.class]) {
+        cursor = cursor.superview;
+        CGFloat area = MAX(0.0, cursor.bounds.size.width * cursor.bounds.size.height);
+        if (area >= bestArea) {
+            best = cursor;
+            bestArea = area;
+        }
+    }
+    return best;
+}
+
 @interface LPOverlayCoordinator ()
 @property (nonatomic, strong) UIView *hostView;
 @property (nonatomic, strong) UIView *stockDateView;
@@ -165,7 +188,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     if (!self.isEnabled && self.themeRenderer == nil) {
         return;
     }
-    UIView *currentHost = self.stockDateView.superview;
+    UIView *currentHost = LPFullLockScreenHostForView(self.stockDateView.superview);
     if (currentHost == nil) {
         return;
     }
@@ -186,6 +209,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 }
 
 - (void)attachToHostView:(UIView *)hostView {
+    hostView = LPFullLockScreenHostForView(hostView);
     if (hostView == nil || (!self.isEnabled && self.themeRenderer == nil)) {
         return;
     }
@@ -200,6 +224,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
             self.overlayView.frame = hostView.bounds;
             [hostView addSubview:self.overlayView];
         } else {
+            self.overlayView.frame = hostView.bounds;
             [hostView bringSubviewToFront:self.overlayView];
         }
         [self startHostMonitor];
