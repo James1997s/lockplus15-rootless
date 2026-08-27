@@ -45,7 +45,7 @@
       "transform": "translateX(-50%)",
       "width": "320px",
       "height": "16px",
-      "innerHTML": "VAN GOGH · DA VINCI · MONET · HOKUSAI",
+      "innerHTML": "VAN GOGH \u00b7 DA VINCI \u00b7 MONET \u00b7 HOKUSAI",
       "color": "#8A7565",
       "font-family": "HelveticaNeue-Medium",
       "font-size": "8px",
@@ -129,5 +129,8 @@
       "border-radius": "0px",
       "z-index": "20"
     }
-  }
+  },
+  "schemaVersion": 2,
+  "format": "native",
+  "id": "animated-art-gallery"
 }

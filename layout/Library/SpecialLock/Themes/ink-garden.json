@@ -1,30 +1,98 @@
 {
+  "schemaVersion": 2,
+  "format": "native",
   "id": "ink-garden",
-  "name": "Ink Garden",
-  "version": "1.0.0",
-  "format": "folder",
-  "basePath": "folder-themes/ink-garden",
-  "entry": "LockBackground.html",
-  "files": [
+  "assets": [
     {
-      "path": "CondLight.otf",
-      "sha256": "f77a6815a4b408da82a9329eb4c69a4f3b296796b9ef0f2d88e1d9ebd23ffadb"
-    },
-    {
-      "path": "LockBackground.html",
-      "sha256": "245a369b50de7ded55ce170c7278c7423f061d891e4094310dca581259c766cf"
-    },
-    {
-      "path": "script.js",
-      "sha256": "c017be8f7ead263995a0c27a7290cdc16946bbec509cda1465c85f8441916c74"
-    },
-    {
-      "path": "style.css",
-      "sha256": "dc66b9d2051fcd45a6eef4311186c1dcf434badca030b91f952530157efe8fc9"
-    },
-    {
-      "path": "wallpaper.jpg",
+      "id": "artwork",
+      "url": "folder-themes/ink-garden/wallpaper.jpg",
       "sha256": "32016458dc149f256f5c887067497222f5dd8da5d736ffe696de75175ac76b52"
     }
-  ]
+  ],
+  "placedElements": {
+    "background": {
+      "type": "wallpaper",
+      "gradient": "#151915,#36422C,#10120E"
+    },
+    "ambientLeft": {
+      "type": "particle",
+      "top": "126",
+      "x": "0.17",
+      "size": "15",
+      "opacity": "0.40",
+      "color": "#E8E1CB",
+      "motion": "drift",
+      "motion-distance": "26",
+      "motion-duration": "6"
+    },
+    "ambientRight": {
+      "type": "particle",
+      "top": "398",
+      "x": "0.83",
+      "size": "21",
+      "opacity": "0.33",
+      "color": "#E8E1CB",
+      "motion": "drift",
+      "motion-distance": "33",
+      "motion-duration": "8"
+    },
+    "title": {
+      "type": "text",
+      "top": "63",
+      "width": "330",
+      "height": "28",
+      "font-size": "13",
+      "font-weight": "700",
+      "letter-spacing": "2.2",
+      "color": "#E8E1CB",
+      "innerHTML": "INK GARDEN",
+      "animation": "glow",
+      "animation-duration": "4"
+    },
+    "clock": {
+      "type": "clock",
+      "top": "192",
+      "width": "340",
+      "height": "86",
+      "font-size": "70",
+      "font-weight": "700",
+      "letter-spacing": "-1",
+      "color": "#FFFFFF",
+      "text-shadow": "0 2 10 rgba(0,0,0,0.72)"
+    },
+    "date": {
+      "type": "date",
+      "top": "278",
+      "width": "330",
+      "height": "28",
+      "font-size": "14",
+      "font-weight": "600",
+      "letter-spacing": "1.4",
+      "color": "#FFFFFF",
+      "uppercase": "true",
+      "text-shadow": "0 1 6 rgba(0,0,0,0.75)"
+    },
+    "nativeBadge": {
+      "type": "panel",
+      "top": "712",
+      "width": "238",
+      "height": "38",
+      "font-size": "11",
+      "font-weight": "700",
+      "letter-spacing": "1.1",
+      "color": "#E8E1CB",
+      "background-color": "rgba(7,7,12,0.42)",
+      "border": "1 solid rgba(255,255,255,0.22)",
+      "border-radius": "18",
+      "innerHTML": "NATIVE \u00b7 LOCAL \u00b7 VISUAL ONLY"
+    },
+    "artwork": {
+      "type": "image",
+      "asset-id": "artwork",
+      "image-role": "wallpaper",
+      "opacity": "0.64",
+      "animation": "breathe",
+      "animation-duration": "8"
+    }
+  }
 }

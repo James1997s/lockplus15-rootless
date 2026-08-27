@@ -1,7 +1,6 @@
 #import "LPNativeThemeRenderer.h"
 #import <rootless.h>
 #import <ImageIO/ImageIO.h>
-#import <WebKit/WebKit.h>
 
 static NSString * const kLPThemePreferencesDomain = @"com.example.speciallock";
 
@@ -979,32 +978,15 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 @implementation LPNativeThemeElement
 @end
 
-@interface LPNativeThemeRenderer () <WKNavigationDelegate>
+@interface LPNativeThemeRenderer ()
 @property (nonatomic, strong) NSMutableArray<LPNativeThemeElement *> *elements;
 @property (nonatomic, strong) NSMutableArray<LPECGTimeView *> *ecgTimeViews;
 @property (nonatomic, strong) NSMutableArray<LPBrushstrokeTimeView *> *brushstrokeTimeViews;
 @property (nonatomic, strong) NSTimer *updateTimer;
-@property (nonatomic, strong) WKWebView *folderWebView;
-@property (nonatomic, copy) NSString *folderReadRoot;
-@property (nonatomic, assign) NSUInteger folderLoadGeneration;
 @property (nonatomic, assign) BOOL transitionSuspended;
 @end
 
 @implementation LPNativeThemeRenderer
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-
-    // Folder themes own the complete visual canvas. Reassert the WebView
-    // frame on every host reparent/layout pass because SpringBoard can change
-    // the date hierarchy bounds during lock/unlock without rebuilding us.
-    if (self.folderWebView != nil) {
-        self.folderWebView.frame = self.bounds;
-        self.folderWebView.hidden = self.transitionSuspended;
-        self.folderWebView.scrollView.contentInset = UIEdgeInsetsZero;
-        self.folderWebView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
-    }
-}
 
 - (instancetype)initWithThemeJSONString:(NSString *)themeJSONString {
     self = [super initWithFrame:CGRectZero];
@@ -1028,21 +1010,11 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 - (void)stopRendering {
     [self.updateTimer invalidate];
     self.updateTimer = nil;
-    self.folderLoadGeneration += 1;
-    self.folderWebView.navigationDelegate = nil;
-    [self.folderWebView stopLoading];
-    [self.folderWebView removeFromSuperview];
-    self.folderWebView = nil;
-    self.folderReadRoot = nil;
 }
 
 - (void)setTransitionSuspended:(BOOL)suspended {
     _transitionSuspended = suspended;
     self.hidden = suspended;
-    if (self.folderWebView != nil) {
-        self.folderWebView.hidden = suspended;
-        self.folderWebView.layer.speed = suspended ? 0.0 : 1.0;
-    }
     if (suspended) {
         [self.updateTimer invalidate];
         self.updateTimer = nil;
@@ -1057,92 +1029,6 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     [self.elements removeAllObjects];
     [self.ecgTimeViews removeAllObjects];
     [self.brushstrokeTimeViews removeAllObjects];
-}
-
-- (void)loadFolderThemeWithID:(NSString *)themeID {
-    if (themeID.length == 0) return;
-    NSString *relativeRoot = [@"/Library/SpecialLock/Themes/Folders" stringByAppendingPathComponent:themeID];
-    NSString *rootPath = ROOT_PATH_NS(relativeRoot);
-    NSString *entryPath = [rootPath stringByAppendingPathComponent:@"LockBackground.html"];
-    BOOL isDirectory = NO;
-    if (![[NSFileManager defaultManager] fileExistsAtPath:entryPath isDirectory:&isDirectory] || isDirectory) return;
-
-    // Update the security/read boundary before starting navigation. This lets
-    // one retained WebView move between complete XenHTML-style folders.
-    self.folderReadRoot = rootPath;
-    WKWebView *webView = self.folderWebView;
-    if (webView == nil) {
-        WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-        configuration.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
-        configuration.allowsInlineMediaPlayback = NO;
-        configuration.suppressesIncrementalRendering = NO;
-        configuration.defaultWebpagePreferences.allowsContentJavaScript = YES;
-        webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:configuration];
-        webView.navigationDelegate = self;
-        webView.backgroundColor = UIColor.clearColor;
-        webView.opaque = NO;
-        webView.clipsToBounds = NO;
-        webView.scrollView.scrollEnabled = NO;
-        webView.scrollView.bounces = NO;
-        webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        webView.scrollView.contentInset = UIEdgeInsetsZero;
-        webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
-        webView.userInteractionEnabled = NO;
-        webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [self addSubview:webView];
-        self.folderWebView = webView;
-    } else {
-        webView.navigationDelegate = self;
-    }
-
-    // A changing query is understood by WebKit as a new document URL and
-    // prevents a stale LockBackground.html response from being reused. The
-    // query does not alter relative CSS, JS, font, or wallpaper resolution.
-    NSURLComponents *components = [NSURLComponents componentsWithURL:[NSURL fileURLWithPath:entryPath]
-                                             resolvingAgainstBaseURL:NO];
-    components.query = [NSString stringWithFormat:@"sl_reload=%llu", (unsigned long long)(CFAbsoluteTimeGetCurrent() * 1000.0)];
-    [webView loadFileURL:components.URL allowingReadAccessToURL:[NSURL fileURLWithPath:rootPath isDirectory:YES]];
-}
-
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    NSURL *URL = navigationAction.request.URL;
-    NSString *root = self.folderReadRoot ?: @"";
-    BOOL local = URL.isFileURL && root.length > 0 && [URL.path hasPrefix:[root stringByAppendingString:@"/"]];
-    decisionHandler(local ? WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel);
-}
-
-- (void)reloadCurrentFolderDocument {
-    NSString *themeID = [self selectedThemeID];
-    WKWebView *webView = self.folderWebView;
-    NSUInteger generation = self.folderLoadGeneration;
-    if (themeID.length == 0 || webView == nil) {
-        return;
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Ignore a delayed callback from a folder that has already been
-        // replaced by a JSON/native theme.
-        if (self.folderWebView == webView && self.folderLoadGeneration == generation) {
-            [self loadFolderThemeWithID:themeID];
-        }
-    });
-}
-
-- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    if (webView == self.folderWebView) {
-        [self reloadCurrentFolderDocument];
-    }
-}
-
-- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    if (webView == self.folderWebView) {
-        [self reloadCurrentFolderDocument];
-    }
-}
-
-- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
-    if (webView == self.folderWebView) {
-        [self reloadCurrentFolderDocument];
-    }
 }
 
 - (NSString *)selectedThemeID {
@@ -1173,14 +1059,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 - (void)reloadWithThemeJSONString:(NSString *)themeJSONString {
     NSData *data = [themeJSONString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *theme = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
-    if ([theme isKindOfClass:NSDictionary.class] && [theme[@"format"] isEqualToString:@"folder"]) {
-        [self loadFolderThemeWithID:[self selectedThemeID]];
-        return;
-    }
-
-    // JSON/native mode must never share the renderer’s folder WebView or any
-    // elements left by the previous mode. Clear the complete content set in a
-    // single main-thread transaction before adding native views.
+    // Native scenes are rebuilt as one UIKit/Core Animation content set.
     [self clearNativeRenderedContent];
     NSDictionary *placedElements = [theme isKindOfClass:NSDictionary.class] ? theme[@"placedElements"] : nil;
     if (![placedElements isKindOfClass:NSDictionary.class] || placedElements.count == 0) {
@@ -1405,7 +1284,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         element.properties = properties;
         element.label = label;
         [self.elements addObject:element];
-        if ([type isEqualToString:@"text"] || [type isEqualToString:@"html"] || [type isEqualToString:@"panel"] || [type isEqualToString:@"widget"] || [type isEqualToString:@"overlay"]) {
+        if ([type isEqualToString:@"text"] || [type isEqualToString:@"panel"] || [type isEqualToString:@"widget"] || [type isEqualToString:@"overlay"]) {
             [self applyText:[properties[@"innerHTML"] isKindOfClass:NSString.class] ? properties[@"innerHTML"] : @"" toElement:element];
         }
     }

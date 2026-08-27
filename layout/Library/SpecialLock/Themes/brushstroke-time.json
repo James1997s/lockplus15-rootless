@@ -41,5 +41,8 @@
       "animation-duration": "18s",
       "z-index": "20"
     }
-  }
+  },
+  "schemaVersion": 2,
+  "format": "native",
+  "id": "brushstroke-time"
 }

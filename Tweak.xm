@@ -102,21 +102,13 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
 %end
 
 
-%hook SBPasscodeLockViewBase
-- (void)willMoveToWindow:(UIWindow *)newWindow {
-    if (newWindow != nil) {
-        [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:NO];
-    }
-    %orig(newWindow);
-}
-- (void)didMoveToWindow {
-    %orig;
-    if (self.window != nil) {
-        [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:NO];
-    }
-}
-%end
 %hook SBDashBoardViewController
+- (void)viewWillAppear:(BOOL)animated {
+    %orig(animated);
+    // Restore the visual-only renderer before the dashboard's appearance
+    // animation, not after a later unlock callback.
+    [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:YES];
+}
 - (void)viewWillDisappear:(BOOL)animated {
     [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:NO];
     %orig(animated);
@@ -124,6 +116,14 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
 - (void)viewDidAppear:(BOOL)animated {
     %orig(animated);
     [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:YES];
+}
+- (void)viewDidDisappear:(BOOL)animated {
+    %orig(animated);
+    // The overlay is already hidden synchronously in viewWillDisappear:. Free
+    // the retained HTML/native renderer only after the dashboard transition has
+    // completed so it cannot remain in the Home Screen hierarchy or consume
+    // rendering time during the unlock animation.
+    [[LPOverlayCoordinator sharedCoordinator] detachCurrentOverlay];
 }
 %end
 %ctor {

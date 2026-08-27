@@ -1,37 +1,111 @@
 {
+  "schemaVersion": 2,
+  "format": "native",
   "id": "oneui8-adaptive-clock",
-  "name": "One UI 8 Adaptive Clock",
-  "version": "1.0.2",
-  "format": "folder",
-  "basePath": "folder-themes/oneui8-adaptive-clock",
-  "entry": "LockBackground.html",
-  "files": [
+  "assets": [
     {
-      "path": "LockBackground.html",
-      "sha256": "f130e48e9cb7788dda4692538fc61c1f16c96bef3496a932cf9df08cfc77715c"
-    },
-    {
-      "path": "script.js",
-      "sha256": "608408374bc9e397978b3c4e70e904ea25b47b083c2b24a53c33b10cdf4f974f"
-    },
-    {
-      "path": "style.css",
-      "sha256": "59fbb4b912d8424b034e78b247c38aa7dfab236d2885c6f59d504010db04758a"
-    },
-    {
-      "path": "wallpaper.jpg",
+      "id": "artwork",
+      "url": "folder-themes/oneui8-adaptive-clock/wallpaper.jpg",
       "sha256": "e69d09ccec931634147e370582b8d5937fb3b8abafd866ac56eb269731fc8305"
     }
   ],
-  "typography": {
-    "fontStack": "\"Avenir Next\", sans-serif",
-    "clockWeight": "700",
-    "clockLetterSpacing": "-0.06em"
-  },
-  "clockComposition": {
-    "family": "dashboard",
-    "variant": 2
-  },
-  "staticUI": true,
-  "clockStyle": "terminal"
+  "placedElements": {
+    "background": {
+      "type": "wallpaper",
+      "gradient": "#121221,#34335F,#11101D"
+    },
+    "ambientLeft": {
+      "type": "particle",
+      "top": "126",
+      "x": "0.17",
+      "size": "15",
+      "opacity": "0.40",
+      "color": "#E7E2FF",
+      "motion": "drift",
+      "motion-distance": "26",
+      "motion-duration": "6"
+    },
+    "ambientRight": {
+      "type": "particle",
+      "top": "398",
+      "x": "0.83",
+      "size": "21",
+      "opacity": "0.33",
+      "color": "#E7E2FF",
+      "motion": "drift",
+      "motion-distance": "33",
+      "motion-duration": "8"
+    },
+    "title": {
+      "type": "text",
+      "top": "63",
+      "width": "330",
+      "height": "28",
+      "font-size": "13",
+      "font-weight": "700",
+      "letter-spacing": "2.2",
+      "color": "#E7E2FF",
+      "innerHTML": "ONE UI",
+      "animation": "glow",
+      "animation-duration": "4"
+    },
+    "clock": {
+      "type": "clock",
+      "top": "180",
+      "width": "340",
+      "height": "86",
+      "font-size": "70",
+      "font-weight": "700",
+      "letter-spacing": "-1",
+      "color": "#FFFFFF",
+      "text-shadow": "0 2 10 rgba(0,0,0,0.72)"
+    },
+    "date": {
+      "type": "date",
+      "top": "266",
+      "width": "330",
+      "height": "28",
+      "font-size": "14",
+      "font-weight": "600",
+      "letter-spacing": "1.4",
+      "color": "#FFFFFF",
+      "uppercase": "true",
+      "text-shadow": "0 1 6 rgba(0,0,0,0.75)"
+    },
+    "nativeBadge": {
+      "type": "panel",
+      "top": "712",
+      "width": "238",
+      "height": "38",
+      "font-size": "11",
+      "font-weight": "700",
+      "letter-spacing": "1.1",
+      "color": "#E7E2FF",
+      "background-color": "rgba(7,7,12,0.42)",
+      "border": "1 solid rgba(255,255,255,0.22)",
+      "border-radius": "18",
+      "innerHTML": "NATIVE \u00b7 LOCAL \u00b7 VISUAL ONLY"
+    },
+    "orbit": {
+      "type": "ring",
+      "top": "112",
+      "diameter": "248",
+      "stroke-width": "1.4",
+      "arc-start": "18",
+      "arc-length": "308",
+      "dash": "7 10",
+      "rotation-duration": "18",
+      "rotation-direction": "clockwise",
+      "opacity": "0.62",
+      "color": "#E7E2FF"
+    },
+    "artwork": {
+      "type": "image",
+      "asset-id": "artwork",
+      "image-role": "wallpaper",
+      "opacity": "0.64",
+      "animation": "breathe",
+      "animation-duration": "8"
+    }
+  }
 }

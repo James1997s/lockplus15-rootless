@@ -1,26 +1,111 @@
 {
+  "schemaVersion": 2,
+  "format": "native",
   "id": "geometric-twenty-four",
-  "name": "Geometric Twenty-Four",
-  "version": "1.0.0",
-  "format": "folder",
-  "basePath": "folder-themes/geometric-twenty-four",
-  "entry": "LockBackground.html",
-  "files": [
+  "assets": [
     {
-      "path": "LockBackground.html",
-      "sha256": "e4b94fa309a5101fc0812399529bb15a9e4090b81eb4e83cbacaef10be6aef65"
-    },
-    {
-      "path": "script.js",
-      "sha256": "fe1231f323497daf8569d1bab82d2110f3cd19006dae56d0a86a9fdf5d970bf1"
-    },
-    {
-      "path": "style.css",
-      "sha256": "353eace3fed6ff015fff76423a304317450c236f5743956f21cc1774187dea13"
-    },
-    {
-      "path": "wallpaper.jpg",
+      "id": "artwork",
+      "url": "folder-themes/geometric-twenty-four/wallpaper.jpg",
       "sha256": "12bcd5762881097c9980c8079372fc1d57b5b1687a8bd51de59decdcd8cdb7f5"
     }
-  ]
+  ],
+  "placedElements": {
+    "background": {
+      "type": "wallpaper",
+      "gradient": "#1B1B23,#45414D,#15151A"
+    },
+    "ambientLeft": {
+      "type": "particle",
+      "top": "126",
+      "x": "0.17",
+      "size": "15",
+      "opacity": "0.40",
+      "color": "#F9D86E",
+      "motion": "drift",
+      "motion-distance": "26",
+      "motion-duration": "6"
+    },
+    "ambientRight": {
+      "type": "particle",
+      "top": "398",
+      "x": "0.83",
+      "size": "21",
+      "opacity": "0.33",
+      "color": "#F9D86E",
+      "motion": "drift",
+      "motion-distance": "33",
+      "motion-duration": "8"
+    },
+    "title": {
+      "type": "text",
+      "top": "63",
+      "width": "330",
+      "height": "28",
+      "font-size": "13",
+      "font-weight": "700",
+      "letter-spacing": "2.2",
+      "color": "#F9D86E",
+      "innerHTML": "GEOMETRIC 24",
+      "animation": "glow",
+      "animation-duration": "4"
+    },
+    "clock": {
+      "type": "clock",
+      "top": "184",
+      "width": "340",
+      "height": "86",
+      "font-size": "70",
+      "font-weight": "700",
+      "letter-spacing": "-1",
+      "color": "#FFFFFF",
+      "text-shadow": "0 2 10 rgba(0,0,0,0.72)"
+    },
+    "date": {
+      "type": "date",
+      "top": "270",
+      "width": "330",
+      "height": "28",
+      "font-size": "14",
+      "font-weight": "600",
+      "letter-spacing": "1.4",
+      "color": "#FFFFFF",
+      "uppercase": "true",
+      "text-shadow": "0 1 6 rgba(0,0,0,0.75)"
+    },
+    "nativeBadge": {
+      "type": "panel",
+      "top": "712",
+      "width": "238",
+      "height": "38",
+      "font-size": "11",
+      "font-weight": "700",
+      "letter-spacing": "1.1",
+      "color": "#F9D86E",
+      "background-color": "rgba(7,7,12,0.42)",
+      "border": "1 solid rgba(255,255,255,0.22)",
+      "border-radius": "18",
+      "innerHTML": "NATIVE \u00b7 LOCAL \u00b7 VISUAL ONLY"
+    },
+    "orbit": {
+      "type": "ring",
+      "top": "112",
+      "diameter": "248",
+      "stroke-width": "1.4",
+      "arc-start": "18",
+      "arc-length": "308",
+      "dash": "7 10",
+      "rotation-duration": "18",
+      "rotation-direction": "clockwise",
+      "opacity": "0.62",
+      "color": "#F9D86E"
+    },
+    "artwork": {
+      "type": "image",
+      "asset-id": "artwork",
+      "image-role": "wallpaper",
+      "opacity": "0.64",
+      "animation": "breathe",
+      "animation-duration": "8"
+    }
+  }
 }

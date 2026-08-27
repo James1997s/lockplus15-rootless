@@ -6,112 +6,112 @@
       "id": "xen-cat-side-clock-folder",
       "name": "Whimsy Cat Folder Clock",
       "url": "xen-cat-side-clock-folder.json",
-      "format": "folder"
+      "format": "native"
     },
     {
       "id": "ios26-big-clock",
       "name": "iOS 26 Big Glass Clock",
       "url": "ios26-big-clock.json",
-      "format": "folder"
+      "format": "native"
     },
     {
       "id": "oneui8-adaptive-clock",
       "name": "One UI 8 Adaptive Clock",
       "url": "oneui8-adaptive-clock.json",
-      "format": "folder"
+      "format": "native"
     },
     {
       "id": "aurora-glass",
       "name": "Aurora Glass",
       "url": "aurora-glass.json",
-      "format": "folder"
+      "format": "native"
     },
     {
       "id": "ink-garden",
       "name": "Ink Garden",
       "url": "ink-garden.json",
-      "format": "folder"
+      "format": "native"
     },
     {
       "id": "desert-sun",
       "name": "Desert Sun",
       "url": "desert-sun.json",
-      "format": "folder"
+      "format": "native"
     },
     {
       "id": "ocean-night",
       "name": "Ocean Night",
       "url": "ocean-night.json",
-      "format": "folder"
+      "format": "native"
     },
     {
       "id": "neon-architecture",
       "name": "Neon Architecture",
       "url": "neon-architecture.json",
-      "format": "folder"
+      "format": "native"
     },
     {
       "id": "geometric-twenty-four",
       "name": "Geometric Twenty-Four",
       "description": "Dark geometric prism lock screen with cyan and pink indicators, a compact word clock, and a live date header.",
-      "format": "folder",
+      "format": "native",
       "url": "geometric-twenty-four.json"
     },
     {
       "id": "purple-anime-stack-clock",
       "name": "Purple Anime Stack Clock",
       "description": "Vivid purple stacked-outline clock with a vertical date rail and lower anime-inspired artwork; no music-player panel.",
-      "format": "folder",
-      "url": "folder-themes/purple-anime-stack-clock/purple-anime-stack-clock.json"
+      "format": "native",
+      "url": "purple-anime-stack-clock.json"
     },
     {
       "id": "animated-psychedelic-cat",
       "name": "Animated Psychedelic Cat",
       "description": "Animated geometric cat lock screen with live date and time; no notification, notch, or status-bar markup.",
-      "format": "folder",
-      "url": "folder-themes/animated-psychedelic-cat/animated-psychedelic-cat.json"
+      "format": "native",
+      "url": "animated-psychedelic-cat.json"
     },
     {
       "id": "stencil-revolt",
       "name": "Comic Graffiti Wall Clock",
       "description": "Monochrome comic-graffiti collage with a darkened wallpaper, one large Sour Gummy live clock, and a small live date; no notifications, notch, or status-bar overlay.",
-      "format": "folder",
-      "url": "folder-themes/stencil-revolt/stencil-revolt.json"
+      "format": "native",
+      "url": "stencil-revolt.json"
     },
     {
       "id": "silent-film-chaplin",
       "name": "The Silent Hour",
       "description": "Charlie Chaplin-inspired silent-film newspaper lock screen with the original monochrome street wallpaper, live time/date, Walsall weather label, and battery status.",
-      "format": "folder",
-      "url": "folder-themes/silent-film-chaplin/silent-film-chaplin.json"
+      "format": "native",
+      "url": "silent-film-chaplin.json"
     },
     {
       "id": "animated-art-gallery",
       "name": "Animated Art Gallery",
       "description": "White gilt-framed animated art gallery with an elegant bottom label.",
-      "format": "json",
+      "format": "native",
       "url": "animated-art-gallery.json"
     },
     {
       "id": "pulse-timeline",
       "name": "Pulse Timeline",
       "description": "A looping ECG trace that draws the live time without ordinary clock text.",
-      "format": "json",
+      "format": "native",
       "url": "pulse-timeline.json"
     },
     {
       "id": "brushstroke-time",
       "name": "Brushstroke Time",
       "description": "A realistic brush paints the live time, then a rotating small historical painting study.",
-      "format": "json",
+      "format": "native",
       "url": "brushstroke-time.json"
     },
     {
       "id": "html-test-lock",
-      "name": "HTML Test Lock",
-      "description": "A local CSS-only HTML test lock with no input, links, remote resources, or external navigation.",
-      "format": "folder",
-      "url": "folder-themes/html-test-lock/html-test-lock.json"
+      "name": "Native Test Lock",
+      "description": "A local UIKit/Core Animation test lock with no HTML, JavaScript, remote resources, or external navigation.",
+      "format": "native",
+      "url": "html-test-lock.json"
     }
   ]
 }

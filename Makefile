@@ -9,7 +9,7 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = SpecialLock
 SpecialLock_FILES = Tweak.xm LPOverlayCoordinator.m LPThemeCatalog.m LPNativeThemeRenderer.m
 SpecialLock_CFLAGS = -fobjc-arc
-SpecialLock_FRAMEWORKS = UIKit ImageIO WebKit
+SpecialLock_FRAMEWORKS = UIKit ImageIO
 
 BUNDLE_NAME = SpecialLockPrefs
 SpecialLockPrefs_FILES = LPHRootListController.m LPHThemePickerController.m LPHThemeManagerController.m LPThemeCatalog.m

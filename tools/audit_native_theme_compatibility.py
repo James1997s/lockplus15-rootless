@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1] / 'themes'
 CATALOG = ROOT / 'catalog.json'
-SUPPORTED_TYPES = {'clock', 'date', 'word-clock', 'text', 'html', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay', 'ecg-time', 'brushstroke-time'}
+SUPPORTED_TYPES = {'clock', 'date', 'word-clock', 'text', 'wallpaper', 'panel', 'blob', 'particle', 'ring', 'image', 'widget', 'overlay', 'ecg-time', 'brushstroke-time'}
 SUPPORTED_PROPERTIES = {
     'type', 'position', 'left', 'right', 'top', 'bottom', 'transform', 'transform-origin', 'text-align', 'font-file', 'color', 'font-family',
     'font-size', 'font-weight', 'letter-spacing', 'text-shadow', 'z-index',
@@ -24,7 +24,6 @@ REQUIRED_BY_TYPE = {
     'date': {'top', 'color', 'font-size'},
     'word-clock': {'top', 'color', 'font-size'},
     'text': {'top', 'color', 'font-size'},
-    'html': {'top', 'color', 'font-size', 'innerHTML'},
     'panel': {'top', 'background-color', 'innerHTML'},
     'wallpaper': {'gradient'},
     'blob': {'top', 'color', 'size', 'x'},
