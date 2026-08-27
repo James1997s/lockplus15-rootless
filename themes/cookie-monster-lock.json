@@ -1,7 +1,7 @@
 {
   "id": "cookie-monster-lock",
   "name": "Cookie Monster Cookie Time",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "assets": [
     {
       "id": "cookie-wallpaper",
@@ -46,14 +46,12 @@
       "width": "320px",
       "height": "24px",
       "time-format": "EEE, MMM d",
-      "color": "transparent",
-      "font-family": "HelveticaNeue-Medium",
+      "color": "#8A4B2A",
+      "font-family": "CookieCutout",
       "font-size": "17px",
-      "font-weight": "500",
+      "font-weight": "400",
       "text-shadow": "0px 1px 3px rgba(0,0,0,0.55)",
-      "z-index": "10",
-      "cookie-letter-glyph-atlas-asset-id": "cookie-letter-glyph-atlas",
-      "cookie-number-glyph-atlas-asset-id": "cookie-number-glyph-atlas"
+      "z-index": "10"
     },
     "clock": {
       "type": "clock",
@@ -64,14 +62,13 @@
       "width": "330px",
       "height": "88px",
       "time-format": "h:mm",
-      "color": "transparent",
-      "font-family": "CooperBlackMS,Cooper Black,HelveticaNeue-Bold,Arial,sans-serif",
+      "color": "#8A4B2A",
+      "font-family": "CookieCutout",
       "font-size": "76px",
-      "font-weight": "700",
+      "font-weight": "400",
       "letter-spacing": "1px",
       "text-shadow": "0px 1px 0px rgba(255,247,232,0.45)",
-      "z-index": "11",
-      "cookie-glyph-atlas-asset-id": "cookie-number-glyph-atlas"
+      "z-index": "11"
     },
     "caption": {
       "type": "text",
@@ -82,15 +79,13 @@
       "width": "300px",
       "height": "22px",
       "innerHTML": "COOKIE TIME",
-      "color": "transparent",
-      "font-family": "HelveticaNeue-Bold",
+      "color": "#8A4B2A",
+      "font-family": "CookieCutout",
       "font-size": "11px",
-      "font-weight": "700",
+      "font-weight": "400",
       "letter-spacing": "3px",
       "text-shadow": "0px 1px 3px rgba(0,0,0,0.55)",
-      "z-index": "10",
-      "cookie-letter-glyph-atlas-asset-id": "cookie-letter-glyph-atlas",
-      "cookie-number-glyph-atlas-asset-id": "cookie-number-glyph-atlas"
+      "z-index": "10"
     }
   }
 }
