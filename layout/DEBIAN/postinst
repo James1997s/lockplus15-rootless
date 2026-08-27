@@ -1,13 +1,11 @@
 #!/bin/sh
 set -e
 
-# SpecialLock is a clean GitHub-only theme client. On its first installation,
-# preserve the previously downloaded catalog and preferences from LockPlus 15
-# when available, but clear local theme JSON and image payloads so users choose
-# the remote theme they want to download.
+# SpecialLock is a clean GitHub-only theme client. Clear stale catalogs and
+# cached theme payloads on this migration so the current remote catalog is used.
 base="/var/jb/var/mobile/Library/SpecialLock"
 cache="$base/Themes"
-marker="$base/.github-theme-client-v1"
+marker="$base/.github-theme-client-v2"
 old_base="/var/jb/var/mobile/Library/LockPlus15"
 old_cache="$old_base/Themes"
 old_preferences="/var/jb/var/mobile/Library/Preferences/com.example.lockplus15.plist"
@@ -15,13 +13,10 @@ new_preferences="/var/jb/var/mobile/Library/Preferences/com.example.speciallock.
 
 if [ ! -e "$marker" ]; then
     mkdir -p "$cache"
-    if [ -f "$old_cache/catalog.json" ] && [ ! -f "$cache/catalog.json" ]; then
-        cp "$old_cache/catalog.json" "$cache/catalog.json"
-    fi
     if [ -f "$old_preferences" ] && [ ! -f "$new_preferences" ]; then
         cp "$old_preferences" "$new_preferences"
     fi
-    find "$cache" -maxdepth 1 -type f -name '*.json' ! -name 'catalog.json' -delete 2>/dev/null || true
+    find "$cache" -maxdepth 1 -type f -name '*.json' -delete 2>/dev/null || true
     rm -rf "$cache/Assets"
     : > "$marker"
     chown -R mobile:mobile "$base" 2>/dev/null || true
