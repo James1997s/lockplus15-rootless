@@ -1,7 +1,7 @@
 {
   "id": "oneui8-adaptive-clock",
-  "name": "iOS 26 Big Glass Clock",
-  "version": "1.0.0",
+  "name": "One UI 8 Adaptive Clock",
+  "version": "1.0.2",
   "format": "folder",
   "basePath": "folder-themes/oneui8-adaptive-clock",
   "entry": "LockBackground.html",
@@ -20,7 +20,7 @@
     },
     {
       "path": "style.css",
-      "sha256": "9eb533f34fffd9bd1fb16ead9b0d642e2119411567738f188db4aeb8188a6b83"
+      "sha256": "d7c0715b3903332afaf466b179d699aee59973b8b8f5a385640cc80590252ade"
     },
     {
       "path": "wallpaper.jpg",
