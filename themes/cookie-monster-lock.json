@@ -1,7 +1,7 @@
 {
   "id": "cookie-monster-lock",
   "name": "Cookie Monster Cookie Time",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "assets": [
     {
       "id": "cookie-wallpaper",
@@ -22,6 +22,11 @@
       "id": "cookie-number-glyph-atlas",
       "url": "assets/cookie-monster/cookie-number-glyph-atlas.png",
       "sha256": "c9ace4e793733aded052e29d81b27d46f4633958d5ce0b5b88c40406e6d42e2b"
+    },
+    {
+      "id": "cookie-letter-glyph-atlas",
+      "url": "assets/cookie-monster/cookie-letter-glyph-atlas.png",
+      "sha256": "460bbea08aa73dd269947122a61d1c45f708570a5ba9a1e112c2da013400bc31"
     }
   ],
   "placedElements": {
@@ -51,7 +56,9 @@
       "font-size": "17px",
       "font-weight": "500",
       "text-shadow": "0px 1px 3px rgba(0,0,0,0.55)",
-      "z-index": "10"
+      "z-index": "10",
+      "cookie-letter-glyph-atlas-asset-id": "cookie-letter-glyph-atlas",
+      "cookie-number-glyph-atlas-asset-id": "cookie-number-glyph-atlas"
     },
     "clock": {
       "type": "clock",
@@ -86,7 +93,9 @@
       "font-weight": "700",
       "letter-spacing": "3px",
       "text-shadow": "0px 1px 3px rgba(0,0,0,0.55)",
-      "z-index": "10"
+      "z-index": "10",
+      "cookie-letter-glyph-atlas-asset-id": "cookie-letter-glyph-atlas",
+      "cookie-number-glyph-atlas-asset-id": "cookie-number-glyph-atlas"
     },
     "googlyEyes": {
       "type": "image",

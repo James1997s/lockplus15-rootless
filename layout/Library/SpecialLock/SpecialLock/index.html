@@ -65,7 +65,7 @@
       function applyProperties(element, properties) {
         Object.keys(properties).forEach(function (key) {
           var value = properties[key];
-          if (key === 'type' || key === 'innerHTML' || key === 'text-texture-asset-id' || key === 'cookie-glyph-atlas-asset-id') {
+          if (key === 'type' || key === 'innerHTML' || key === 'text-texture-asset-id' || key === 'cookie-glyph-atlas-asset-id' || key === 'cookie-letter-glyph-atlas-asset-id' || key === 'cookie-number-glyph-atlas-asset-id') {
             return;
           }
           if (key.indexOf('data-') === 0) {
@@ -101,6 +101,10 @@
           applyProperties(element, properties);
           if (type === 'clock' && properties['cookie-glyph-atlas-asset-id']) {
             element.setAttribute('data-cookie-atlas', properties['cookie-glyph-atlas-asset-id']);
+          }
+          if ((type === 'date' || type === 'text') && properties['cookie-letter-glyph-atlas-asset-id']) {
+            element.setAttribute('data-cookie-letter-atlas', properties['cookie-letter-glyph-atlas-asset-id']);
+            element.setAttribute('data-cookie-number-atlas', properties['cookie-number-glyph-atlas-id'] || properties['cookie-number-glyph-atlas-asset-id'] || '');
           }
           if ((type === 'clock' || type === 'date' || type === 'text') && properties['text-texture-asset-id'] && currentTheme && currentTheme.id) {
             var texturePath = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/' + encodeURIComponent(properties['text-texture-asset-id']);
@@ -158,6 +162,24 @@
         return true;
       }
 
+      function renderCookieCutoutText(element, value) {
+        var letterID = element.getAttribute('data-cookie-letter-atlas');
+        var numberID = element.getAttribute('data-cookie-number-atlas');
+        if (!letterID || !currentTheme || !currentTheme.id) return false;
+        var base = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/';
+        var letterPath = base + encodeURIComponent(letterID);
+        var numberPath = base + encodeURIComponent(numberID);
+        var small = element.getAttribute('data-lp-type') === 'text';
+        element.textContent = '';
+        element.style.fontSize = '0px'; element.style.display = 'flex'; element.style.alignItems = 'center'; element.style.justifyContent = 'center'; element.style.gap = small ? '1px' : '2px';
+        String(value).split('').forEach(function (ch) {
+          var span = document.createElement('span'); span.style.display = 'inline-block'; span.style.height = small ? '18px' : '22px'; span.style.width = small ? '12px' : '15px';
+          if (ch === ' ') { span.style.width = small ? '7px' : '8px'; }
+          else { var li = 'abcdefghijklmnopqrstuvwxyz'.indexOf(ch.toLowerCase()); var ni = '0123456789:'.indexOf(ch); if (li >= 0) { span.style.backgroundImage = 'url("' + letterPath + '")'; span.style.backgroundSize = '2600% 100%'; span.style.backgroundPosition = ((li / 25) * 100) + '% center'; } else if (ni >= 0 && numberID) { span.style.backgroundImage = 'url("' + numberPath + '")'; span.style.backgroundSize = '1100% 100%'; span.style.backgroundPosition = ((ni / 10) * 100) + '% center'; } else { span.textContent = ch; span.style.color = '#7A4322'; span.style.fontSize = small ? '12px' : '16px'; } }
+          element.appendChild(span);
+        }); return true;
+      }
+
       function updateDynamicValues() {
         var now = new Date();
         var elements = root.querySelectorAll('[data-lp-type]');
@@ -171,7 +193,8 @@
               element.textContent = timeString(now);
             }
           } else if (type === 'date') {
-            element.textContent = dateString(now, element.id);
+            if (element.getAttribute('data-cookie-letter-atlas')) renderCookieCutoutText(element, dateString(now, element.id));
+            else element.textContent = dateString(now, element.id);
           } else if (type === 'battery') {
             var level = (window.LockPlus15 && window.LockPlus15.batteryLevel);
             element.textContent = (typeof level === 'number' ? Math.round(level * 100) : '--') + '%';
