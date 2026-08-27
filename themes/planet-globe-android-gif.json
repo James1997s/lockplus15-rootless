@@ -6,7 +6,7 @@
     {
       "id": "rotating-globe",
       "url": "assets/planet-globe/rotating-globe-v1.gif",
-      "sha256": "ff36ce1f9852c99b13ef567a2228867d513646f79385cd4b9d578030b8842484"
+      "sha256": "6067f27f14ede7762351be56c3ff826539558e5a601dfad8808dc116dc28d039"
     }
   ],
   "placedElements": {
@@ -53,18 +53,6 @@
       "font-weight": "400",
       "letter-spacing": "1.5px",
       "text-shadow": "0px 2px 5px rgba(0,0,0,0.5)",
-      "z-index": "10"
-    },
-    "glass": {
-      "type": "panel",
-      "position": "absolute",
-      "left": "50%",
-      "top": "276px",
-      "transform": "translateX(-50%)",
-      "width": "250px",
-      "height": "1px",
-      "background-color": "rgba(255,255,255,0.5)",
-      "innerHTML": "",
       "z-index": "10"
     }
   }
