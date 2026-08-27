@@ -10,7 +10,7 @@ static NSString * const kLPDefaultThemeID = @"aurora";
 static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 static NSUInteger const kLPMaximumCatalogThemes = 64;
 // The public repository is the only trusted remote theme catalog.
-static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.com/James1997s/lockplus15-rootless/main/themes/catalog.json";
+static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.com/James1997s/lockplus15-rootless/38f15343a75fb0603ff172fd8846dfa5cf61cb96/themes/catalog.json";
 
 @implementation LPThemeCatalog
 
