@@ -16,7 +16,12 @@
     },
     {
       "path": "style.css",
-      "sha256": "5a8fefe7315dd606f0fac9805bb9d7d2f462eee621b15ffcdd964db7a5bed81f"
+      "sha256": "4807214991e0d39ecb5385d7fe042f7a535d88f9daadbb06cc1cbf84579a6047"
     }
-  ]
+  ],
+  "typography": {
+    "fontStack": "GillSans, sans-serif",
+    "clockWeight": "700",
+    "clockLetterSpacing": "-0.06em"
+  }
 }

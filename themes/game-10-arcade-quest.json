@@ -16,7 +16,12 @@
     },
     {
       "path": "style.css",
-      "sha256": "5a8fefe7315dd606f0fac9805bb9d7d2f462eee621b15ffcdd964db7a5bed81f"
+      "sha256": "7103f6dd85940c7b1ce10116856bc2f25d101d19fbee9924e9bf64a972beb948"
     }
-  ]
+  ],
+  "typography": {
+    "fontStack": "Copperplate, serif",
+    "clockWeight": "700",
+    "clockLetterSpacing": "-0.01em"
+  }
 }

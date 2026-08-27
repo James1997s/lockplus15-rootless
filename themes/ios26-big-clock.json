@@ -11,16 +11,17 @@
       "sha256": "07fe4e3cecede69476d94bbacefc24407e2cb557f1a23da820dcaa09871a6ab2"
     },
     {
-      "path": "iOS26Clock.ttf",
-      "sha256": "b0da7d93f61deb360ac07fba2327ba765ba8d5c93643473b8d1fe7652ff27121"
-    },
-    {
       "path": "script.js",
       "sha256": "de7080786b8599615af871341370feacea943ca6e1e9b2c1c632fdbafc72977d"
     },
     {
       "path": "style.css",
-      "sha256": "a408ba4a8e2dc3402a08389d6d17d89abb87a5d7ae0907d7b1a870eec9da0b35"
+      "sha256": "366a02b8a124c5b66c1b71e537f36fa5488e9cdb5574e8f26a75b506bda99f32"
     }
-  ]
+  ],
+  "typography": {
+    "fontStack": "\"Hiragino Mincho ProN\", serif",
+    "clockWeight": "500",
+    "clockLetterSpacing": "-0.04em"
+  }
 }

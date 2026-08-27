@@ -16,7 +16,12 @@
     },
     {
       "path": "style.css",
-      "sha256": "5a8fefe7315dd606f0fac9805bb9d7d2f462eee621b15ffcdd964db7a5bed81f"
+      "sha256": "2b3179094e2ce57764943506e4f3f581ac18f1deee225702d3858b30a0f59f5f"
     }
-  ]
+  ],
+  "typography": {
+    "fontStack": "Baskerville, serif",
+    "clockWeight": "600",
+    "clockLetterSpacing": "-0.03em"
+  }
 }

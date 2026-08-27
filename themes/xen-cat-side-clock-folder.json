@@ -16,11 +16,12 @@
     },
     {
       "path": "style.css",
-      "sha256": "adcaae9339d5189fd1e395923b8108d29dd2a06405b6aaab278e2a7feddfcec5"
-    },
-    {
-      "path": "wallpaper.gif",
-      "sha256": "54ed4731b59c52fd562c8eef03ebca91d73c23de2075602f947936063c1d8d97"
+      "sha256": "e4c192f53e9a2a21007131d191c33e025fddc6d285c1fe4269cb5aa7ebf9675a"
     }
-  ]
+  ],
+  "typography": {
+    "fontStack": "\"Hiragino Kaku Gothic ProN\", sans-serif",
+    "clockWeight": "800",
+    "clockLetterSpacing": "-0.08em"
+  }
 }

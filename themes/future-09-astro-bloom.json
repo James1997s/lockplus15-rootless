@@ -8,15 +8,20 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "f299759833b9d686be80cabd320645a379bf8b8e80eb2ffdecd39d2ce309e313"
+      "sha256": "664bfaeae10817c2996199bc706f86129e30ab34dc5a8569129e21b52ab84fd6"
     },
     {
       "path": "script.js",
-      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+      "sha256": "9e098eb95539bcc27ab211d5cce875ff1dcf19e84933db4dab485c2cb1503767"
     },
     {
       "path": "style.css",
-      "sha256": "9773e000b0da732ad13587e4dc411837f4c64c88f2a1e951b44c7e9357981349"
+      "sha256": "4400c4a957a0d8e23471266f149f435ec51cfb5eb0856ea84cc1a56633ee87fd"
     }
-  ]
+  ],
+  "typography": {
+    "fontStack": "Futura, sans-serif",
+    "clockWeight": "500",
+    "clockLetterSpacing": "-0.07em"
+  }
 }

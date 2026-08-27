@@ -16,7 +16,12 @@
     },
     {
       "path": "style.css",
-      "sha256": "5a8fefe7315dd606f0fac9805bb9d7d2f462eee621b15ffcdd964db7a5bed81f"
+      "sha256": "4739cb967243c5bef8cc1db5eb5ff10e12efe2f6a1cc8256d188217eecba3fac"
     }
-  ]
+  ],
+  "typography": {
+    "fontStack": "\"Trebuchet MS\", sans-serif",
+    "clockWeight": "700",
+    "clockLetterSpacing": "-0.05em"
+  }
 }

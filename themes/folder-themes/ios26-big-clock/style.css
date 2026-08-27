@@ -30,3 +30,6 @@ body::before {
 
 .swipe-bar { position: absolute; bottom: 21px; left: 50%; width: 135px; height: 4px; border-radius: 8px; background: rgba(255,255,255,.84); transform: translateX(-50%); box-shadow: 0 0 12px rgba(255,255,255,.35); }
 @media (max-height: 600px) { .clock-wrap { margin-top: 20px; height: 380px; } .clock { font-size: 175px; } }
+
+/* unique typography: ios26-big-clock */
+.clock{font-family:var(--theme-font);font-weight:var(--clock-weight);letter-spacing:var(--clock-spacing);font-size:clamp(42px,15vw,var(--clock-size));}.word{font-family:var(--theme-font);letter-spacing:var(--date-spacing);}.date{font-family:var(--theme-font);letter-spacing:var(--date-spacing);}

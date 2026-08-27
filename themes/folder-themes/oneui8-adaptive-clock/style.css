@@ -9,3 +9,6 @@ body::after { content: ""; position: absolute; inset: 0; pointer-events: none; b
 .clock span { position: absolute; left: 50%; display: block; min-width: 1.8em; text-align: center; transform: translateX(-50%); }
 .clock .hour { top: 23vh; }
 .clock .minute { top: 48vh; }
+
+/* unique typography: oneui8-adaptive-clock */
+.clock{font-family:var(--theme-font);font-weight:var(--clock-weight);letter-spacing:var(--clock-spacing);font-size:clamp(42px,15vw,var(--clock-size));}.word{font-family:var(--theme-font);letter-spacing:var(--date-spacing);}.date{font-family:var(--theme-font);letter-spacing:var(--date-spacing);}

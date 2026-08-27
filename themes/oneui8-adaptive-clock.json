@@ -11,20 +11,21 @@
       "sha256": "831d994f56270da25005d1c74dfcb36a4d87265757488dbf774408f121c1fed7"
     },
     {
-      "path": "OneUI8Clock.otf",
-      "sha256": "6bcf26030c245d9b0ebd0e5b20e85494669d21f8d7b41b714e4ebca459f1f322"
-    },
-    {
       "path": "script.js",
       "sha256": "608408374bc9e397978b3c4e70e904ea25b47b083c2b24a53c33b10cdf4f974f"
     },
     {
       "path": "style.css",
-      "sha256": "d7c0715b3903332afaf466b179d699aee59973b8b8f5a385640cc80590252ade"
+      "sha256": "19bbbf9655c1e6848439dc302c569e8e752cbff96271e15b015f9cc55d8ee0a9"
     },
     {
       "path": "wallpaper.jpg",
       "sha256": "e69d09ccec931634147e370582b8d5937fb3b8abafd866ac56eb269731fc8305"
     }
-  ]
+  ],
+  "typography": {
+    "fontStack": "\"Avenir Next\", sans-serif",
+    "clockWeight": "700",
+    "clockLetterSpacing": "-0.06em"
+  }
 }
