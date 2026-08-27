@@ -2,6 +2,7 @@
 
 #import <notify.h>
 #import <rootless.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "LPThemeCatalog.h"
 
@@ -10,6 +11,80 @@ static NSString * const kLPPreferencesChanged = @"com.example.speciallock/prefer
 static NSString * const kLPThemeDirectory = @"/Library/SpecialLock/Themes";
 static NSString * const kLPCachedThemeDirectory = @"/var/mobile/Library/SpecialLock/Themes";
 static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
+
+
+@interface LPThemeVisualCardCell : UITableViewCell
+@property (nonatomic, strong) UIImageView *previewImageView;
+@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UILabel *descriptionLabel;
+@property (nonatomic, strong) UILabel *statusLabel;
+@property (nonatomic, strong) UILabel *badgeLabel;
+@end
+
+@implementation LPThemeVisualCardCell
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
+    if (self) {
+        self.backgroundColor = UIColor.clearColor;
+        self.contentView.backgroundColor = UIColor.secondarySystemGroupedBackgroundColor;
+        self.contentView.layer.cornerRadius = 16.0;
+        self.contentView.layer.masksToBounds = YES;
+        self.selectionStyle = UITableViewCellSelectionStyleGray;
+
+        _previewImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+        _previewImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _previewImageView.clipsToBounds = YES;
+        _previewImageView.layer.cornerRadius = 12.0;
+        [self.contentView addSubview:_previewImageView];
+
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        _titleLabel.font = [UIFont systemFontOfSize:17.0 weight:UIFontWeightSemibold];
+        _titleLabel.textColor = UIColor.labelColor;
+        _titleLabel.numberOfLines = 2;
+        [self.contentView addSubview:_titleLabel];
+
+        _descriptionLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        _descriptionLabel.font = [UIFont systemFontOfSize:12.0 weight:UIFontWeightRegular];
+        _descriptionLabel.textColor = UIColor.secondaryLabelColor;
+        _descriptionLabel.numberOfLines = 2;
+        [self.contentView addSubview:_descriptionLabel];
+
+        _statusLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        _statusLabel.font = [UIFont systemFontOfSize:12.0 weight:UIFontWeightMedium];
+        _statusLabel.textColor = UIColor.secondaryLabelColor;
+        _statusLabel.numberOfLines = 2;
+        [self.contentView addSubview:_statusLabel];
+
+        _badgeLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        _badgeLabel.font = [UIFont systemFontOfSize:11.0 weight:UIFontWeightBold];
+        _badgeLabel.textAlignment = NSTextAlignmentCenter;
+        _badgeLabel.layer.cornerRadius = 8.0;
+        _badgeLabel.layer.masksToBounds = YES;
+        [self.contentView addSubview:_badgeLabel];
+    }
+    return self;
+}
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    CGFloat h = self.contentView.bounds.size.height;
+    self.previewImageView.frame = CGRectMake(10.0, 10.0, 78.0, MAX(1.0, h - 20.0));
+    CGFloat left = CGRectGetMaxX(self.previewImageView.frame) + 13.0;
+    CGFloat right = self.contentView.bounds.size.width - 14.0;
+    self.badgeLabel.frame = CGRectMake(MAX(left, right - 76.0), 12.0, MIN(76.0, right - left), 22.0);
+    self.titleLabel.frame = CGRectMake(left, 10.0, MAX(1.0, CGRectGetMinX(self.badgeLabel.frame) - left - 8.0), 34.0);
+    self.descriptionLabel.frame = CGRectMake(left, 44.0, MAX(1.0, right - left), 30.0);
+    self.statusLabel.frame = CGRectMake(left, 76.0, MAX(1.0, right - left), MAX(1.0, h - 82.0));
+}
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    self.previewImageView.image = nil;
+    self.previewImageView.backgroundColor = UIColor.tertiarySystemFillColor;
+    self.descriptionLabel.text = nil;
+    self.titleLabel.text = nil;
+    self.statusLabel.text = nil;
+    self.badgeLabel.text = nil;
+}
+@end
 
 @interface LPHThemeManagerController ()
 @property (nonatomic, copy) NSArray<NSDictionary *> *themeRecords;
@@ -29,7 +104,9 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Theme Manager";
-    self.tableView.rowHeight = 54.0;
+    self.tableView.rowHeight = 108.0;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
     self.tableView.refreshControl = [[UIRefreshControl alloc] init];
     [self.tableView.refreshControl addTarget:self action:@selector(refreshThemes) forControlEvents:UIControlEventValueChanged];
 
@@ -195,26 +272,62 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     return @"Available Themes";
 }
 
+- (UIImage *)previewImageForThemeID:(NSString *)themeID {
+    if (themeID.length == 0) return nil;
+    NSString *path = ROOT_PATH_NS([[@"/var/mobile/Library/SpecialLock/Themes/Assets" stringByAppendingPathComponent:themeID] stringByAppendingPathComponent:@"wallpaper.jpg"]);
+    UIImage *image = [UIImage imageWithContentsOfFile:path];
+    if (image == nil) {
+        path = ROOT_PATH_NS([[@"/Library/SpecialLock/Themes/Assets" stringByAppendingPathComponent:themeID] stringByAppendingPathComponent:@"wallpaper.jpg"]);
+        image = [UIImage imageWithContentsOfFile:path];
+    }
+    return image;
+}
+
+- (UIColor *)previewFallbackColorForThemeID:(NSString *)themeID {
+    NSUInteger hash = themeID.hash;
+    CGFloat hue = (CGFloat)(hash % 360) / 360.0;
+    return [UIColor colorWithHue:hue saturation:0.48 brightness:0.42 alpha:1.0];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString * const reuseIdentifier = @"ThemeCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+    static NSString * const reuseIdentifier = @"ThemeVisualCard";
+    LPThemeVisualCardCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell = [[LPThemeVisualCardCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
     }
     NSDictionary *record = self.themeRecords[indexPath.row];
+    NSString *themeID = [record[@"id"] isKindOfClass:NSString.class] ? record[@"id"] : @"";
     NSString *selectedThemeID = [self selectedThemeID];
-    cell.textLabel.text = record[@"name"];
-    if ([record[@"id"] isEqualToString:selectedThemeID]) {
-        cell.detailTextLabel.text = @"Selected";
-    } else if ([record[@"cached"] boolValue]) {
-        cell.detailTextLabel.text = @"Downloaded • Tap to apply • Swipe to delete";
-    } else if (self.hasCachedCatalog) {
-        cell.detailTextLabel.text = @"Available on GitHub • Tap to download";
-    } else {
-        cell.detailTextLabel.text = @"Bundled fallback • Tap to apply";
-    }
-    cell.accessoryType = [record[@"id"] isEqualToString:selectedThemeID] ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    BOOL selected = [themeID isEqualToString:selectedThemeID];
+    BOOL cached = [record[@"cached"] boolValue];
+    UIImage *preview = [self previewImageForThemeID:themeID];
+    cell.previewImageView.image = preview;
+    cell.previewImageView.backgroundColor = preview ? UIColor.clearColor : [self previewFallbackColorForThemeID:themeID];
+    NSDictionary<NSString *, NSString *> *descriptions = @{
+        @"white-word-wheel": @"Minimal white word-based time display.",
+        @"framed-parking": @"Framed motion lock with a clean editorial layout.",
+        @"move-the-image": @"Animated artwork with a shifting visual composition.",
+        @"animated-art-gallery": @"Gallery-inspired animated artwork lock screen.",
+        @"pulse-timeline": @"Modern timeline layout with a subtle pulse animation.",
+        @"brushstroke-time": @"Painterly brush textures with an expressive time layout.",
+        @"planet-globe-animated-gif": @"Rotating planet lock screen with an atmospheric space look.",
+        @"cookie-monster-lock": @"Playful cookie-texture theme with a colorful character backdrop.",
+        @"cat-hat-side-clock": @"Whimsical side-positioned clock inspired by a storybook cat.",
+        @"xen-cat-side-clock-folder": @"Full folder theme with a whimsical side clock and local assets.",
+        @"ios26-big-clock": @"Large glass-style clock arranged across the lock-screen panels.",
+        @"oneui8-adaptive-clock": @"Adaptive rounded clock inspired by modern One UI styling.",
+        @"aurora-glass": @"Soft aurora gradients, translucent styling, and custom typography.",
+        @"ink-garden": @"Ink-wash botanical artwork with a calm editorial mood.",
+        @"desert-sun": @"Warm desert palette with spacious, sunlit typography.",
+        @"ocean-night": @"Deep ocean blues with a quiet nighttime atmosphere.",
+        @"neon-architecture": @"Electric architectural geometry with a futuristic night palette."
+    };
+    cell.titleLabel.text = record[@"name"];
+    cell.descriptionLabel.text = descriptions[themeID] ?: @"A custom SpecialLock theme with local visual assets.";
+    cell.statusLabel.text = selected ? @"Currently applied • Tap to reapply" : (cached ? @"Downloaded • Tap to apply • Swipe to delete" : (self.hasCachedCatalog ? @"Available on GitHub • Tap to download" : @"Bundled fallback • Tap to apply"));
+    cell.badgeLabel.text = selected ? @"APPLIED" : (cached ? @"DOWNLOADED" : @"GET THEME");
+    cell.badgeLabel.textColor = selected ? UIColor.whiteColor : UIColor.labelColor;
+    cell.badgeLabel.backgroundColor = selected ? UIColor.systemGreenColor : UIColor.tertiarySystemFillColor;
     return cell;
 }
 
@@ -260,7 +373,7 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     CFPreferencesSetAppValue(CFSTR("theme"), (__bridge CFPropertyListRef)themeID, (__bridge CFStringRef)kLPPreferencesDomain);
     CFPreferencesAppSynchronize((__bridge CFStringRef)kLPPreferencesDomain);
     notify_post(kLPPreferencesChanged.UTF8String);
-    self.statusLabel.text = [NSString stringWithFormat:@"%@ applied. Lock the device to view the new theme.", name ?: @"Theme"];
+    self.statusLabel.text = [NSString stringWithFormat:@"%@ applied immediately.", name ?: @"Theme"];
     [self.tableView reloadData];
 }
 

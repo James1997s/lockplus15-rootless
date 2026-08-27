@@ -98,8 +98,21 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 - (void)refreshForPreferences {
     [self applyStockDateVisibility];
 
-    UIView *host = self.hostView;
-    if (host != nil && (self.isEnabled || self.themeRenderer != nil)) {
+    // A preference notification is the cross-process commit signal from the
+    // manager. Reload the retained renderer directly; attachToHostView: alone
+    // intentionally preserves the existing hierarchy and therefore cannot
+    // change the document by itself.
+    if (!self.isEnabled) {
+        [self detachCurrentOverlay];
+        return;
+    }
+    if (self.themeRenderer != nil) {
+        [self applyActiveThemeImmediately];
+        return;
+    }
+
+    UIView *host = self.hostView ?: self.stockDateView.superview;
+    if (host != nil && self.isEnabled) {
         [self attachToHostView:host];
     } else {
         [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithCompletion:^(BOOL activeThemeUpdated) {
@@ -107,6 +120,34 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
             // the lock-screen date host is available again.
         }];
     }
+}
+
+- (void)applyActiveThemeImmediately {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!self.isEnabled) {
+            return;
+        }
+
+        NSString *themeJSON = [self activeThemeJSON];
+        if (themeJSON.length == 0) {
+            return;
+        }
+
+        // Keep the existing overlay/WebView alive when possible. The renderer
+        // reloads the newly selected folder entry without waiting for a
+        // lock/unlock callback or a SpringBoard restart.
+        if (self.themeRenderer != nil) {
+            [self.themeRenderer reloadWithThemeJSONString:themeJSON];
+            [self ensureOverlayAttachedToCurrentHost];
+            [self startHostMonitor];
+            return;
+        }
+
+        UIView *host = self.stockDateView.superview;
+        if (host != nil) {
+            [self attachToHostView:host];
+        }
+    });
 }
 
 - (void)registerStockDateView:(UIView *)dateView {
@@ -130,6 +171,10 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     }
     if (self.overlayView.superview != currentHost || self.hostView != currentHost) {
         [self attachToHostView:currentHost];
+    } else if (self.overlayView != nil) {
+        // SpringBoard can insert a new sibling above us without changing the
+        // parent. Restore visual ordering on every monitor tick.
+        [currentHost bringSubviewToFront:self.overlayView];
     }
 }
 
@@ -154,6 +199,8 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
             self.hostView = hostView;
             self.overlayView.frame = hostView.bounds;
             [hostView addSubview:self.overlayView];
+        } else {
+            [hostView bringSubviewToFront:self.overlayView];
         }
         [self startHostMonitor];
         return;
@@ -164,7 +211,8 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     UIView *overlay = [[UIView alloc] initWithFrame:hostView.bounds];
     overlay.backgroundColor = UIColor.clearColor;
     overlay.opaque = NO;
-    overlay.layer.zPosition = 0.0;
+    // Stay above SpringBoard views added later to the date host.
+    overlay.layer.zPosition = 1.0;
     overlay.userInteractionEnabled = NO;
     overlay.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
