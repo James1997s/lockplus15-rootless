@@ -1,7 +1,7 @@
 {
   "id": "cookie-monster-lock",
   "name": "Cookie Monster Cookie Time",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "assets": [
     {
       "id": "cookie-wallpaper",
@@ -12,11 +12,6 @@
       "id": "cookie-clock-texture",
       "url": "assets/cookie-monster/cookie-clock-texture.jpg",
       "sha256": "f28b84081c8361e104e76c53e27049e0075bb54c0fd21d23be9703ab57d275a4"
-    },
-    {
-      "id": "googly-eyes-animation",
-      "url": "assets/cookie-monster/googly-eyes-animation.gif",
-      "sha256": "7d553d1e4cd1bb933644a62664d5aee071a386963bd76702c12b713a2a79bd21"
     },
     {
       "id": "cookie-number-glyph-atlas",
@@ -96,18 +91,6 @@
       "z-index": "10",
       "cookie-letter-glyph-atlas-asset-id": "cookie-letter-glyph-atlas",
       "cookie-number-glyph-atlas-asset-id": "cookie-number-glyph-atlas"
-    },
-    "googlyEyes": {
-      "type": "image",
-      "position": "absolute",
-      "left": "50%",
-      "top": "0px",
-      "transform": "translateX(-50%)",
-      "width": "375px",
-      "height": "667px",
-      "asset-id": "googly-eyes-animation",
-      "image-role": "overlay",
-      "z-index": "5"
     }
   }
 }
