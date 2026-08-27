@@ -52,6 +52,12 @@
       "name": "Whimsy Cat Folder Clock",
       "url": "xen-cat-side-clock-folder.json",
       "format": "folder"
+    },
+    {
+      "id": "ios26-big-clock",
+      "name": "iOS 26 Big Glass Clock",
+      "url": "ios26-big-clock.json",
+      "format": "folder"
     }
   ]
 }
