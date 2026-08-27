@@ -274,6 +274,24 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
     }] resume];
 }
 
+- (BOOL)isSafeHTMLFragment:(NSString *)html {
+    if (![html isKindOfClass:NSString.class] || html.length > 8192) {
+        return NO;
+    }
+    NSString *lower = html.lowercaseString;
+    NSArray<NSString *> *blocked = @[ @"<script", @"</script", @"<iframe", @"<object", @"<embed", @"<link", @"<meta", @"<style", @"javascript:", @"vbscript:", @"data:text/html", @"expression(", @"url(" ];
+    for (NSString *token in blocked) {
+        if ([lower containsString:token]) {
+            return NO;
+        }
+    }
+    NSRegularExpression *eventAttribute = [NSRegularExpression regularExpressionWithPattern:@"\\bon[a-z0-9_-]+\\s*=" options:NSRegularExpressionCaseInsensitive error:nil];
+    if ([eventAttribute firstMatchInString:html options:0 range:NSMakeRange(0, html.length)] != nil) {
+        return NO;
+    }
+    return YES;
+}
+
 - (BOOL)isTrustedCatalogURL:(NSURL *)catalogURL {
     return catalogURL != nil && [catalogURL.scheme.lowercaseString isEqualToString:@"https"] && catalogURL.host.length > 0 && [catalogURL.path hasSuffix:@"/catalog.json"];
 }
@@ -364,6 +382,9 @@ static NSString * const kLPDefaultCatalogURL = @"https://raw.githubusercontent.c
                 return nil;
             }
             if ([[value lowercaseString] containsString:@"javascript:"]) {
+                return nil;
+            }
+            if ([type isEqualToString:@"html"] && [key isEqualToString:@"innerHTML"] && ![self isSafeHTMLFragment:value]) {
                 return nil;
             }
         }

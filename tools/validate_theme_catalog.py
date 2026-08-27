@@ -14,6 +14,15 @@ def fail(message: str) -> None:
     raise SystemExit(message)
 
 
+def validate_html_fragment(identifier: str, value: str) -> None:
+    if len(value) > 8192:
+        fail(f'Theme {identifier} contains an HTML fragment that is too large.')
+    lower = value.lower()
+    blocked = ('<script', '</script', '<iframe', '<object', '<embed', '<link', '<meta', '<style', 'javascript:', 'vbscript:', 'data:text/html', 'expression(', 'url(')
+    if any(token in lower for token in blocked) or any(marker in lower for marker in (' onload=', ' onclick=', ' onerror=', ' onmouseover=')):
+        fail(f'Theme {identifier} contains unsafe HTML.')
+
+
 def main() -> None:
     catalog = json.loads(CATALOG.read_text(encoding='utf-8'))
     entries = catalog.get('themes')
@@ -54,6 +63,8 @@ def main() -> None:
                     fail(f'Theme {identifier} has a non-string style property.')
                 if property_value.lower().startswith(('javascript:', 'data:text/html')):
                     fail(f'Theme {identifier} has a blocked URI.')
+                if properties.get('type') == 'html' and property_name == 'innerHTML':
+                    validate_html_fragment(identifier, property_value)
 
     print(f'Validated {len(entries)} catalog entries and theme files.')
 
