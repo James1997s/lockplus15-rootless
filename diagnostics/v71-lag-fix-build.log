@@ -1,0 +1,25 @@
+[0;36m==> [1;39mCleaning…[m
+[1;31m> [1;3;39mMaking all for tweak SpecialLock…[m
+[0;31m==> [1;39mPreprocessing Tweak.xm…[m
+[0;32m==> [1;39mCompiling Tweak.xm (arm64)…[m
+[0;32m==> [1;39mCompiling LPOverlayCoordinator.m (arm64)…[m
+[0;32m==> [1;39mCompiling LPThemeCatalog.m (arm64)…[m
+[0;32m==> [1;39mCompiling LPNativeThemeRenderer.m (arm64)…[m
+[0;33m==> [1;39mLinking tweak SpecialLock (arm64)…[m
+[0;34m==> [1;39mGenerating debug symbols for SpecialLock…[m
+[0;34m==> [1;39mStripping SpecialLock (arm64)…[m
+[0;34m==> [1;39mSigning SpecialLock…[m
+[1;31m> [1;3;39mMaking all for bundle SpecialLockPrefs…[m
+[0;35m==> [1;39mCopying resource files into the bundle wrapper…[m
+[0;32m==> [1;39mCompiling LPHThemePickerController.m (arm64)…[m
+[0;32m==> [1;39mCompiling LPHRootListController.m (arm64)…[m
+[0;32m==> [1;39mCompiling LPHThemeManagerController.m (arm64)…[m
+[0;32m==> [1;39mCompiling LPThemeCatalog.m (arm64)…[m
+[0;33m==> [1;39mLinking bundle SpecialLockPrefs (arm64)…[m
+[0;34m==> [1;39mGenerating debug symbols for SpecialLockPrefs…[m
+[0;34m==> [1;39mStripping SpecialLockPrefs (arm64)…[m
+[0;34m==> [1;39mSigning SpecialLockPrefs…[m
+[1;31m> [1;3;39mMaking stage for tweak SpecialLock…[m
+[1;31m> [1;3;39mMaking stage for bundle SpecialLockPrefs…[m
+[0;36m==> [1;36mNotice:[m Neither plutil, ply, or libplist-utils are installed, so XML plist files were not optimized.
+dm.pl: building package `com.example.speciallock:iphoneos-arm64' in `./packages/com.example.speciallock_0.1.0-71_iphoneos-arm64.deb'

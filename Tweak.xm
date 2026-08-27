@@ -103,6 +103,12 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
 
 
 %hook SBPasscodeLockViewBase
+- (void)willMoveToWindow:(UIWindow *)newWindow {
+    if (newWindow != nil) {
+        [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:NO];
+    }
+    %orig(newWindow);
+}
 - (void)didMoveToWindow {
     %orig;
     if (self.window != nil) {
