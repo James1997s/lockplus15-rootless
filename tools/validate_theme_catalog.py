@@ -64,7 +64,7 @@ def main() -> None:
                 paths.add(item['path'])
                 if not isinstance(item.get('sha256'), str) or len(item['sha256']) != 64:
                     fail(f'Theme {identifier} has an invalid folder hash.')
-                local = path.parent / 'folder-themes' / identifier / item['path']
+                local = ROOT / base_path / item['path']
                 if not local.is_file() or __import__('hashlib').sha256(local.read_bytes()).hexdigest() != item['sha256'].lower():
                     fail(f'Theme {identifier} folder hash mismatch: {item["path"]}.')
             if 'LockBackground.html' not in paths:

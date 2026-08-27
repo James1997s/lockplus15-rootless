@@ -1,26 +1,20 @@
 #!/bin/sh
 set -e
 
-# SpecialLock is a clean GitHub-only theme client. Clear stale catalogs and
-# cached theme payloads on this migration so the current remote catalog is used.
+# Themes are embedded in the package and resolved only from /var/jb/Library.
+# Clear obsolete remote caches so no downloaded manifest, asset, or HTML folder
+# can remain active after the local-only conversion.
 base="/var/jb/var/mobile/Library/SpecialLock"
-cache="$base/Themes"
-marker="$base/.github-theme-client-v2"
-old_base="/var/jb/var/mobile/Library/LockPlus15"
-old_cache="$old_base/Themes"
+legacy_cache="$base/Themes"
 old_preferences="/var/jb/var/mobile/Library/Preferences/com.example.lockplus15.plist"
 new_preferences="/var/jb/var/mobile/Library/Preferences/com.example.speciallock.plist"
 
-if [ ! -e "$marker" ]; then
-    mkdir -p "$cache"
-    if [ -f "$old_preferences" ] && [ ! -f "$new_preferences" ]; then
-        cp "$old_preferences" "$new_preferences"
-    fi
-    find "$cache" -maxdepth 1 -type f -name '*.json' -delete 2>/dev/null || true
-    rm -rf "$cache/Assets"
-    : > "$marker"
-    chown -R mobile:mobile "$base" 2>/dev/null || true
-    chown mobile:mobile "$new_preferences" 2>/dev/null || true
+mkdir -p "$base"
+if [ -f "$old_preferences" ] && [ ! -f "$new_preferences" ]; then
+    cp "$old_preferences" "$new_preferences"
 fi
+rm -rf "$legacy_cache" "$base/.github-theme-client-v2"
+chown -R mobile:mobile "$base" 2>/dev/null || true
+chown mobile:mobile "$new_preferences" 2>/dev/null || true
 
 exit 0

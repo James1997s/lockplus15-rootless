@@ -1061,7 +1061,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 
 - (void)loadFolderThemeWithID:(NSString *)themeID {
     if (themeID.length == 0) return;
-    NSString *relativeRoot = [@"/var/mobile/Library/SpecialLock/Themes/Assets" stringByAppendingPathComponent:themeID];
+    NSString *relativeRoot = [@"/Library/SpecialLock/Themes/Folders" stringByAppendingPathComponent:themeID];
     NSString *rootPath = ROOT_PATH_NS(relativeRoot);
     NSString *entryPath = [rootPath stringByAppendingPathComponent:@"LockBackground.html"];
     BOOL isDirectory = NO;
@@ -1165,7 +1165,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     if ([[assetID stringByTrimmingCharactersInSet:allowed] length] != 0) {
         return nil;
     }
-    NSString *unrootedAssetPath = [[@"/var/mobile/Library/SpecialLock/Themes/Assets" stringByAppendingPathComponent:[self selectedThemeID]] stringByAppendingPathComponent:assetID];
+    NSString *unrootedAssetPath = [[@"/Library/SpecialLock/Themes/Assets" stringByAppendingPathComponent:[self selectedThemeID]] stringByAppendingPathComponent:assetID];
     NSString *assetPath = ROOT_PATH_NS(unrootedAssetPath);
     return LPImageFromThemeAssetData([NSData dataWithContentsOfFile:assetPath]);
 }

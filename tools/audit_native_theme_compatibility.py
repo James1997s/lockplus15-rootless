@@ -92,7 +92,7 @@ def main() -> None:
                     errors.append(f'{identifier}: unsafe or duplicate folder path {relative!r}.')
                     continue
                 paths.add(relative)
-                local = theme_path.parent / 'folder-themes' / identifier / relative
+                local = ROOT / base_path / relative
                 if not local.is_file() or not isinstance(digest, str) or len(digest) != 64 or hashlib.sha256(local.read_bytes()).hexdigest() != digest.lower():
                     errors.append(f'{identifier}: folder hash mismatch for {relative}.')
             if 'LockBackground.html' not in paths:

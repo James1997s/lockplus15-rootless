@@ -151,11 +151,6 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     UIView *host = self.hostView ?: self.stockDateView.superview;
     if (host != nil && self.isEnabled) {
         [self attachToHostView:host];
-    } else {
-        [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithCompletion:^(BOOL activeThemeUpdated) {
-            // The catalog cache has been refreshed. It will be rendered when
-            // the lock-screen date host is available again.
-        }];
     }
 }
 
@@ -272,13 +267,6 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     self.overlayView = overlay;
     self.themeRenderer = renderer;
     [self startHostMonitor];
-
-    [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithCompletion:^(BOOL activeThemeUpdated) {
-        NSString *updatedTheme = [self activeThemeJSON];
-        if (activeThemeUpdated && updatedTheme.length > 0 && self.themeRenderer == renderer) {
-            [renderer reloadWithThemeJSONString:updatedTheme];
-        }
-    }];
 }
 - (void)setLockScreenVisible:(BOOL)visible {
     void (^update)(void) = ^{

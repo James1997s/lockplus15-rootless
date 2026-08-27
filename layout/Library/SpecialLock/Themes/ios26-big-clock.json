@@ -1,0 +1,33 @@
+{
+  "id": "ios26-big-clock",
+  "name": "iOS 26 Big Glass Clock",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/ios26-big-clock",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "c0909ec2dccab38fd2d1e5464849d9b7742d8bae4ea14060702adeb311204a21"
+    },
+    {
+      "path": "script.js",
+      "sha256": "de7080786b8599615af871341370feacea943ca6e1e9b2c1c632fdbafc72977d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "8a408eef35f4c48d42865bc3992b3e25efc9988c7481867492cdc601037e1ff1"
+    }
+  ],
+  "typography": {
+    "fontStack": "\"Hiragino Mincho ProN\", serif",
+    "clockWeight": "500",
+    "clockLetterSpacing": "-0.04em"
+  },
+  "clockComposition": {
+    "family": "dashboard",
+    "variant": 1
+  },
+  "staticUI": true,
+  "clockStyle": "ring"
+}

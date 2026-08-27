@@ -1,0 +1,30 @@
+{
+  "id": "desert-sun",
+  "name": "Desert Sun",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/desert-sun",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "BebasNeue.otf",
+      "sha256": "dde93254bbf2c81d56fcabb26c9ba1c260f82daf914f2dfc985bea6ed23d2c42"
+    },
+    {
+      "path": "LockBackground.html",
+      "sha256": "5fc1a48823ec095d73c9d3f07057b805c1fc6d0dcbab52a6ac459ee08d4a68eb"
+    },
+    {
+      "path": "script.js",
+      "sha256": "c017be8f7ead263995a0c27a7290cdc16946bbec509cda1465c85f8441916c74"
+    },
+    {
+      "path": "style.css",
+      "sha256": "85de19a5393da3fbb887f13ed3794a572a5ba78ee4d701b3e4f5a39771a362ee"
+    },
+    {
+      "path": "wallpaper.jpg",
+      "sha256": "f0a31b241e6ab60ffb81e4f648a82fd99b49f45aa4c051de5a8bd90b34d8e5da"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "assets": [],
+  "placedElements": {
+    "wallpaper": {
+      "type": "wallpaper",
+      "position": "absolute",
+      "left": "50%",
+      "top": "0px",
+      "transform": "translateX(-50%)",
+      "gradient": "#02090B|#04181A",
+      "z-index": "-100"
+    },
+    "monitorPanel": {
+      "type": "panel",
+      "position": "absolute",
+      "left": "50%",
+      "top": "176px",
+      "transform": "translateX(-50%)",
+      "width": "340px",
+      "height": "280px",
+      "padding": "0px",
+      "background-color": "#041316",
+      "border": "1px solid #125047",
+      "border-radius": "4px",
+      "innerHTML": "",
+      "color": "rgba(0,0,0,0)",
+      "z-index": "10"
+    },
+    "pulseTime": {
+      "type": "ecg-time",
+      "position": "absolute",
+      "left": "50%",
+      "top": "176px",
+      "transform": "translateX(-50%)",
+      "width": "340px",
+      "height": "280px",
+      "color": "#3FFFB8",
+      "grid-color": "#0A272A",
+      "stroke-width": "3px",
+      "animation-duration": "3.4s",
+      "z-index": "20"
+    }
+  }
+}

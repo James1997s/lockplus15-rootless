@@ -1,0 +1,37 @@
+{
+  "id": "oneui8-adaptive-clock",
+  "name": "One UI 8 Adaptive Clock",
+  "version": "1.0.2",
+  "format": "folder",
+  "basePath": "folder-themes/oneui8-adaptive-clock",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "f130e48e9cb7788dda4692538fc61c1f16c96bef3496a932cf9df08cfc77715c"
+    },
+    {
+      "path": "script.js",
+      "sha256": "608408374bc9e397978b3c4e70e904ea25b47b083c2b24a53c33b10cdf4f974f"
+    },
+    {
+      "path": "style.css",
+      "sha256": "59fbb4b912d8424b034e78b247c38aa7dfab236d2885c6f59d504010db04758a"
+    },
+    {
+      "path": "wallpaper.jpg",
+      "sha256": "e69d09ccec931634147e370582b8d5937fb3b8abafd866ac56eb269731fc8305"
+    }
+  ],
+  "typography": {
+    "fontStack": "\"Avenir Next\", sans-serif",
+    "clockWeight": "700",
+    "clockLetterSpacing": "-0.06em"
+  },
+  "clockComposition": {
+    "family": "dashboard",
+    "variant": 2
+  },
+  "staticUI": true,
+  "clockStyle": "terminal"
+}
