@@ -49,6 +49,13 @@
       "name": "Neon Architecture",
       "url": "neon-architecture.json",
       "format": "folder"
+    },
+    {
+      "id": "geometric-twenty-four",
+      "name": "Geometric Twenty-Four",
+      "description": "Dark geometric prism lock screen with cyan and pink indicators, a compact word clock, and a live date header.",
+      "format": "folder",
+      "url": "geometric-twenty-four.json"
     }
   ]
 }

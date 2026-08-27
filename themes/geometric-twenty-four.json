@@ -1,0 +1,26 @@
+{
+  "id": "geometric-twenty-four",
+  "name": "Geometric Twenty-Four",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/geometric-twenty-four",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "8a3a6aa21a4f7c811273f4fe10ca272585ced2a71c9d5ef96fa63961927f6460"
+    },
+    {
+      "path": "script.js",
+      "sha256": "250cf0aba83659b0d6394b0078b82397beeb7aaad20645ca0ded60a849c24ccc"
+    },
+    {
+      "path": "style.css",
+      "sha256": "2428b7c55836508abc3cda8ffe225bac3529191b2df5fe21192fbabd0e5f2b34"
+    },
+    {
+      "path": "wallpaper.jpg",
+      "sha256": "95ac6082e2abddcf4d29acf6f01deeddb0be1dfeee74d70afaaec0dcb7925b49"
+    }
+  ]
+}
