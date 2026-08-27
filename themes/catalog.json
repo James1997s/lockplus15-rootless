@@ -3,60 +3,6 @@
   "catalogName": "SpecialLock Theme Catalog",
   "themes": [
     {
-      "id": "white-word-wheel",
-      "name": "White Word Wheel",
-      "url": "white-word-wheel.json",
-      "format": "folder"
-    },
-    {
-      "id": "framed-parking",
-      "name": "White Framed Motion",
-      "url": "framed-parking.json",
-      "format": "folder"
-    },
-    {
-      "id": "move-the-image",
-      "name": "Move the Image",
-      "url": "move-the-image.json",
-      "format": "folder"
-    },
-    {
-      "id": "animated-art-gallery",
-      "name": "Animated Art Gallery",
-      "url": "animated-art-gallery.json",
-      "format": "folder"
-    },
-    {
-      "id": "pulse-timeline",
-      "name": "Pulse Timeline",
-      "url": "pulse-timeline.json",
-      "format": "folder"
-    },
-    {
-      "id": "brushstroke-time",
-      "name": "Brushstroke Time",
-      "url": "brushstroke-time.json",
-      "format": "folder"
-    },
-    {
-      "id": "planet-globe-animated-gif",
-      "name": "Planet Globe Animated Lock",
-      "url": "planet-globe-android-gif.json",
-      "format": "folder"
-    },
-    {
-      "id": "cookie-monster-lock",
-      "name": "Cookie Monster Cookie Time",
-      "url": "cookie-monster-lock.json",
-      "format": "folder"
-    },
-    {
-      "id": "cat-hat-side-clock",
-      "name": "Whimsy Cat Side Clock",
-      "url": "cat-hat-side-clock.json",
-      "format": "folder"
-    },
-    {
       "id": "xen-cat-side-clock-folder",
       "name": "Whimsy Cat Folder Clock",
       "url": "xen-cat-side-clock-folder.json",
