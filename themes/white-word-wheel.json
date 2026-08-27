@@ -16,11 +16,11 @@
     },
     {
       "path": "script.js",
-      "sha256": "f6242d7bffe80a6662b5f879c9bd9a6b3111ea7a6af29a530cfbdae447d78df3"
+      "sha256": "a52273bea36961f9a623f9c5f2689c0fe9cead119f3df52a88a49100a3bebcdd"
     },
     {
       "path": "style.css",
-      "sha256": "4753a714b65585cfa8f8a686c548658e769989d20e54f892c4add4281fcfb2ba"
+      "sha256": "8ece3af86ac60937021d29c8a0e53b68a2b4ec8c890de7ce3236380b6e61d943"
     }
   ]
 }

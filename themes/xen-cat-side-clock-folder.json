@@ -11,12 +11,12 @@
       "sha256": "27689636480171ed95c346fb21e80427d04a96ada2799fe2b88dbdf78b7f416f"
     },
     {
-      "path": "style.css",
-      "sha256": "adcaae9339d5189fd1e395923b8108d29dd2a06405b6aaab278e2a7feddfcec5"
-    },
-    {
       "path": "script.js",
       "sha256": "b3de2a25766a1c96f47c76ab27b4f3d584824ccf59edd29f126e9fbf5132b9b0"
+    },
+    {
+      "path": "style.css",
+      "sha256": "adcaae9339d5189fd1e395923b8108d29dd2a06405b6aaab278e2a7feddfcec5"
     },
     {
       "path": "wallpaper.gif",
