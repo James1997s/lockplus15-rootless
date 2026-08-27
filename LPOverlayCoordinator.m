@@ -74,9 +74,11 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     if (value != NULL) {
         CFRelease(value);
     }
-    // A clean install has no selected cached theme. Keep SpringBoard's stock
-    // date/clock visible until the user explicitly downloads and selects one.
-    return enabled && [[LPThemeCatalog sharedCatalog] activeThemeJSON].length > 0;
+    // Keep an already-rendered folder theme enabled while SpringBoard or the
+    // catalog briefly rebuilds its active-theme cache during unlock. A clean
+    // install still falls back to the stock date because no renderer exists.
+    NSString *activeTheme = [[LPThemeCatalog sharedCatalog] activeThemeJSON];
+    return enabled && (activeTheme.length > 0 || self.themeRenderer != nil);
 }
 
 - (BOOL)isApplyingStockDateVisibility {
@@ -97,12 +99,12 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     [self applyStockDateVisibility];
 
     UIView *host = self.hostView;
-    [self detachFromHostView:host];
-    if (host != nil && self.isEnabled) {
+    if (host != nil && (self.isEnabled || self.themeRenderer != nil)) {
         [self attachToHostView:host];
     } else {
         [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithCompletion:^(BOOL activeThemeUpdated) {
-            // The catalog cache has been refreshed. It will be rendered the next time the host attaches.
+            // The catalog cache has been refreshed. It will be rendered when
+            // the lock-screen date host is available again.
         }];
     }
 }
@@ -119,7 +121,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 }
 
 - (void)ensureOverlayAttachedToCurrentHost {
-    if (!self.isEnabled) {
+    if (!self.isEnabled && self.themeRenderer == nil) {
         return;
     }
     UIView *currentHost = self.stockDateView.superview;
@@ -139,7 +141,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 }
 
 - (void)attachToHostView:(UIView *)hostView {
-    if (hostView == nil || !self.isEnabled) {
+    if (hostView == nil || (!self.isEnabled && self.themeRenderer == nil)) {
         return;
     }
 
@@ -179,8 +181,9 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     [self startHostMonitor];
 
     [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithCompletion:^(BOOL activeThemeUpdated) {
-        if (activeThemeUpdated && self.themeRenderer == renderer) {
-            [renderer reloadWithThemeJSONString:[self activeThemeJSON]];
+        NSString *updatedTheme = [self activeThemeJSON];
+        if (activeThemeUpdated && updatedTheme.length > 0 && self.themeRenderer == renderer) {
+            [renderer reloadWithThemeJSONString:updatedTheme];
         }
     }];
 }
