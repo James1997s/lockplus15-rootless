@@ -12,15 +12,11 @@
     },
     {
       "path": "script.js",
-      "sha256": "d835f800912b2879fa825c01fa7bd523a4c6689c1791527b5e5699cabdfdd293"
+      "sha256": "fe1231f323497daf8569d1bab82d2110f3cd19006dae56d0a86a9fdf5d970bf1"
     },
     {
       "path": "style.css",
-      "sha256": "2b2f748d65850423de865bce1f5aaf735b0987107e117fc808dfae65966d5fe0"
-    },
-    {
-      "path": "wallpaper.jpg",
-      "sha256": "95ac6082e2abddcf4d29acf6f01deeddb0be1dfeee74d70afaaec0dcb7925b49"
+      "sha256": "353eace3fed6ff015fff76423a304317450c236f5743956f21cc1774187dea13"
     }
   ]
 }
