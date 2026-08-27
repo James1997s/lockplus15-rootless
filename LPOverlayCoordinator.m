@@ -20,6 +20,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 @property (nonatomic, assign) BOOL applyingStockDateVisibility;
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) LPNativeThemeRenderer *themeRenderer;
+@property (nonatomic, strong) NSTimer *hostMonitorTimer;
 @end
 
 @implementation LPOverlayCoordinator
@@ -47,6 +48,8 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 }
 
 - (void)dealloc {
+    [self.hostMonitorTimer invalidate];
+    self.hostMonitorTimer = nil;
     CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                        (__bridge const void *)self,
                                        kLPPreferencesChanged,
@@ -115,6 +118,26 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     }
 }
 
+- (void)ensureOverlayAttachedToCurrentHost {
+    if (!self.isEnabled || self.stockDateView.window == nil) {
+        return;
+    }
+    UIView *currentHost = self.stockDateView.superview;
+    if (currentHost == nil) {
+        return;
+    }
+    if (self.overlayView.superview != currentHost || self.hostView != currentHost) {
+        [self attachToHostView:currentHost];
+    }
+}
+
+- (void)startHostMonitor {
+    [self.hostMonitorTimer invalidate];
+    self.hostMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.50 repeats:YES block:^(NSTimer *timer) {
+        [self ensureOverlayAttachedToCurrentHost];
+    }];
+}
+
 - (void)attachToHostView:(UIView *)hostView {
     if (hostView == nil || !self.isEnabled) {
         return;
@@ -156,6 +179,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 
     self.overlayView = overlay;
     self.themeRenderer = renderer;
+    [self startHostMonitor];
 
     [[LPThemeCatalog sharedCatalog] synchronizeCatalogWithCompletion:^(BOOL activeThemeUpdated) {
         if (activeThemeUpdated && self.themeRenderer == renderer) {
@@ -172,6 +196,8 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 }
 
 - (void)detachCurrentOverlay {
+    [self.hostMonitorTimer invalidate];
+    self.hostMonitorTimer = nil;
     [self.themeRenderer stopRendering];
     [self.overlayView removeFromSuperview];
     self.themeRenderer = nil;
