@@ -36,6 +36,11 @@
       "id": "planet-globe-animated-gif",
       "name": "Planet Globe Animated Lock",
       "url": "planet-globe-android-gif.json"
+    },
+    {
+      "id": "cookie-monster-lock",
+      "name": "Cookie Monster Cookie Time",
+      "url": "cookie-monster-lock.json"
     }
   ]
 }
