@@ -341,16 +341,13 @@ static NSString * const kLPHiddenThemeIDsKey = @"hiddenThemeIDs";
     if (themeID.length == 0) {
         return;
     }
-    if ([record[@"cached"] boolValue]) {
-        [self applyThemeID:themeID name:record[@"name"]];
-        return;
-    }
-
+    // Re-fetch cached themes so published GitHub revisions replace stale files.
+    BOOL cached = [record[@"cached"] boolValue];
     self.synchronizing = YES;
     self.refreshButton.enabled = NO;
     self.progressView.hidden = NO;
     self.progressView.progress = 0.25;
-    self.statusLabel.text = [NSString stringWithFormat:@"Downloading %@…", record[@"name"]];
+    self.statusLabel.text = [NSString stringWithFormat:@"%@ %@…", cached ? @"Updating" : @"Downloading", record[@"name"]];
     __weak typeof(self) weakSelf = self;
     [[LPThemeCatalog sharedCatalog] downloadThemeWithID:themeID completion:^(BOOL success) {
         __strong typeof(weakSelf) self = weakSelf;
