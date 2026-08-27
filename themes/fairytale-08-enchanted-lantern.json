@@ -1,0 +1,22 @@
+{
+  "id": "fairytale-08-enchanted-lantern",
+  "name": "Enchanted Lantern",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/fairytale-08-enchanted-lantern",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "bfb1bbb9c6b427e9637fa42ebaf0bfa5b052388c1675f4684f130516aff3ce6d"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "4b27c4c103f0aa6a867ededb713aba7812b68a72f8d8762d83f20b6e339be7bd"
+    }
+  ]
+}

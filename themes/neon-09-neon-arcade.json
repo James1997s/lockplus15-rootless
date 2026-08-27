@@ -1,0 +1,22 @@
+{
+  "id": "neon-09-neon-arcade",
+  "name": "Neon Arcade",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/neon-09-neon-arcade",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "d45ff8c79778a1940c006367c1ecd351949d5dc84d225d1c3dab1d6b3dc2dc29"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "1f4b981550edabb459e9e73dd647881f2220a2af20abac300462b45e3dbf0b16"
+    }
+  ]
+}

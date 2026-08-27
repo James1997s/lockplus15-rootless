@@ -1,0 +1,22 @@
+{
+  "id": "colour-10-prism-clock",
+  "name": "Prism Clock",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/colour-10-prism-clock",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "3b417fbc5d17e1e7cd2f7e56d59f41ea1da1f4536f2b801ac7a018b963f736ac"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "01769d21522b16b87f7e183634f9d71a57c9c583e79404f2ebf1d7ff81894901"
+    }
+  ]
+}

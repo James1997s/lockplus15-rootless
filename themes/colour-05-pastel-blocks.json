@@ -1,0 +1,22 @@
+{
+  "id": "colour-05-pastel-blocks",
+  "name": "Pastel Blocks",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/colour-05-pastel-blocks",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "8bf18b265b81d5ca39294ff99b1e7a579bce9b87f9ffcee3cf3cd5fec6268a91"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "01769d21522b16b87f7e183634f9d71a57c9c583e79404f2ebf1d7ff81894901"
+    }
+  ]
+}

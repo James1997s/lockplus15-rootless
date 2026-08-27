@@ -1,0 +1,22 @@
+{
+  "id": "japanese-04-sakura-signal",
+  "name": "Sakura Signal",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/japanese-04-sakura-signal",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "4037bd8b523cf3a0e675b167f0210f02fe0519724ec4d16d2889364a61ec2f4d"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "16c66507afd8b0c894d4150ef8789ad56885bc7e196c201ffdea8298c69b6f94"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "tattoo-07-old-school-dice",
+  "name": "Old School Dice",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/tattoo-07-old-school-dice",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "f8631ec962fd79e25479ab6408bc4bf141a5e1fbd881f02763328277c88329c5"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "5e17d5defcc017c805b187d0cd287e37637bfb770cd1ba8ef68ae5e4cebd9309"
+    }
+  ]
+}

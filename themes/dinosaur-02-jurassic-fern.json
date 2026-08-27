@@ -1,0 +1,22 @@
+{
+  "id": "dinosaur-02-jurassic-fern",
+  "name": "Jurassic Fern",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/dinosaur-02-jurassic-fern",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "deb43ee57e3b5921a93fcf8a5cbe0c1f003be2078a74da7d9b603cc74c4c57ed"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "ef200c530f6a85558808303233b12035cb6704de8ac72832e8b9671f72d90279"
+    }
+  ]
+}

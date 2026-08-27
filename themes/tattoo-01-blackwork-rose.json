@@ -1,0 +1,22 @@
+{
+  "id": "tattoo-01-blackwork-rose",
+  "name": "Blackwork Rose",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/tattoo-01-blackwork-rose",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "77a4a3f165c6bed9d891c6b5e0099c422c590dcf2a8fe732fec0e21d4ea7d92f"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "5e17d5defcc017c805b187d0cd287e37637bfb770cd1ba8ef68ae5e4cebd9309"
+    }
+  ]
+}

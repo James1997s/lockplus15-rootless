@@ -1,0 +1,22 @@
+{
+  "id": "future-04-solar-console",
+  "name": "Solar Console",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/future-04-solar-console",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "4973f58545da040189503d20ea23136cd6600cbb181644fa38b0c7527fc57512"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "9773e000b0da732ad13587e4dc411837f4c64c88f2a1e951b44c7e9357981349"
+    }
+  ]
+}

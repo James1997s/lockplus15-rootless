@@ -1,0 +1,22 @@
+{
+  "id": "gameboy-02-four-shade-quest",
+  "name": "Four Shade Quest",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/gameboy-02-four-shade-quest",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "12fce531549f1a1368aa971df7a494b8e0a3c5dca09c953bba772312261c622d"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "356cd097572dbdca87526960cf0c611d577d547b206ac8dc9895d3341c94239b"
+    }
+  ]
+}

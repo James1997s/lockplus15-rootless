@@ -1,0 +1,22 @@
+{
+  "id": "tattoo-06-floral-flash",
+  "name": "Floral Flash",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/tattoo-06-floral-flash",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "c1cf23fc0cf8ab2d8750f30bf706a9da1aa087ca53273c752f36f1ca33577a3b"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "5e17d5defcc017c805b187d0cd287e37637bfb770cd1ba8ef68ae5e4cebd9309"
+    }
+  ]
+}

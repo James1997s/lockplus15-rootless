@@ -1,0 +1,22 @@
+{
+  "id": "fairytale-04-paper-crown",
+  "name": "Paper Crown",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/fairytale-04-paper-crown",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "843222953ba2b1e47ff66949662f24c37c3af25ed1a1b2f04e623f76ef032981"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "4b27c4c103f0aa6a867ededb713aba7812b68a72f8d8762d83f20b6e339be7bd"
+    }
+  ]
+}

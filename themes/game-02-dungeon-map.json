@@ -1,0 +1,22 @@
+{
+  "id": "game-02-dungeon-map",
+  "name": "Dungeon Map",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/game-02-dungeon-map",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "9478acb8213dc33584a1281393d8bd7b66ac066b1cf043e16ad4140a8cd6829b"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "5a8fefe7315dd606f0fac9805bb9d7d2f462eee621b15ffcdd964db7a5bed81f"
+    }
+  ]
+}

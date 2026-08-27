@@ -1,0 +1,22 @@
+{
+  "id": "japanese-01-shoji-dawn",
+  "name": "Shoji Dawn",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/japanese-01-shoji-dawn",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "077dbf822d1209affdb772f5ad4d76f9481629b4567ada66df97fb97d5475a2e"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "16c66507afd8b0c894d4150ef8789ad56885bc7e196c201ffdea8298c69b6f94"
+    }
+  ]
+}

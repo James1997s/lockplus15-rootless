@@ -1,0 +1,22 @@
+{
+  "id": "japanese-10-wabi-moon",
+  "name": "Wabi Moon",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/japanese-10-wabi-moon",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "f18ca5ebe28acb5907be5323152f398c0852e7a7cfcf5971b47e2fa1790797bd"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "16c66507afd8b0c894d4150ef8789ad56885bc7e196c201ffdea8298c69b6f94"
+    }
+  ]
+}

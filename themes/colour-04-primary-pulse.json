@@ -1,0 +1,22 @@
+{
+  "id": "colour-04-primary-pulse",
+  "name": "Primary Pulse",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/colour-04-primary-pulse",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "a0bc24b658cf43d56898d515fecb26ce9f147fbb9c75bbe93002b79b16223a96"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "01769d21522b16b87f7e183634f9d71a57c9c583e79404f2ebf1d7ff81894901"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "future-06-ion-drift",
+  "name": "Ion Drift",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/future-06-ion-drift",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "b685799ba24fc313f7f00962a45b279eb79430a7c90ce48b224562cc1ad5f175"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "9773e000b0da732ad13587e4dc411837f4c64c88f2a1e951b44c7e9357981349"
+    }
+  ]
+}

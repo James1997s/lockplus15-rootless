@@ -56,6 +56,706 @@
       "description": "Dark geometric prism lock screen with cyan and pink indicators, a compact word clock, and a live date header.",
       "format": "folder",
       "url": "geometric-twenty-four.json"
+    },
+    {
+      "id": "japanese-01-shoji-dawn",
+      "name": "Shoji Dawn",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-01-shoji-dawn.json"
+    },
+    {
+      "id": "japanese-02-koi-current",
+      "name": "Koi Current",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-02-koi-current.json"
+    },
+    {
+      "id": "japanese-03-tokyo-rain",
+      "name": "Tokyo Rain",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-03-tokyo-rain.json"
+    },
+    {
+      "id": "japanese-04-sakura-signal",
+      "name": "Sakura Signal",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-04-sakura-signal.json"
+    },
+    {
+      "id": "japanese-05-zen-ink",
+      "name": "Zen Ink",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-05-zen-ink.json"
+    },
+    {
+      "id": "japanese-06-lantern-night",
+      "name": "Lantern Night",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-06-lantern-night.json"
+    },
+    {
+      "id": "japanese-07-bamboo-mist",
+      "name": "Bamboo Mist",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-07-bamboo-mist.json"
+    },
+    {
+      "id": "japanese-08-neon-torii",
+      "name": "Neon Torii",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-08-neon-torii.json"
+    },
+    {
+      "id": "japanese-09-origami-sky",
+      "name": "Origami Sky",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-09-origami-sky.json"
+    },
+    {
+      "id": "japanese-10-wabi-moon",
+      "name": "Wabi Moon",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-10-wabi-moon.json"
+    },
+    {
+      "id": "japanese-11-fuji-quiet",
+      "name": "Fuji Quiet",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-11-fuji-quiet.json"
+    },
+    {
+      "id": "japanese-12-kitsune-glow",
+      "name": "Kitsune Glow",
+      "description": "Japanese original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom japanese type treatment.",
+      "format": "folder",
+      "url": "japanese-12-kitsune-glow.json"
+    },
+    {
+      "id": "future-01-orbit-glass",
+      "name": "Orbit Glass",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-01-orbit-glass.json"
+    },
+    {
+      "id": "future-02-quantum-grid",
+      "name": "Quantum Grid",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-02-quantum-grid.json"
+    },
+    {
+      "id": "future-03-chrome-horizon",
+      "name": "Chrome Horizon",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-03-chrome-horizon.json"
+    },
+    {
+      "id": "future-04-solar-console",
+      "name": "Solar Console",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-04-solar-console.json"
+    },
+    {
+      "id": "future-05-deep-space-ui",
+      "name": "Deep Space UI",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-05-deep-space-ui.json"
+    },
+    {
+      "id": "future-06-ion-drift",
+      "name": "Ion Drift",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-06-ion-drift.json"
+    },
+    {
+      "id": "future-07-lunar-terminal",
+      "name": "Lunar Terminal",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-07-lunar-terminal.json"
+    },
+    {
+      "id": "future-08-prism-reactor",
+      "name": "Prism Reactor",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-08-prism-reactor.json"
+    },
+    {
+      "id": "future-09-astro-bloom",
+      "name": "Astro Bloom",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-09-astro-bloom.json"
+    },
+    {
+      "id": "future-10-vector-dawn",
+      "name": "Vector Dawn",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-10-vector-dawn.json"
+    },
+    {
+      "id": "future-11-holo-district",
+      "name": "Holo District",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-11-holo-district.json"
+    },
+    {
+      "id": "future-12-nova-dial",
+      "name": "Nova Dial",
+      "description": "Futuristic original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom future type treatment.",
+      "format": "folder",
+      "url": "future-12-nova-dial.json"
+    },
+    {
+      "id": "comic-01-pop-panel",
+      "name": "Pop Panel",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-01-pop-panel.json"
+    },
+    {
+      "id": "comic-02-ink-burst",
+      "name": "Ink Burst",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-02-ink-burst.json"
+    },
+    {
+      "id": "comic-03-rocket-panel",
+      "name": "Rocket Panel",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-03-rocket-panel.json"
+    },
+    {
+      "id": "comic-04-hero-halftone",
+      "name": "Hero Halftone",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-04-hero-halftone.json"
+    },
+    {
+      "id": "comic-05-midnight-pulp",
+      "name": "Midnight Pulp",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-05-midnight-pulp.json"
+    },
+    {
+      "id": "comic-06-cosmic-speech",
+      "name": "Cosmic Speech",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-06-cosmic-speech.json"
+    },
+    {
+      "id": "comic-07-action-lines",
+      "name": "Action Lines",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-07-action-lines.json"
+    },
+    {
+      "id": "comic-08-retro-panels",
+      "name": "Retro Panels",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-08-retro-panels.json"
+    },
+    {
+      "id": "comic-09-electric-zine",
+      "name": "Electric Zine",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-09-electric-zine.json"
+    },
+    {
+      "id": "comic-10-sunday-strip",
+      "name": "Sunday Strip",
+      "description": "Comic-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom comic type treatment.",
+      "format": "folder",
+      "url": "comic-10-sunday-strip.json"
+    },
+    {
+      "id": "fairytale-01-storybook-castle",
+      "name": "Storybook Castle",
+      "description": "Original fairytale original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom fairytale type treatment.",
+      "format": "folder",
+      "url": "fairytale-01-storybook-castle.json"
+    },
+    {
+      "id": "fairytale-02-moonlit-carousel",
+      "name": "Moonlit Carousel",
+      "description": "Original fairytale original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom fairytale type treatment.",
+      "format": "folder",
+      "url": "fairytale-02-moonlit-carousel.json"
+    },
+    {
+      "id": "fairytale-03-wonder-garden",
+      "name": "Wonder Garden",
+      "description": "Original fairytale original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom fairytale type treatment.",
+      "format": "folder",
+      "url": "fairytale-03-wonder-garden.json"
+    },
+    {
+      "id": "fairytale-04-paper-crown",
+      "name": "Paper Crown",
+      "description": "Original fairytale original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom fairytale type treatment.",
+      "format": "folder",
+      "url": "fairytale-04-paper-crown.json"
+    },
+    {
+      "id": "fairytale-05-midnight-parade",
+      "name": "Midnight Parade",
+      "description": "Original fairytale original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom fairytale type treatment.",
+      "format": "folder",
+      "url": "fairytale-05-midnight-parade.json"
+    },
+    {
+      "id": "fairytale-06-glass-slipper",
+      "name": "Glass Slipper",
+      "description": "Original fairytale original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom fairytale type treatment.",
+      "format": "folder",
+      "url": "fairytale-06-glass-slipper.json"
+    },
+    {
+      "id": "fairytale-07-cloud-kingdom",
+      "name": "Cloud Kingdom",
+      "description": "Original fairytale original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom fairytale type treatment.",
+      "format": "folder",
+      "url": "fairytale-07-cloud-kingdom.json"
+    },
+    {
+      "id": "fairytale-08-enchanted-lantern",
+      "name": "Enchanted Lantern",
+      "description": "Original fairytale original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom fairytale type treatment.",
+      "format": "folder",
+      "url": "fairytale-08-enchanted-lantern.json"
+    },
+    {
+      "id": "tattoo-01-blackwork-rose",
+      "name": "Blackwork Rose",
+      "description": "Tattoo original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom tattoo type treatment.",
+      "format": "folder",
+      "url": "tattoo-01-blackwork-rose.json"
+    },
+    {
+      "id": "tattoo-02-sailor-swallow",
+      "name": "Sailor Swallow",
+      "description": "Tattoo original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom tattoo type treatment.",
+      "format": "folder",
+      "url": "tattoo-02-sailor-swallow.json"
+    },
+    {
+      "id": "tattoo-03-serpent-line",
+      "name": "Serpent Line",
+      "description": "Tattoo original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom tattoo type treatment.",
+      "format": "folder",
+      "url": "tattoo-03-serpent-line.json"
+    },
+    {
+      "id": "tattoo-04-lucky-tiger",
+      "name": "Lucky Tiger",
+      "description": "Tattoo original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom tattoo type treatment.",
+      "format": "folder",
+      "url": "tattoo-04-lucky-tiger.json"
+    },
+    {
+      "id": "tattoo-05-sacred-heart",
+      "name": "Sacred Heart",
+      "description": "Tattoo original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom tattoo type treatment.",
+      "format": "folder",
+      "url": "tattoo-05-sacred-heart.json"
+    },
+    {
+      "id": "tattoo-06-floral-flash",
+      "name": "Floral Flash",
+      "description": "Tattoo original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom tattoo type treatment.",
+      "format": "folder",
+      "url": "tattoo-06-floral-flash.json"
+    },
+    {
+      "id": "tattoo-07-old-school-dice",
+      "name": "Old School Dice",
+      "description": "Tattoo original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom tattoo type treatment.",
+      "format": "folder",
+      "url": "tattoo-07-old-school-dice.json"
+    },
+    {
+      "id": "tattoo-08-moon-moth",
+      "name": "Moon Moth",
+      "description": "Tattoo original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom tattoo type treatment.",
+      "format": "folder",
+      "url": "tattoo-08-moon-moth.json"
+    },
+    {
+      "id": "neon-01-neon-alley",
+      "name": "Neon Alley",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-01-neon-alley.json"
+    },
+    {
+      "id": "neon-02-vapor-bloom",
+      "name": "Vapor Bloom",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-02-vapor-bloom.json"
+    },
+    {
+      "id": "neon-03-laser-rain",
+      "name": "Laser Rain",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-03-laser-rain.json"
+    },
+    {
+      "id": "neon-04-electric-motel",
+      "name": "Electric Motel",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-04-electric-motel.json"
+    },
+    {
+      "id": "neon-05-cyan-circuit",
+      "name": "Cyan Circuit",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-05-cyan-circuit.json"
+    },
+    {
+      "id": "neon-06-pink-voltage",
+      "name": "Pink Voltage",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-06-pink-voltage.json"
+    },
+    {
+      "id": "neon-07-ultraviolet-club",
+      "name": "Ultraviolet Club",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-07-ultraviolet-club.json"
+    },
+    {
+      "id": "neon-08-digital-sunset",
+      "name": "Digital Sunset",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-08-digital-sunset.json"
+    },
+    {
+      "id": "neon-09-neon-arcade",
+      "name": "Neon Arcade",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-09-neon-arcade.json"
+    },
+    {
+      "id": "neon-10-light-leak",
+      "name": "Light Leak",
+      "description": "Neon original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom neon type treatment.",
+      "format": "folder",
+      "url": "neon-10-light-leak.json"
+    },
+    {
+      "id": "colour-01-colour-stack",
+      "name": "Colour Stack",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-01-colour-stack.json"
+    },
+    {
+      "id": "colour-02-candy-time",
+      "name": "Candy Time",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-02-candy-time.json"
+    },
+    {
+      "id": "colour-03-spectrum-split",
+      "name": "Spectrum Split",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-03-spectrum-split.json"
+    },
+    {
+      "id": "colour-04-primary-pulse",
+      "name": "Primary Pulse",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-04-primary-pulse.json"
+    },
+    {
+      "id": "colour-05-pastel-blocks",
+      "name": "Pastel Blocks",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-05-pastel-blocks.json"
+    },
+    {
+      "id": "colour-06-tangerine-tick",
+      "name": "Tangerine Tick",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-06-tangerine-tick.json"
+    },
+    {
+      "id": "colour-07-aqua-marker",
+      "name": "Aqua Marker",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-07-aqua-marker.json"
+    },
+    {
+      "id": "colour-08-lemon-dial",
+      "name": "Lemon Dial",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-08-lemon-dial.json"
+    },
+    {
+      "id": "colour-09-coral-minute",
+      "name": "Coral Minute",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-09-coral-minute.json"
+    },
+    {
+      "id": "colour-10-prism-clock",
+      "name": "Prism Clock",
+      "description": "Colour clocks original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom colour type treatment.",
+      "format": "folder",
+      "url": "colour-10-prism-clock.json"
+    },
+    {
+      "id": "dinosaur-01-raptor-run",
+      "name": "Raptor Run",
+      "description": "Dinosaur original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom dinosaur type treatment.",
+      "format": "folder",
+      "url": "dinosaur-01-raptor-run.json"
+    },
+    {
+      "id": "dinosaur-02-jurassic-fern",
+      "name": "Jurassic Fern",
+      "description": "Dinosaur original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom dinosaur type treatment.",
+      "format": "folder",
+      "url": "dinosaur-02-jurassic-fern.json"
+    },
+    {
+      "id": "dinosaur-03-fossil-lab",
+      "name": "Fossil Lab",
+      "description": "Dinosaur original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom dinosaur type treatment.",
+      "format": "folder",
+      "url": "dinosaur-03-fossil-lab.json"
+    },
+    {
+      "id": "dinosaur-04-cretaceous-dawn",
+      "name": "Cretaceous Dawn",
+      "description": "Dinosaur original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom dinosaur type treatment.",
+      "format": "folder",
+      "url": "dinosaur-04-cretaceous-dawn.json"
+    },
+    {
+      "id": "dinosaur-05-dino-tracks",
+      "name": "Dino Tracks",
+      "description": "Dinosaur original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom dinosaur type treatment.",
+      "format": "folder",
+      "url": "dinosaur-05-dino-tracks.json"
+    },
+    {
+      "id": "dinosaur-06-amber-bone",
+      "name": "Amber Bone",
+      "description": "Dinosaur original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom dinosaur type treatment.",
+      "format": "folder",
+      "url": "dinosaur-06-amber-bone.json"
+    },
+    {
+      "id": "dinosaur-07-volcanic-rex",
+      "name": "Volcanic Rex",
+      "description": "Dinosaur original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom dinosaur type treatment.",
+      "format": "folder",
+      "url": "dinosaur-07-volcanic-rex.json"
+    },
+    {
+      "id": "dinosaur-08-tiny-triceratops",
+      "name": "Tiny Triceratops",
+      "description": "Dinosaur original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom dinosaur type treatment.",
+      "format": "folder",
+      "url": "dinosaur-08-tiny-triceratops.json"
+    },
+    {
+      "id": "game-01-pixel-quest",
+      "name": "Pixel Quest",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-01-pixel-quest.json"
+    },
+    {
+      "id": "game-02-dungeon-map",
+      "name": "Dungeon Map",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-02-dungeon-map.json"
+    },
+    {
+      "id": "game-03-sky-runner",
+      "name": "Sky Runner",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-03-sky-runner.json"
+    },
+    {
+      "id": "game-04-mecha-pilot",
+      "name": "Mecha Pilot",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-04-mecha-pilot.json"
+    },
+    {
+      "id": "game-05-puzzle-field",
+      "name": "Puzzle Field",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-05-puzzle-field.json"
+    },
+    {
+      "id": "game-06-boss-room",
+      "name": "Boss Room",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-06-boss-room.json"
+    },
+    {
+      "id": "game-07-star-pilot",
+      "name": "Star Pilot",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-07-star-pilot.json"
+    },
+    {
+      "id": "game-08-racing-hud",
+      "name": "Racing HUD",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-08-racing-hud.json"
+    },
+    {
+      "id": "game-09-quest-log",
+      "name": "Quest Log",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-09-quest-log.json"
+    },
+    {
+      "id": "game-10-arcade-quest",
+      "name": "Arcade Quest",
+      "description": "Game-inspired original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom game type treatment.",
+      "format": "folder",
+      "url": "game-10-arcade-quest.json"
+    },
+    {
+      "id": "gameboy-01-pocket-green",
+      "name": "Pocket Green",
+      "description": "Game Boy original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom gameboy type treatment.",
+      "format": "folder",
+      "url": "gameboy-01-pocket-green.json"
+    },
+    {
+      "id": "gameboy-02-four-shade-quest",
+      "name": "Four Shade Quest",
+      "description": "Game Boy original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom gameboy type treatment.",
+      "format": "folder",
+      "url": "gameboy-02-four-shade-quest.json"
+    },
+    {
+      "id": "gameboy-03-mono-sprite",
+      "name": "Mono Sprite",
+      "description": "Game Boy original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom gameboy type treatment.",
+      "format": "folder",
+      "url": "gameboy-03-mono-sprite.json"
+    },
+    {
+      "id": "gameboy-04-handheld-dawn",
+      "name": "Handheld Dawn",
+      "description": "Game Boy original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom gameboy type treatment.",
+      "format": "folder",
+      "url": "gameboy-04-handheld-dawn.json"
+    },
+    {
+      "id": "gameboy-05-cartridge-city",
+      "name": "Cartridge City",
+      "description": "Game Boy original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom gameboy type treatment.",
+      "format": "folder",
+      "url": "gameboy-05-cartridge-city.json"
+    },
+    {
+      "id": "gameboy-06-dot-matrix",
+      "name": "Dot Matrix",
+      "description": "Game Boy original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom gameboy type treatment.",
+      "format": "folder",
+      "url": "gameboy-06-dot-matrix.json"
+    },
+    {
+      "id": "pet-01-pocket-pet",
+      "name": "Pocket Pet",
+      "description": "Virtual pet original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom pet type treatment.",
+      "format": "folder",
+      "url": "pet-01-pocket-pet.json"
+    },
+    {
+      "id": "pet-02-care-cycle",
+      "name": "Care Cycle",
+      "description": "Virtual pet original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom pet type treatment.",
+      "format": "folder",
+      "url": "pet-02-care-cycle.json"
+    },
+    {
+      "id": "pet-03-happy-egg",
+      "name": "Happy Egg",
+      "description": "Virtual pet original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom pet type treatment.",
+      "format": "folder",
+      "url": "pet-03-happy-egg.json"
+    },
+    {
+      "id": "pet-04-tiny-friend",
+      "name": "Tiny Friend",
+      "description": "Virtual pet original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom pet type treatment.",
+      "format": "folder",
+      "url": "pet-04-tiny-friend.json"
+    },
+    {
+      "id": "pet-05-pet-garden",
+      "name": "Pet Garden",
+      "description": "Virtual pet original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom pet type treatment.",
+      "format": "folder",
+      "url": "pet-05-pet-garden.json"
+    },
+    {
+      "id": "pet-06-digital-hatch",
+      "name": "Digital Hatch",
+      "description": "Virtual pet original HTML lock screen with animated artwork, live clock, Walsall weather, and a custom pet type treatment.",
+      "format": "folder",
+      "url": "pet-06-digital-hatch.json"
     }
   ]
 }

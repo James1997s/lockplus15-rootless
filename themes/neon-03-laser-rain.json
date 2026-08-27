@@ -1,0 +1,22 @@
+{
+  "id": "neon-03-laser-rain",
+  "name": "Laser Rain",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/neon-03-laser-rain",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "2fd10d6784ea5fe3bf3c5aa8d46f30f898cab77abc267258f89f85b5129120b5"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "1f4b981550edabb459e9e73dd647881f2220a2af20abac300462b45e3dbf0b16"
+    }
+  ]
+}

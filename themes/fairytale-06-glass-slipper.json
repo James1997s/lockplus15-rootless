@@ -1,0 +1,22 @@
+{
+  "id": "fairytale-06-glass-slipper",
+  "name": "Glass Slipper",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/fairytale-06-glass-slipper",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "c0fde577c2a2ff7d08ede0af5fdc672515501e1c7c222df84f4e139b1fe4674e"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "4b27c4c103f0aa6a867ededb713aba7812b68a72f8d8762d83f20b6e339be7bd"
+    }
+  ]
+}

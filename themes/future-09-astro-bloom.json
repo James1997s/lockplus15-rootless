@@ -1,0 +1,22 @@
+{
+  "id": "future-09-astro-bloom",
+  "name": "Astro Bloom",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/future-09-astro-bloom",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "f299759833b9d686be80cabd320645a379bf8b8e80eb2ffdecd39d2ce309e313"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "9773e000b0da732ad13587e4dc411837f4c64c88f2a1e951b44c7e9357981349"
+    }
+  ]
+}

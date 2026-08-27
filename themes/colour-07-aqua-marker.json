@@ -1,0 +1,22 @@
+{
+  "id": "colour-07-aqua-marker",
+  "name": "Aqua Marker",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/colour-07-aqua-marker",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "1f76a39805942a076e47da928b285f09748b4baf88e7d1a84241b37aee7290a7"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "01769d21522b16b87f7e183634f9d71a57c9c583e79404f2ebf1d7ff81894901"
+    }
+  ]
+}

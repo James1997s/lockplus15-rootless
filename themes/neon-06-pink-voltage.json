@@ -1,0 +1,22 @@
+{
+  "id": "neon-06-pink-voltage",
+  "name": "Pink Voltage",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/neon-06-pink-voltage",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "2d36bbbecf6fddc4798ef24996c5803f86e37f84e6f6bdc4495809fcd58077c1"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "1f4b981550edabb459e9e73dd647881f2220a2af20abac300462b45e3dbf0b16"
+    }
+  ]
+}

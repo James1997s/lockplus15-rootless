@@ -1,0 +1,22 @@
+{
+  "id": "dinosaur-06-amber-bone",
+  "name": "Amber Bone",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/dinosaur-06-amber-bone",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "be92bf99f6a1905ca6b10b0dac796c86a7775451a70b2ec68e62b102ba9d3b74"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "ef200c530f6a85558808303233b12035cb6704de8ac72832e8b9671f72d90279"
+    }
+  ]
+}

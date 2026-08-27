@@ -1,0 +1,22 @@
+{
+  "id": "comic-05-midnight-pulp",
+  "name": "Midnight Pulp",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/comic-05-midnight-pulp",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "4d3bc883b4215f44f4290ef8015c1f41675645fe57ae00970b9cdc5553b1a2a1"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "e0ad94f2a3a8fbebca77b1bb92ac8874b911228fdde8cee805ae4e66b0cedcf9"
+    }
+  ]
+}

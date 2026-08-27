@@ -1,0 +1,22 @@
+{
+  "id": "japanese-11-fuji-quiet",
+  "name": "Fuji Quiet",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/japanese-11-fuji-quiet",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "611a23da5e7949f359ec3e7cb5fa21af40a3682c7f8ea40a106ce8db27684006"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "16c66507afd8b0c894d4150ef8789ad56885bc7e196c201ffdea8298c69b6f94"
+    }
+  ]
+}

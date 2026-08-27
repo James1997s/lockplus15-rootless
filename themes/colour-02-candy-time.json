@@ -1,0 +1,22 @@
+{
+  "id": "colour-02-candy-time",
+  "name": "Candy Time",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/colour-02-candy-time",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "a5f617a6dfee525482c17a1e7eca55e2e0c9099499523ce12271f9dc857c5131"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "01769d21522b16b87f7e183634f9d71a57c9c583e79404f2ebf1d7ff81894901"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "comic-01-pop-panel",
+  "name": "Pop Panel",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/comic-01-pop-panel",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "b3cb69d33c76bab0a1717bb7b79fc0e96389c1b047a0d7277c30fce7fddf28db"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "e0ad94f2a3a8fbebca77b1bb92ac8874b911228fdde8cee805ae4e66b0cedcf9"
+    }
+  ]
+}

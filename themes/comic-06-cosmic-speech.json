@@ -1,0 +1,22 @@
+{
+  "id": "comic-06-cosmic-speech",
+  "name": "Cosmic Speech",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/comic-06-cosmic-speech",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "b3fb63d63f5c9417072ece75972d053bf4885fcba5945e467c4f1b4dbc157431"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "e0ad94f2a3a8fbebca77b1bb92ac8874b911228fdde8cee805ae4e66b0cedcf9"
+    }
+  ]
+}

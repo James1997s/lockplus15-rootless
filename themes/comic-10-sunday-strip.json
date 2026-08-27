@@ -1,0 +1,22 @@
+{
+  "id": "comic-10-sunday-strip",
+  "name": "Sunday Strip",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/comic-10-sunday-strip",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "22c10bafecd16d13a7052151d6c9e3072bf71180f627927d992feabca7883bb2"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "e0ad94f2a3a8fbebca77b1bb92ac8874b911228fdde8cee805ae4e66b0cedcf9"
+    }
+  ]
+}

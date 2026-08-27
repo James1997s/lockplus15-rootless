@@ -1,0 +1,22 @@
+{
+  "id": "dinosaur-03-fossil-lab",
+  "name": "Fossil Lab",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/dinosaur-03-fossil-lab",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "ba473b61162fd4ce31a4974474386a38d7bb8707bef1c350c2c07823ff320333"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "ef200c530f6a85558808303233b12035cb6704de8ac72832e8b9671f72d90279"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "tattoo-08-moon-moth",
+  "name": "Moon Moth",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/tattoo-08-moon-moth",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "0c0c6c5092cf3347913d8a77d83949d4204535ec60d45c003061289d3fa2e798"
+    },
+    {
+      "path": "script.js",
+      "sha256": "bc31dbe9273140d05ba8853fb8fcdeb79baf24f1414a36ece32ba34ed7802a2d"
+    },
+    {
+      "path": "style.css",
+      "sha256": "5e17d5defcc017c805b187d0cd287e37637bfb770cd1ba8ef68ae5e4cebd9309"
+    }
+  ]
+}
