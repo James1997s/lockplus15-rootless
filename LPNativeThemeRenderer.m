@@ -987,6 +987,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 @property (nonatomic, strong) WKWebView *folderWebView;
 @property (nonatomic, copy) NSString *folderReadRoot;
 @property (nonatomic, assign) NSUInteger folderLoadGeneration;
+@property (nonatomic, assign) BOOL transitionSuspended;
 @end
 
 @implementation LPNativeThemeRenderer
@@ -999,6 +1000,7 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     // the date hierarchy bounds during lock/unlock without rebuilding us.
     if (self.folderWebView != nil) {
         self.folderWebView.frame = self.bounds;
+        self.folderWebView.hidden = self.transitionSuspended;
         self.folderWebView.scrollView.contentInset = UIEdgeInsetsZero;
         self.folderWebView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
     }
@@ -1032,6 +1034,19 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
     [self.folderWebView removeFromSuperview];
     self.folderWebView = nil;
     self.folderReadRoot = nil;
+}
+
+- (void)setTransitionSuspended:(BOOL)suspended {
+    _transitionSuspended = suspended;
+    self.hidden = suspended;
+    if (self.folderWebView != nil) {
+        self.folderWebView.hidden = suspended;
+        self.folderWebView.layer.speed = suspended ? 0.0 : 1.0;
+    }
+    if (suspended) {
+        [self.updateTimer invalidate];
+        self.updateTimer = nil;
+    }
 }
 
 - (void)clearNativeRenderedContent {

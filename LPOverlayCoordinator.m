@@ -284,8 +284,9 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     void (^update)(void) = ^{
         self.lockScreenVisible = visible;
         if (!visible) {
-            // Hide synchronously before SpringBoard presents passcode or unlock
-            // layers; do not wait for the 500 ms host monitor tick.
+            // Suspend the retained renderer first, then hide the overlay before
+            // SpringBoard presents passcode or unlock layers.
+            [self.themeRenderer setTransitionSuspended:YES];
             self.overlayView.hidden = YES;
             self.overlayView.alpha = 0.0;
             [self.hostMonitorTimer invalidate];
@@ -293,6 +294,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
         } else {
             self.overlayView.alpha = 1.0;
             self.overlayView.hidden = NO;
+            [self.themeRenderer setTransitionSuspended:NO];
             [self applyStockDateVisibility];
             [self ensureOverlayAttachedToCurrentHost];
             [self startHostMonitor];
