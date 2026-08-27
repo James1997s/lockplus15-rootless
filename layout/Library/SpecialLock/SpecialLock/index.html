@@ -9,7 +9,16 @@
     html, body, #lp-root { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: transparent; }
     #lp-root { position: relative; pointer-events: none; -webkit-user-select: none; user-select: none; }
     .lp-element { position: absolute; white-space: nowrap; text-align: center; -webkit-font-smoothing: antialiased; }
-    .lp-clock, .lp-date { font-variant-numeric: tabular-nums; }
+    @font-face {
+      font-family: "LockTime26Stencil";
+      src: url("fonts/LockTime26Stencil.ttf") format("truetype");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    .lp-clock, .lp-date, .lp-battery { font-variant-numeric: tabular-nums; }
+    #lp-globe { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+    .lp-battery { position:absolute; white-space:nowrap; text-align:center; }
   </style>
 </head>
 <body>
@@ -29,6 +38,12 @@
         var hours = now.getHours();
         var minutes = pad(now.getMinutes());
         var is24Hour = !!(currentTheme && currentTheme.twentyFourHour);
+        if (currentTheme && currentTheme.placedElements && currentTheme.placedElements.clock) {
+          var clockProps = currentTheme.placedElements.clock;
+          if (clockProps['data-twenty-four-hour'] !== undefined) {
+            is24Hour = String(clockProps['data-twenty-four-hour']).toLowerCase() === 'true';
+          }
+        }
         if (is24Hour) {
           return pad(hours) + ':' + minutes;
         }
@@ -37,19 +52,20 @@
       }
 
       function dateString(now, style) {
-        if (style === 'todaystrings') {
-          return now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+        if (style === 'shortdate' || style === 'locktime') {
+          return now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
         }
+        var options = { weekday: 'long', month: 'long', day: 'numeric' };
         if (style === 'daydatemonth') {
-          return now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+          options = { weekday: 'long', day: 'numeric', month: 'long' };
         }
-        return now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+        return now.toLocaleDateString('en-US', options);
       }
 
       function applyProperties(element, properties) {
         Object.keys(properties).forEach(function (key) {
           var value = properties[key];
-          if (key === 'type' || key === 'innerHTML' || key === 'text-texture-asset-id') {
+          if (key === 'type' || key === 'innerHTML' || key === 'text-texture-asset-id' || key === 'cookie-glyph-atlas-asset-id') {
             return;
           }
           if (key.indexOf('data-') === 0) {
@@ -65,19 +81,26 @@
       function render(theme) {
         currentTheme = theme || { placedElements: {} };
         root.textContent = '';
+        root.removeAttribute('style');
         var elements = currentTheme.placedElements || {};
 
         Object.keys(elements).forEach(function (identifier) {
           var properties = elements[identifier] || {};
           var type = properties.type || 'text';
-          var element = type === 'image' ? document.createElement('img') : document.createElement('div');
+          var isWebGLGlobe = type === 'webgl-globe' || properties['render-mode'] === 'webgl-globe';
+          var element = isWebGLGlobe ? document.createElement('canvas') : (type === 'image' ? document.createElement('img') : document.createElement('div'));
+          if (identifier === 'background' || type === 'background') {
+            applyProperties(root, properties);
+            root.setAttribute('data-lp-background', 'true');
+            return;
+          }
           element.id = identifier;
           element.className = 'lp-element lp-' + type;
+          if (isWebGLGlobe) { element.id = 'lp-globe'; }
           element.setAttribute('data-lp-type', type);
           applyProperties(element, properties);
-          if (type === 'image' && properties['asset-id'] && currentTheme && currentTheme.id) {
-            element.src = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/' + encodeURIComponent(properties['asset-id']);
-            element.draggable = false;
+          if (type === 'clock' && properties['cookie-glyph-atlas-asset-id']) {
+            element.setAttribute('data-cookie-atlas', properties['cookie-glyph-atlas-asset-id']);
           }
           if ((type === 'clock' || type === 'date' || type === 'text') && properties['text-texture-asset-id'] && currentTheme && currentTheme.id) {
             var texturePath = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/' + encodeURIComponent(properties['text-texture-asset-id']);
@@ -89,12 +112,50 @@
             element.style.color = 'transparent';
             element.style.webkitTextFillColor = 'transparent';
           }
+          if (type === 'image') {
+            var assetID = properties['asset-id'];
+            var themeID = currentTheme && currentTheme.id;
+            if (assetID && themeID) {
+              element.src = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(themeID) + '/' + encodeURIComponent(assetID);
+            } else if (typeof properties.src === 'string') {
+              element.src = properties.src;
+            }
+            element.draggable = false;
+          }
           if (type === 'text' && typeof properties.innerHTML === 'string') {
             element.textContent = properties.innerHTML;
           }
           root.appendChild(element);
+          if (isWebGLGlobe) { startGlobe(element, properties); }
         });
         updateDynamicValues();
+      }
+
+      function renderCookieCutoutClock(element, value) {
+        var atlasID = element.getAttribute('data-cookie-atlas');
+        if (!atlasID || !currentTheme || !currentTheme.id) return false;
+        var chars = String(value).split('');
+        var atlasPath = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/' + encodeURIComponent(atlasID);
+        element.textContent = '';
+        element.style.fontSize = '0px';
+        element.style.display = 'flex';
+        element.style.alignItems = 'center';
+        element.style.justifyContent = 'center';
+        element.style.gap = '2px';
+        for (var i = 0; i < chars.length; i += 1) {
+          var glyph = document.createElement('span');
+          var index = '0123456789:'.indexOf(chars[i]);
+          if (index < 0) continue;
+          glyph.style.display = 'inline-block';
+          glyph.style.width = '64px';
+          glyph.style.height = '78px';
+          glyph.style.backgroundImage = 'url("' + atlasPath + '")';
+          glyph.style.backgroundRepeat = 'no-repeat';
+          glyph.style.backgroundSize = '1100% 100%';
+          glyph.style.backgroundPosition = ((index / 10) * 100) + '% center';
+          element.appendChild(glyph);
+        }
+        return true;
       }
 
       function updateDynamicValues() {
@@ -104,11 +165,36 @@
           var element = elements[index];
           var type = element.getAttribute('data-lp-type');
           if (type === 'clock') {
-            element.textContent = timeString(now);
+            if (element.getAttribute('data-cookie-atlas')) {
+              renderCookieCutoutClock(element, timeString(now));
+            } else {
+              element.textContent = timeString(now);
+            }
           } else if (type === 'date') {
             element.textContent = dateString(now, element.id);
+          } else if (type === 'battery') {
+            var level = (window.LockPlus15 && window.LockPlus15.batteryLevel);
+            element.textContent = (typeof level === 'number' ? Math.round(level * 100) : '--') + '%';
           }
         }
+      }
+
+      function startGlobe(canvas, props) {
+        var gl = canvas.getContext('webgl', { alpha: true, antialias: true });
+        if (!gl) return;
+        var vs = 'attribute vec3 p; attribute vec2 uv; uniform mat4 m; varying vec2 v; void main(){gl_Position=m*vec4(p,1.0);v=uv;}';
+        var fs = 'precision mediump float; varying vec2 v; uniform sampler2D tex; uniform float glow; void main(){vec4 c=texture2D(tex,v); float rim=pow(1.0-abs(v.y-0.5)*2.0,1.7); gl_FragColor=vec4(c.rgb*(0.68+0.32*rim)+vec3(0.02,0.12,0.30)*rim*0.35,c.a);}';
+        function shader(t,s){var x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);return x;}
+        var pr=gl.createProgram();gl.attachShader(pr,shader(gl.VERTEX_SHADER,vs));gl.attachShader(pr,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);
+        var verts=[], uvs=[], idx=[], lat=28, lon=48;
+        for(var y=0;y<=lat;y++){var a=y*Math.PI/lat, sy=Math.cos(a), sr=Math.sin(a);for(var x=0;x<=lon;x++){var b=x*2*Math.PI/lon;verts.push(sr*Math.cos(b),sy,sr*Math.sin(b));uvs.push(1-x/lon,1-y/lat);}}
+        for(var y=0;y<lat;y++)for(var x=0;x<lon;x++){var i=y*(lon+1)+x;idx.push(i,i+lon+1,i+1,i+1,i+lon+1,i+lon+2);}
+        function buf(type,data){var b=gl.createBuffer();gl.bindBuffer(type,b);gl.bufferData(type,new Float32Array(data),gl.STATIC_DRAW);return b;}
+        var pb=buf(gl.ARRAY_BUFFER,verts), ub=buf(gl.ARRAY_BUFFER,uvs), ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),gl.STATIC_DRAW);
+        var pl=gl.getAttribLocation(pr,'p'), ul=gl.getAttribLocation(pr,'uv');gl.bindBuffer(gl.ARRAY_BUFFER,pb);gl.enableVertexAttribArray(pl);gl.vertexAttribPointer(pl,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,ub);gl.enableVertexAttribArray(ul);gl.vertexAttribPointer(ul,2,gl.FLOAT,false,0,0);
+        var image=new Image(); image.onload=function(){var tx=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tx);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);gl.uniform1i(gl.getUniformLocation(pr,'tex'),0);requestAnimationFrame(frame);}; image.src=props['texture-url'] || 'assets/earth-texture.png';
+        var start=Date.now();
+        function frame(){var w=canvas.clientWidth*devicePixelRatio,h=canvas.clientHeight*devicePixelRatio;if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);var t=(Date.now()-start)/1000, ang=t*0.18;var sx=canvas.clientWidth/375, sy=canvas.clientHeight/667;var sc=props.scale||0.78;var aspect=w/h;var f=1.0/Math.tan(0.55/2), near=0.1, far=10.0;var m=[f/aspect,0,0,0,0,f,0,0,0,0,(far+near)/(near-far),-1,0,0,(2*far*near)/(near-far),0];var c=Math.cos(ang),s=Math.sin(ang);m[0]*=sc;m[5]*=sc;m[12]=0;m[13]=-0.18;m[14]=-2.55;var r=[c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1];var out=[];for(var q=0;q<4;q++)for(var k=0;k<4;k++){var z=0;for(var j=0;j<4;j++)z+=m[q*4+j]*r[j*4+k];out[q*4+k]=z;}gl.uniformMatrix4fv(gl.getUniformLocation(pr,'m'),false,new Float32Array(out));gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0);requestAnimationFrame(frame);}
       }
 
       window.LockPlus15 = window.LockPlus15 || {};
@@ -125,7 +211,15 @@
         }
       }
       render(initialTheme);
-      window.setInterval(updateDynamicValues, 1000);
+      function scheduleClockRefresh() {
+        var now = new Date();
+        var delay = ((60 - now.getSeconds()) * 1000) - now.getMilliseconds();
+        window.setTimeout(function () {
+          updateDynamicValues();
+          scheduleClockRefresh();
+        }, Math.max(250, delay));
+      }
+      scheduleClockRefresh();
     }());
   </script>
 </body>
