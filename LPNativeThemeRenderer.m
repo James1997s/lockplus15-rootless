@@ -991,25 +991,11 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
 
 @implementation LPNativeThemeRenderer
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-
-    // Folder themes own the complete visual canvas. Reassert the WebView
-    // frame on every host reparent/layout pass because SpringBoard can change
-    // the date hierarchy bounds during lock/unlock without rebuilding us.
-    if (self.folderWebView != nil) {
-        self.folderWebView.frame = self.bounds;
-        self.folderWebView.scrollView.contentInset = UIEdgeInsetsZero;
-        self.folderWebView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
-    }
-}
-
 - (instancetype)initWithThemeJSONString:(NSString *)themeJSONString {
     self = [super initWithFrame:CGRectZero];
     if (self) {
         self.backgroundColor = UIColor.clearColor;
         self.opaque = NO;
-        self.clipsToBounds = NO;
         self.userInteractionEnabled = NO;
         self.elements = [NSMutableArray array];
         self.ecgTimeViews = [NSMutableArray array];
@@ -1066,12 +1052,8 @@ static UIImage *LPImageFromThemeAssetData(NSData *data) {
         webView.navigationDelegate = self;
         webView.backgroundColor = UIColor.clearColor;
         webView.opaque = NO;
-        webView.clipsToBounds = NO;
         webView.scrollView.scrollEnabled = NO;
         webView.scrollView.bounces = NO;
-        webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        webView.scrollView.contentInset = UIEdgeInsetsZero;
-        webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
         webView.userInteractionEnabled = NO;
         webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self addSubview:webView];
