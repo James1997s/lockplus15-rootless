@@ -269,19 +269,28 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     }];
 }
 - (void)setLockScreenVisible:(BOOL)visible {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    void (^update)(void) = ^{
         self.lockScreenVisible = visible;
         if (!visible) {
+            // Hide synchronously before SpringBoard presents passcode or unlock
+            // layers; do not wait for the 500 ms host monitor tick.
             self.overlayView.hidden = YES;
+            self.overlayView.alpha = 0.0;
             [self.hostMonitorTimer invalidate];
             self.hostMonitorTimer = nil;
         } else {
+            self.overlayView.alpha = 1.0;
             self.overlayView.hidden = NO;
             [self applyStockDateVisibility];
             [self ensureOverlayAttachedToCurrentHost];
             [self startHostMonitor];
         }
-    });
+    };
+    if ([NSThread isMainThread]) {
+        update();
+    } else {
+        dispatch_async(dispatch_get_main_queue(), update);
+    }
 }
 
 - (void)detachFromHostView:(UIView *)hostView {

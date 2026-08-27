@@ -9,6 +9,8 @@
 @end
 @interface SBDashBoardViewController : UIViewController
 @end
+@interface SBPasscodeLockViewBase : UIView
+@end
 
 static char kLPHiddenEmptyNotificationStateKey;
 
@@ -100,6 +102,14 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
 %end
 
 
+%hook SBPasscodeLockViewBase
+- (void)didMoveToWindow {
+    %orig;
+    if (self.window != nil) {
+        [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:NO];
+    }
+}
+%end
 %hook SBDashBoardViewController
 - (void)viewWillDisappear:(BOOL)animated {
     [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:NO];
