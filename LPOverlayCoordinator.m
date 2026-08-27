@@ -122,7 +122,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     if (!self.isEnabled || self.stockDateView.window == nil) {
         return;
     }
-    UIView *currentHost = self.stockDateView.superview;
+    UIView *currentHost = self.stockDateView.window;
     if (currentHost == nil) {
         return;
     }
@@ -165,7 +165,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
     renderer.translatesAutoresizingMaskIntoConstraints = NO;
 
     [overlay addSubview:renderer];
-    [hostView addSubview:overlay];
+    [hostView insertSubview:overlay atIndex:0];
     [NSLayoutConstraint activateConstraints:@[
         [overlay.leadingAnchor constraintEqualToAnchor:hostView.leadingAnchor],
         [overlay.trailingAnchor constraintEqualToAnchor:hostView.trailingAnchor],
