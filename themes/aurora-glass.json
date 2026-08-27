@@ -1,0 +1,30 @@
+{
+  "id": "aurora-glass",
+  "name": "iOS 26 Big Glass Clock",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/aurora-glass",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "AkrobatLight.otf",
+      "sha256": "af7c8371cf79504cc4871da03ef65687e35d1943878a9b4aef02955fe4f909e6"
+    },
+    {
+      "path": "LockBackground.html",
+      "sha256": "7ba3fef6f7830986c983ae9fad4051b208dbb85cd7e91a61183d5f73c2b62771"
+    },
+    {
+      "path": "script.js",
+      "sha256": "c017be8f7ead263995a0c27a7290cdc16946bbec509cda1465c85f8441916c74"
+    },
+    {
+      "path": "style.css",
+      "sha256": "1f136bcb94928ce5f5e3dd490e46f9a1eebd1a62186d89fe8ec7b286f0c7f04b"
+    },
+    {
+      "path": "wallpaper.jpg",
+      "sha256": "c6a233f185e54811a696e90bcf9dabae2917f4410d33a6315197ad51e492dd98"
+    }
+  ]
+}

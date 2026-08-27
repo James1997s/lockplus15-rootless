@@ -64,6 +64,36 @@
       "name": "One UI 8 Adaptive Clock",
       "url": "oneui8-adaptive-clock.json",
       "format": "folder"
+    },
+    {
+      "id": "aurora-glass",
+      "name": "Aurora Glass",
+      "url": "aurora-glass.json",
+      "format": "folder"
+    },
+    {
+      "id": "ink-garden",
+      "name": "Ink Garden",
+      "url": "ink-garden.json",
+      "format": "folder"
+    },
+    {
+      "id": "desert-sun",
+      "name": "Desert Sun",
+      "url": "desert-sun.json",
+      "format": "folder"
+    },
+    {
+      "id": "ocean-night",
+      "name": "Ocean Night",
+      "url": "ocean-night.json",
+      "format": "folder"
+    },
+    {
+      "id": "neon-architecture",
+      "name": "Neon Architecture",
+      "url": "neon-architecture.json",
+      "format": "folder"
     }
   ]
 }

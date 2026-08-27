@@ -1,0 +1,30 @@
+{
+  "id": "ink-garden",
+  "name": "iOS 26 Big Glass Clock",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/ink-garden",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "CondLight.otf",
+      "sha256": "f77a6815a4b408da82a9329eb4c69a4f3b296796b9ef0f2d88e1d9ebd23ffadb"
+    },
+    {
+      "path": "LockBackground.html",
+      "sha256": "245a369b50de7ded55ce170c7278c7423f061d891e4094310dca581259c766cf"
+    },
+    {
+      "path": "script.js",
+      "sha256": "c017be8f7ead263995a0c27a7290cdc16946bbec509cda1465c85f8441916c74"
+    },
+    {
+      "path": "style.css",
+      "sha256": "dc66b9d2051fcd45a6eef4311186c1dcf434badca030b91f952530157efe8fc9"
+    },
+    {
+      "path": "wallpaper.jpg",
+      "sha256": "32016458dc149f256f5c887067497222f5dd8da5d736ffe696de75175ac76b52"
+    }
+  ]
+}

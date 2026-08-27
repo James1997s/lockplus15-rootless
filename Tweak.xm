@@ -88,11 +88,9 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
 }
 
 - (void)willMoveToWindow:(UIWindow *)newWindow {
-    LPOverlayCoordinator *coordinator = [LPOverlayCoordinator sharedCoordinator];
-    if (newWindow == nil) {
-        [coordinator detachCurrentOverlay];
-        [coordinator unregisterStockDateView:self];
-    }
+    // SpringBoard transiently removes/reparents the date view during unlock
+    // and lock-screen hierarchy rebuilds. Do not tear down the HTML renderer
+    // here; didMoveToWindow will register the new host when it returns.
     %orig;
 }
 

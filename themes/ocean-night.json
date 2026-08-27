@@ -1,0 +1,30 @@
+{
+  "id": "ocean-night",
+  "name": "iOS 26 Big Glass Clock",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/ocean-night",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "DIN.otf",
+      "sha256": "6bcf26030c245d9b0ebd0e5b20e85494669d21f8d7b41b714e4ebca459f1f322"
+    },
+    {
+      "path": "LockBackground.html",
+      "sha256": "90da101754a28b3354f096669086a7d95f7a1a0c9cdfe781c4fe31a468c3b000"
+    },
+    {
+      "path": "script.js",
+      "sha256": "c017be8f7ead263995a0c27a7290cdc16946bbec509cda1465c85f8441916c74"
+    },
+    {
+      "path": "style.css",
+      "sha256": "71daf48614bbf2325b55a8cb4783547de1cf420ec614735176855a8bffa7073b"
+    },
+    {
+      "path": "wallpaper.jpg",
+      "sha256": "4799ec5b58538178ebc51183bfc76e5ba76e3de641f40b199c6bbea05b24b26c"
+    }
+  ]
+}
