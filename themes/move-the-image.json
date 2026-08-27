@@ -1,161 +1,26 @@
 {
-  "assets": [
+  "id": "move-the-image",
+  "name": "move-the-image",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/move-the-image",
+  "entry": "LockBackground.html",
+  "files": [
     {
-      "id": "move-image-wallpaper",
-      "url": "assets/move-the-image/move-the-image-iphone7.gif",
+      "path": "LockBackground.html",
+      "sha256": "439bfb8bcaeb15c6da052817cbf518b72ac8df52601b627326feb96eceeb0049"
+    },
+    {
+      "path": "move-the-image-iphone7.gif",
       "sha256": "75184385521127796e754cd5e8d73167c0320fd32549bef97c0a70cc9bac5943"
+    },
+    {
+      "path": "script.js",
+      "sha256": "f6242d7bffe80a6662b5f879c9bd9a6b3111ea7a6af29a530cfbdae447d78df3"
+    },
+    {
+      "path": "style.css",
+      "sha256": "4753a714b65585cfa8f8a686c548658e769989d20e54f892c4add4281fcfb2ba"
     }
-  ],
-  "placedElements": {
-    "wallpaper": {
-      "type": "wallpaper",
-      "position": "absolute",
-      "left": "50%",
-      "top": "0px",
-      "transform": "translateX(-50%)",
-      "gradient": "#FFFFFF|#FFFFFF",
-      "z-index": "-100"
-    },
-    "header": {
-      "type": "text",
-      "position": "absolute",
-      "left": "50%",
-      "top": "46px",
-      "transform": "translateX(-50%)",
-      "width": "326px",
-      "height": "18px",
-      "innerHTML": "MOVE WITH THE MOMENT",
-      "color": "#2A201B",
-      "font-family": "HelveticaNeue-Bold",
-      "font-size": "11px",
-      "font-weight": "700",
-      "letter-spacing": "2.5px",
-      "z-index": "20"
-    },
-    "wordClock": {
-      "type": "word-clock",
-      "position": "absolute",
-      "left": "50%",
-      "top": "72px",
-      "transform": "translateX(-50%)",
-      "width": "340px",
-      "height": "88px",
-      "color": "#17110D",
-      "font-family": "AvenirNext-DemiBold",
-      "font-size": "29px",
-      "font-weight": "700",
-      "letter-spacing": "1.0px",
-      "z-index": "20"
-    },
-    "date": {
-      "type": "date",
-      "position": "absolute",
-      "left": "50%",
-      "top": "170px",
-      "transform": "translateX(-50%)",
-      "width": "320px",
-      "height": "20px",
-      "time-format": "EEEE, MMMM d",
-      "uppercase": "true",
-      "color": "#66584E",
-      "font-family": "HelveticaNeue-Medium",
-      "font-size": "12px",
-      "font-weight": "700",
-      "letter-spacing": "1.2px",
-      "z-index": "20"
-    },
-    "woodOuter": {
-      "type": "panel",
-      "position": "absolute",
-      "left": "50%",
-      "top": "214px",
-      "transform": "translateX(-50%)",
-      "width": "340px",
-      "height": "292px",
-      "padding": "0px",
-      "background-color": "#5A321D",
-      "border": "2px solid #321B10",
-      "border-radius": "2px",
-      "innerHTML": "",
-      "color": "#5A321D",
-      "z-index": "10"
-    },
-    "woodHighlight": {
-      "type": "panel",
-      "position": "absolute",
-      "left": "50%",
-      "top": "220px",
-      "transform": "translateX(-50%)",
-      "width": "328px",
-      "height": "280px",
-      "padding": "0px",
-      "background-color": "#A66A3D",
-      "border": "1px solid #D39A61",
-      "border-radius": "1px",
-      "innerHTML": "",
-      "color": "#A66A3D",
-      "z-index": "11"
-    },
-    "woodInset": {
-      "type": "panel",
-      "position": "absolute",
-      "left": "50%",
-      "top": "230px",
-      "transform": "translateX(-50%)",
-      "width": "308px",
-      "height": "260px",
-      "padding": "0px",
-      "background-color": "#2B190F",
-      "border-radius": "0px",
-      "innerHTML": "",
-      "color": "#2B190F",
-      "z-index": "12"
-    },
-    "framedAnimation": {
-      "type": "image",
-      "position": "absolute",
-      "left": "50%",
-      "top": "246px",
-      "transform": "translateX(-50%)",
-      "asset-id": "move-image-wallpaper",
-      "image-role": "panel",
-      "width": "268px",
-      "height": "220px",
-      "opacity": "1.0",
-      "border-radius": "0px",
-      "z-index": "15"
-    },
-    "quoteBacking": {
-      "type": "panel",
-      "position": "absolute",
-      "left": "50%",
-      "top": "530px",
-      "transform": "translateX(-50%)",
-      "width": "304px",
-      "height": "44px",
-      "padding": "0px",
-      "background-color": "#FFFFFF",
-      "border": "1px solid #5A321D",
-      "border-radius": "0px",
-      "innerHTML": "",
-      "color": "#FFFFFF",
-      "z-index": "15"
-    },
-    "quote": {
-      "type": "text",
-      "position": "absolute",
-      "left": "50%",
-      "top": "542px",
-      "transform": "translateX(-50%)",
-      "width": "292px",
-      "height": "20px",
-      "innerHTML": "JUST LET GO WITH IT",
-      "color": "#432516",
-      "font-family": "HelveticaNeue-Bold",
-      "font-size": "12px",
-      "font-weight": "700",
-      "letter-spacing": "1.4px",
-      "z-index": "20"
-    }
-  }
+  ]
 }

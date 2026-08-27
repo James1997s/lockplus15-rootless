@@ -2,105 +2,25 @@
   "id": "cat-hat-side-clock",
   "name": "Whimsy Cat Side Clock",
   "version": "1.0.2",
-  "assets": [
+  "format": "folder",
+  "basePath": "folder-themes/cat-hat-side-clock",
+  "entry": "LockBackground.html",
+  "files": [
     {
-      "id": "cat-hat-animated-wallpaper",
-      "url": "assets/cat-hat-clock/cat-hat-animated-wallpaper.gif",
+      "path": "LockBackground.html",
+      "sha256": "c30148aa8ffdd07e3e3db6be55791f4280b75b029d677ebfa1b4b7bef2e0c562"
+    },
+    {
+      "path": "cat-hat-animated-wallpaper.gif",
       "sha256": "54ed4731b59c52fd562c8eef03ebca91d73c23de2075602f947936063c1d8d97"
+    },
+    {
+      "path": "script.js",
+      "sha256": "f6242d7bffe80a6662b5f879c9bd9a6b3111ea7a6af29a530cfbdae447d78df3"
+    },
+    {
+      "path": "style.css",
+      "sha256": "4753a714b65585cfa8f8a686c548658e769989d20e54f892c4add4281fcfb2ba"
     }
-  ],
-  "placedElements": {
-    "date": {
-      "type": "date",
-      "position": "absolute",
-      "left": "205px",
-      "top": "44px",
-      "width": "158px",
-      "height": "26px",
-      "time-format": "EEE, MMM d",
-      "color": "#F8E8C2",
-      "font-family": "CookieCutout",
-      "font-file": "fonts/CookieCutout.ttf",
-      "font-size": "16px",
-      "font-weight": "400",
-      "text-shadow": "0px 2px 3px rgba(0,0,0,0.65)",
-      "z-index": "10"
-    },
-    "clock": {
-      "type": "clock",
-      "position": "absolute",
-      "left": "50%",
-      "top": "253px",
-      "width": "126px",
-      "height": "82px",
-      "time-format": "h:mm",
-      "color": "#F4D08B",
-      "font-family": "CookieCutout",
-      "font-file": "fonts/CookieCutout.ttf",
-      "font-size": "58px",
-      "font-weight": "400",
-      "letter-spacing": "1px",
-      "transform": "translateX(-50%) translateX(-145px) rotate(90deg)",
-      "text-shadow": "2px 2px 0px #B52D32, 3px 3px 5px rgba(0,0,0,0.6)",
-      "z-index": "12"
-    },
-    "caption": {
-      "type": "html",
-      "position": "absolute",
-      "left": "224px",
-      "top": "78px",
-      "width": "140px",
-      "height": "24px",
-      "innerHTML": "<span style=\"letter-spacing:1px\">TIME IS A FUNNY THING</span>",
-      "color": "#F8E8C2",
-      "font-family": "CookieCutout",
-      "font-file": "fonts/CookieCutout.ttf",
-      "font-size": "10px",
-      "font-weight": "400",
-      "letter-spacing": "1px",
-      "text-shadow": "0px 2px 3px rgba(0,0,0,0.65)",
-      "z-index": "10"
-    },
-    "accent": {
-      "type": "text",
-      "position": "absolute",
-      "left": "50%",
-      "top": "600px",
-      "width": "140px",
-      "height": "28px",
-      "innerHTML": "OH, THE PLACES!",
-      "color": "#E84B4B",
-      "font-family": "CookieCutout",
-      "font-file": "fonts/CookieCutout.ttf",
-      "font-size": "12px",
-      "font-weight": "400",
-      "letter-spacing": "1px",
-      "transform": "translateX(-50%) rotate(-8deg)",
-      "text-shadow": "1px 1px 0px #F8E8C2",
-      "z-index": "10"
-    },
-    "wallpaper": {
-      "type": "wallpaper",
-      "position": "absolute",
-      "left": "50%",
-      "top": "0px",
-      "transform": "translateX(-50%)",
-      "gradient": "#08152D|#08152D",
-      "z-index": "-100"
-    },
-    "catBackground": {
-      "type": "image",
-      "position": "absolute",
-      "left": "50%",
-      "top": "0px",
-      "transform": "translateX(-50%)",
-      "asset-id": "cat-hat-animated-wallpaper",
-      "image-role": "panel",
-      "width": "375px",
-      "height": "667px",
-      "opacity": "1.0",
-      "border-radius": "0px",
-      "z-index": "0"
-    }
-  }
+  ]
 }

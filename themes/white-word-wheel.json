@@ -1,98 +1,26 @@
 {
-  "assets": [
+  "id": "white-word-wheel",
+  "name": "white-word-wheel",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/white-word-wheel",
+  "entry": "LockBackground.html",
+  "files": [
     {
-      "id": "hamster-wheel",
-      "url": "assets/white-word-wheel/hamster-wheel.gif",
+      "path": "LockBackground.html",
+      "sha256": "180c96c08a2b3ab6f1a5906ab8ecd95ab7c270d348f8456a6b8520ea4ef43947"
+    },
+    {
+      "path": "hamster-wheel.gif",
       "sha256": "ea81dfc0341a2b2e4914fcf1f36d9901a185b1e1e8222be8b53da4a38ec2bc1e"
+    },
+    {
+      "path": "script.js",
+      "sha256": "f6242d7bffe80a6662b5f879c9bd9a6b3111ea7a6af29a530cfbdae447d78df3"
+    },
+    {
+      "path": "style.css",
+      "sha256": "4753a714b65585cfa8f8a686c548658e769989d20e54f892c4add4281fcfb2ba"
     }
-  ],
-  "placedElements": {
-    "wallpaper": {
-      "type": "wallpaper",
-      "position": "absolute",
-      "left": "50%",
-      "top": "0px",
-      "transform": "translateX(-50%)",
-      "gradient": "#FFFFFF|#FFFFFF",
-      "z-index": "-100"
-    },
-    "heading": {
-      "type": "text",
-      "position": "absolute",
-      "left": "50%",
-      "top": "75px",
-      "transform": "translateX(-50%)",
-      "width": "300px",
-      "height": "18px",
-      "innerHTML": "A QUIET MOMENT",
-      "color": "#191919",
-      "font-family": "HelveticaNeue-Medium",
-      "font-size": "11px",
-      "font-weight": "600",
-      "letter-spacing": "2.2px",
-      "z-index": "10"
-    },
-    "wordClock": {
-      "type": "word-clock",
-      "position": "absolute",
-      "left": "50%",
-      "top": "105px",
-      "transform": "translateX(-50%)",
-      "width": "332px",
-      "height": "92px",
-      "color": "#0D0D0D",
-      "font-family": "AvenirNext-DemiBold",
-      "font-size": "31px",
-      "font-weight": "700",
-      "letter-spacing": "1.1px",
-      "z-index": "20"
-    },
-    "date": {
-      "type": "date",
-      "position": "absolute",
-      "left": "50%",
-      "top": "210px",
-      "transform": "translateX(-50%)",
-      "width": "300px",
-      "height": "20px",
-      "time-format": "EEEE, MMMM d",
-      "uppercase": "true",
-      "color": "#565656",
-      "font-family": "HelveticaNeue-Medium",
-      "font-size": "12px",
-      "font-weight": "600",
-      "letter-spacing": "1.0px",
-      "z-index": "20"
-    },
-    "hamsterWheel": {
-      "type": "image",
-      "position": "absolute",
-      "left": "50%",
-      "top": "264px",
-      "transform": "translateX(-50%)",
-      "asset-id": "hamster-wheel",
-      "image-role": "panel",
-      "width": "232px",
-      "height": "232px",
-      "opacity": "1.0",
-      "border-radius": "0px",
-      "z-index": "15"
-    },
-    "caption": {
-      "type": "text",
-      "position": "absolute",
-      "left": "50%",
-      "top": "512px",
-      "transform": "translateX(-50%)",
-      "width": "300px",
-      "height": "18px",
-      "innerHTML": "RUNNING ON TIME",
-      "color": "#171717",
-      "font-family": "HelveticaNeue-Bold",
-      "font-size": "11px",
-      "font-weight": "700",
-      "letter-spacing": "2.0px",
-      "z-index": "20"
-    }
-  }
+  ]
 }

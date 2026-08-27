@@ -1,45 +1,34 @@
 {
-  "assets": [
+  "id": "brushstroke-time",
+  "name": "brushstroke-time",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/brushstroke-time",
+  "entry": "LockBackground.html",
+  "files": [
     {
-      "id": "paintbrush",
-      "url": "assets/brushstroke-time/paintbrush.png",
-      "sha256": "1defbc446d6ff6d3a241eeef156144a8cc930b170f51d7a0b310b4598e7d54ee"
+      "path": "LockBackground.html",
+      "sha256": "b2785a2b16347cbd68332c36840cea3e7ffcd8aa7a41da426b98271b1f3468c2"
     },
     {
-      "id": "mona-lisa-study",
-      "url": "assets/brushstroke-time/mona-lisa-study.jpg",
+      "path": "great-wave-study.jpg",
+      "sha256": "9f2f27f577977b4b6c602ccd1798eb90cc92721ee82b02dcf7c32912ea288bde"
+    },
+    {
+      "path": "mona-lisa-study.jpg",
       "sha256": "d1e4082eea71a62545ce348c1c87af4ef4184605fc38e69d1d8d5ebf6fab055a"
     },
     {
-      "id": "great-wave-study",
-      "url": "assets/brushstroke-time/great-wave-study.jpg",
-      "sha256": "9f2f27f577977b4b6c602ccd1798eb90cc92721ee82b02dcf7c32912ea288bde"
-    }
-  ],
-  "placedElements": {
-    "paper": {
-      "type": "wallpaper",
-      "position": "absolute",
-      "left": "50%",
-      "top": "0px",
-      "transform": "translateX(-50%)",
-      "gradient": "#FAF7EF|#EEE8DA",
-      "z-index": "-100"
+      "path": "paintbrush.png",
+      "sha256": "1defbc446d6ff6d3a241eeef156144a8cc930b170f51d7a0b310b4598e7d54ee"
     },
-    "paintedTimeAndStudy": {
-      "type": "brushstroke-time",
-      "position": "absolute",
-      "left": "50%",
-      "top": "156px",
-      "transform": "translateX(-50%)",
-      "width": "340px",
-      "height": "430px",
-      "color": "#173DAD",
-      "brush-asset-id": "paintbrush",
-      "painting-asset-ids": "mona-lisa-study,great-wave-study",
-      "stroke-width": "13px",
-      "animation-duration": "18s",
-      "z-index": "20"
+    {
+      "path": "script.js",
+      "sha256": "f6242d7bffe80a6662b5f879c9bd9a6b3111ea7a6af29a530cfbdae447d78df3"
+    },
+    {
+      "path": "style.css",
+      "sha256": "4753a714b65585cfa8f8a686c548658e769989d20e54f892c4add4281fcfb2ba"
     }
-  }
+  ]
 }

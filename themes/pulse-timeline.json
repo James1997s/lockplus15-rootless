@@ -1,44 +1,22 @@
 {
-  "assets": [],
-  "placedElements": {
-    "wallpaper": {
-      "type": "wallpaper",
-      "position": "absolute",
-      "left": "50%",
-      "top": "0px",
-      "transform": "translateX(-50%)",
-      "gradient": "#02090B|#04181A",
-      "z-index": "-100"
+  "id": "pulse-timeline",
+  "name": "pulse-timeline",
+  "version": "1.0.0",
+  "format": "folder",
+  "basePath": "folder-themes/pulse-timeline",
+  "entry": "LockBackground.html",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "d563398c61efc030a557acf1bc740c79a52f2b173fe914598a7894dbf2b24c81"
     },
-    "monitorPanel": {
-      "type": "panel",
-      "position": "absolute",
-      "left": "50%",
-      "top": "176px",
-      "transform": "translateX(-50%)",
-      "width": "340px",
-      "height": "280px",
-      "padding": "0px",
-      "background-color": "#041316",
-      "border": "1px solid #125047",
-      "border-radius": "4px",
-      "innerHTML": "",
-      "color": "rgba(0,0,0,0)",
-      "z-index": "10"
+    {
+      "path": "script.js",
+      "sha256": "f6242d7bffe80a6662b5f879c9bd9a6b3111ea7a6af29a530cfbdae447d78df3"
     },
-    "pulseTime": {
-      "type": "ecg-time",
-      "position": "absolute",
-      "left": "50%",
-      "top": "176px",
-      "transform": "translateX(-50%)",
-      "width": "340px",
-      "height": "280px",
-      "color": "#3FFFB8",
-      "grid-color": "#0A272A",
-      "stroke-width": "3px",
-      "animation-duration": "3.4s",
-      "z-index": "20"
+    {
+      "path": "style.css",
+      "sha256": "4753a714b65585cfa8f8a686c548658e769989d20e54f892c4add4281fcfb2ba"
     }
-  }
+  ]
 }

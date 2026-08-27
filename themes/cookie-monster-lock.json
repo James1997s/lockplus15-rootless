@@ -2,90 +2,37 @@
   "id": "cookie-monster-lock",
   "name": "Cookie Monster Cookie Time",
   "version": "1.0.5",
-  "assets": [
+  "format": "folder",
+  "basePath": "folder-themes/cookie-monster-lock",
+  "entry": "LockBackground.html",
+  "files": [
     {
-      "id": "cookie-wallpaper",
-      "url": "assets/cookie-monster/cookie-monster-lock-wallpaper.jpg",
-      "sha256": "e83a9920c1350b42f35325c8dbf526f7f3d0917184faba5f376d2e5a6a916afd"
+      "path": "LockBackground.html",
+      "sha256": "105c8366ce88c84f79042d377254b3a005acf490d60ddd2dfdb97bd9845d8888"
     },
     {
-      "id": "cookie-clock-texture",
-      "url": "assets/cookie-monster/cookie-clock-texture.jpg",
+      "path": "cookie-clock-texture.jpg",
       "sha256": "f28b84081c8361e104e76c53e27049e0075bb54c0fd21d23be9703ab57d275a4"
     },
     {
-      "id": "cookie-number-glyph-atlas",
-      "url": "assets/cookie-monster/cookie-number-glyph-atlas.png",
+      "path": "cookie-letter-glyph-atlas.png",
+      "sha256": "460bbea08aa73dd269947122a61d1c45f708570a5ba9a1e112c2da013400bc31"
+    },
+    {
+      "path": "cookie-monster-lock-wallpaper.jpg",
+      "sha256": "e83a9920c1350b42f35325c8dbf526f7f3d0917184faba5f376d2e5a6a916afd"
+    },
+    {
+      "path": "cookie-number-glyph-atlas.png",
       "sha256": "c9ace4e793733aded052e29d81b27d46f4633958d5ce0b5b88c40406e6d42e2b"
     },
     {
-      "id": "cookie-letter-glyph-atlas",
-      "url": "assets/cookie-monster/cookie-letter-glyph-atlas.png",
-      "sha256": "460bbea08aa73dd269947122a61d1c45f708570a5ba9a1e112c2da013400bc31"
+      "path": "script.js",
+      "sha256": "f6242d7bffe80a6662b5f879c9bd9a6b3111ea7a6af29a530cfbdae447d78df3"
+    },
+    {
+      "path": "style.css",
+      "sha256": "4753a714b65585cfa8f8a686c548658e769989d20e54f892c4add4281fcfb2ba"
     }
-  ],
-  "placedElements": {
-    "wallpaper": {
-      "type": "image",
-      "position": "absolute",
-      "left": "50%",
-      "top": "0px",
-      "transform": "translateX(-50%)",
-      "width": "375px",
-      "height": "667px",
-      "asset-id": "cookie-wallpaper",
-      "image-role": "wallpaper",
-      "z-index": "-20"
-    },
-    "date": {
-      "type": "date",
-      "position": "absolute",
-      "left": "50%",
-      "top": "73px",
-      "transform": "translateX(-50%)",
-      "width": "320px",
-      "height": "24px",
-      "time-format": "EEE, MMM d",
-      "color": "#8A4B2A",
-      "font-family": "CookieCutout",
-      "font-size": "17px",
-      "font-weight": "400",
-      "text-shadow": "0px 1px 3px rgba(0,0,0,0.55)",
-      "z-index": "10"
-    },
-    "clock": {
-      "type": "clock",
-      "position": "absolute",
-      "left": "50%",
-      "top": "112px",
-      "transform": "translateX(-50%)",
-      "width": "330px",
-      "height": "88px",
-      "time-format": "h:mm",
-      "color": "#8A4B2A",
-      "font-family": "CookieCutout",
-      "font-size": "76px",
-      "font-weight": "400",
-      "letter-spacing": "1px",
-      "text-shadow": "0px 1px 0px rgba(255,247,232,0.45)",
-      "z-index": "11"
-    },
-    "caption": {
-      "type": "text",
-      "position": "absolute",
-      "left": "50%",
-      "top": "211px",
-      "transform": "translateX(-50%)",
-      "width": "300px",
-      "height": "22px",
-      "innerHTML": "COOKIE TIME",
-      "color": "#8A4B2A",
-      "font-family": "CookieCutout",
-      "font-size": "11px",
-      "font-weight": "400",
-      "letter-spacing": "3px",
-      "text-shadow": "0px 1px 3px rgba(0,0,0,0.55)",
-      "z-index": "10"
-    }
-  }
+  ]
 }
