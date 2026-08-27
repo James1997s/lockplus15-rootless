@@ -10,17 +10,6 @@
     }
   ],
   "placedElements": {
-    "wallpaper": {
-      "type": "image",
-      "position": "absolute",
-      "left": "0px",
-      "top": "0px",
-      "width": "375px",
-      "height": "667px",
-      "asset-id": "cat-hat-animated-wallpaper",
-      "image-role": "wallpaper",
-      "z-index": "0"
-    },
     "date": {
       "type": "date",
       "position": "absolute",
@@ -33,14 +22,13 @@
       "font-family": "CookieCutout, LockTime26Stencil, cursive",
       "font-size": "16px",
       "font-weight": "400",
-      "text-align": "right",
       "text-shadow": "0px 2px 3px rgba(0,0,0,0.65)",
       "z-index": "10"
     },
     "clock": {
       "type": "clock",
       "position": "absolute",
-      "left": "-24px",
+      "left": "50%",
       "top": "253px",
       "width": "126px",
       "height": "82px",
@@ -50,8 +38,7 @@
       "font-size": "58px",
       "font-weight": "400",
       "letter-spacing": "1px",
-      "transform": "rotate(90deg)",
-      "transform-origin": "center center",
+      "transform": "translateX(-50%) translateX(-145px) rotate(90deg)",
       "text-shadow": "2px 2px 0px #B52D32, 3px 3px 5px rgba(0,0,0,0.6)",
       "z-index": "12"
     },
@@ -68,14 +55,13 @@
       "font-size": "10px",
       "font-weight": "400",
       "letter-spacing": "1px",
-      "text-align": "right",
       "text-shadow": "0px 2px 3px rgba(0,0,0,0.65)",
       "z-index": "10"
     },
     "accent": {
       "type": "text",
       "position": "absolute",
-      "left": "30px",
+      "left": "50%",
       "top": "600px",
       "width": "140px",
       "height": "28px",
@@ -85,9 +71,32 @@
       "font-size": "12px",
       "font-weight": "400",
       "letter-spacing": "1px",
-      "transform": "rotate(-8deg)",
+      "transform": "translateX(-50%) rotate(-8deg)",
       "text-shadow": "1px 1px 0px #F8E8C2",
       "z-index": "10"
+    },
+    "wallpaper": {
+      "type": "wallpaper",
+      "position": "absolute",
+      "left": "50%",
+      "top": "0px",
+      "transform": "translateX(-50%)",
+      "gradient": "#08152D|#08152D",
+      "z-index": "-100"
+    },
+    "catBackground": {
+      "type": "image",
+      "position": "absolute",
+      "left": "50%",
+      "top": "0px",
+      "transform": "translateX(-50%)",
+      "asset-id": "cat-hat-animated-wallpaper",
+      "image-role": "panel",
+      "width": "375px",
+      "height": "667px",
+      "opacity": "1.0",
+      "border-radius": "0px",
+      "z-index": "0"
     }
   }
 }
