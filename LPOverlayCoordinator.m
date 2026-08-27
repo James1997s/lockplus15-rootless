@@ -14,6 +14,18 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
                                          const void *object,
                                          CFDictionaryRef userInfo);
 
+@interface LPEventPassthroughView : UIView
+@end
+
+@implementation LPEventPassthroughView
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    return NO;
+}
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    return nil;
+}
+@end
+
 static UIView *LPFullLockScreenHostForView(UIView *view) {
     if (view == nil) {
         return nil;
@@ -241,7 +253,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 
     self.hostView = hostView;
 
-    UIView *overlay = [[UIView alloc] initWithFrame:hostView.bounds];
+    UIView *overlay = [[LPEventPassthroughView alloc] initWithFrame:hostView.bounds];
     overlay.backgroundColor = UIColor.clearColor;
     overlay.opaque = NO;
     // Stay above SpringBoard views added later to the date host.
