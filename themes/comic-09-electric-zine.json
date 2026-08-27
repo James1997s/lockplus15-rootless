@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "57a099337d772183ece718aebc08155f24f7c6f8c225a150da0910f57ea31608"
+      "sha256": "af23cfc9ee400ca38e23cb84f381c5ce957838300055f4a394ed3b4ccb9f4a7b"
     },
     {
       "path": "script.js",
@@ -16,12 +16,16 @@
     },
     {
       "path": "style.css",
-      "sha256": "c083785930a635fc25c21fcab3eff9d1e8c27e3c98486521efb541ca89fc716f"
+      "sha256": "0856ded12bba1f2826e082a420ec09b2cffda00a1f4eda455a90c4ea22a41a5d"
     }
   ],
   "typography": {
     "fontStack": "\"Hiragino Mincho ProN\", serif",
     "clockWeight": "500",
     "clockLetterSpacing": "-0.04em"
+  },
+  "clockComposition": {
+    "family": "comic",
+    "variant": 6
   }
 }

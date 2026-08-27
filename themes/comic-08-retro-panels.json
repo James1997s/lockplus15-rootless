@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "b118d13492c28207fb08c933a789c60ddfbdac8b74135f76e7644e3702f1688d"
+      "sha256": "a177990fd53cf162efaf9435caf15acec34a16b348b4ea7f54563226bae04ce9"
     },
     {
       "path": "script.js",
@@ -16,12 +16,16 @@
     },
     {
       "path": "style.css",
-      "sha256": "0d7c9bc76c450bd5e1fbb6f7eec58263d2540b530d93eaf710d75c68bd6989e1"
+      "sha256": "b469f90bd0101e9258122a15f33d0edd2cccb53e3cf6bf86bbe79441b8f72f6f"
     }
   ],
   "typography": {
     "fontStack": "\"Hiragino Kaku Gothic ProN\", sans-serif",
     "clockWeight": "800",
     "clockLetterSpacing": "-0.08em"
+  },
+  "clockComposition": {
+    "family": "comic",
+    "variant": 5
   }
 }

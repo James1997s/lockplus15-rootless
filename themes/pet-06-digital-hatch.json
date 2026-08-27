@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "bfb4d7470d3c2b78b5fd34284fb7fe7b62b7ce1b3f0765e596d077fcdaa87f80"
+      "sha256": "ad7d806b53d11af4f6a1810fefdefef0e76536ffd605d0b1e3ffafed530dca00"
     },
     {
       "path": "script.js",
@@ -16,12 +16,16 @@
     },
     {
       "path": "style.css",
-      "sha256": "ea581a5c8c99f2b848f9d1afa1527a19b509639884c975bd0deaffe9d2e2a075"
+      "sha256": "9e42cbe0141dd4eacbe32b197be61679b0f313e0d46828ee3f3527c93b990148"
     }
   ],
   "typography": {
     "fontStack": "\"Trebuchet MS\", sans-serif",
     "clockWeight": "700",
     "clockLetterSpacing": "-0.05em"
+  },
+  "clockComposition": {
+    "family": "pet",
+    "variant": 3
   }
 }

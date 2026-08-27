@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "d9612a3857da2277f7731f8fe64f60363d436e60f01582c982b5cb2b2196873c"
+      "sha256": "5c704a407292306856c4a7aaa6075c3a38f0f7ae64a54d3544425834e1a3fbf1"
     },
     {
       "path": "script.js",
@@ -16,12 +16,16 @@
     },
     {
       "path": "style.css",
-      "sha256": "da8189ac4e62ce0b42719aec6ed0ee6949a9872da3fc8a0a0e2bf2af735e827b"
+      "sha256": "b71df7cdae3e407f7901e71e59326b2ba96d73acdc0c316cfdc8f7e90deb9384"
     }
   ],
   "typography": {
     "fontStack": "Chalkboard SE, cursive",
     "clockWeight": "600",
     "clockLetterSpacing": "-0.02em"
+  },
+  "clockComposition": {
+    "family": "shoji",
+    "variant": 5
   }
 }

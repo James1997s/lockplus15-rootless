@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "831d994f56270da25005d1c74dfcb36a4d87265757488dbf774408f121c1fed7"
+      "sha256": "77041b2609b3b1485e26480ad320147074db2d5901facf693a4ca06a5bab1dec"
     },
     {
       "path": "script.js",
@@ -16,7 +16,7 @@
     },
     {
       "path": "style.css",
-      "sha256": "19bbbf9655c1e6848439dc302c569e8e752cbff96271e15b015f9cc55d8ee0a9"
+      "sha256": "a2b640c2385f1e2cc1c8a84bc8803e8d2ed77bed72889f7d8e3f16bc16ffb8fb"
     },
     {
       "path": "wallpaper.jpg",
@@ -27,5 +27,9 @@
     "fontStack": "\"Avenir Next\", sans-serif",
     "clockWeight": "700",
     "clockLetterSpacing": "-0.06em"
+  },
+  "clockComposition": {
+    "family": "dashboard",
+    "variant": 2
   }
 }

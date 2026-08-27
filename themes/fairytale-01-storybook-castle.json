@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "b721617cddaa2c36a9cdeead23132060aa9a57f251d657af19e7d55586c6481e"
+      "sha256": "1276f5b707a89a453c1e09b01be9946064c81c51421d470d0a8aa1ec168313a2"
     },
     {
       "path": "script.js",
@@ -16,12 +16,16 @@
     },
     {
       "path": "style.css",
-      "sha256": "7099de917d94ebbcea0bd08ed1cdb5ff37f6abdd05f9c5af8e5d1598becf0a7d"
+      "sha256": "0c530bfe1f3f80e122fe53d1b2b37d1971236df27de4fdd50b7e94ff9c2e2582"
     }
   ],
   "typography": {
     "fontStack": "\"Helvetica Neue\", sans-serif",
     "clockWeight": "300",
     "clockLetterSpacing": "-0.07em"
+  },
+  "clockComposition": {
+    "family": "editorial",
+    "variant": 1
   }
 }

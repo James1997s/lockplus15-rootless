@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "2f611f23e77120be2b0f0db514990a806e927ffcec9d1362baf3affb9c6c88bc"
+      "sha256": "e97c866a0062c2ceb9e0e6ec6786529638fe537e12bc2fc36cc39241987d7e99"
     },
     {
       "path": "script.js",
@@ -16,12 +16,16 @@
     },
     {
       "path": "style.css",
-      "sha256": "be7c378c1e4e133fb4f7faa142aaa232ffea3ffc2cc448ec498cb2a3fb8407e4"
+      "sha256": "f5d394e470daddf08b17e7f7a0140a61b976fb3c3c78b7dff077e2711f83592c"
     }
   ],
   "typography": {
     "fontStack": "\"Hiragino Kaku Gothic ProN\", sans-serif",
     "clockWeight": "800",
     "clockLetterSpacing": "-0.08em"
+  },
+  "clockComposition": {
+    "family": "dial",
+    "variant": 3
   }
 }

@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "91f7d1e6b884fbf18208819c6e3f453a9d9e72e9e89402e5525a1a42b1456346"
+      "sha256": "c1202a02d3f6d6bdd9de0a0983571014f5d9edc05ab73d25baaadb39a926d118"
     },
     {
       "path": "script.js",
@@ -16,12 +16,16 @@
     },
     {
       "path": "style.css",
-      "sha256": "86d316910c2dc3a78996c0aff9625e83074ea950abdbc0a45081c92508c8b535"
+      "sha256": "3ce3c57ecb3ec2b5d58c044159a0cb47bff2a3258688b6d28f4907b735f45b2b"
     }
   ],
   "typography": {
     "fontStack": "\"Hiragino Kaku Gothic ProN\", sans-serif",
     "clockWeight": "800",
     "clockLetterSpacing": "-0.08em"
+  },
+  "clockComposition": {
+    "family": "shoji",
+    "variant": 6
   }
 }
