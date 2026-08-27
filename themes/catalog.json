@@ -70,6 +70,13 @@
       "description": "Animated geometric cat lock screen with live date and time; no notification, notch, or status-bar markup.",
       "format": "folder",
       "url": "folder-themes/animated-psychedelic-cat/animated-psychedelic-cat.json"
+    },
+    {
+      "id": "stencil-revolt",
+      "name": "Comic Graffiti Wall Clock",
+      "description": "Monochrome comic-graffiti collage with a darkened wallpaper, one large Sour Gummy live clock, and a small live date; no notifications, notch, or status-bar overlay.",
+      "format": "folder",
+      "url": "folder-themes/stencil-revolt/stencil-revolt.json"
     }
   ]
 }
