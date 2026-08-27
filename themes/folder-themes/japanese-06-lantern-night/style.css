@@ -1,1 +1,10 @@
 :root{--bg:#09101d;--fg:#f1f6ff;--a:#45d8ff;--b:#ff6d9e}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif}.lockscreen{position:fixed;inset:0;background:linear-gradient(160deg,transparent 30%,color-mix(in srgb,var(--a) 16%,transparent)),var(--bg)}.time{font-size:clamp(48px,17vw,82px);font-weight:800;line-height:.88;letter-spacing:-.06em}.word{font-size:13px;letter-spacing:.18em;color:var(--a);font-weight:700;margin-top:12px}.date{font-size:12px;letter-spacing:.1em;opacity:.85;margin-top:12px}.weather{font-size:9px;letter-spacing:.12em;opacity:.7}.shoji-panel{position:absolute;inset:28px 22px 70px;border:8px solid color-mix(in srgb,var(--a) 45%,transparent);padding:30px;background:repeating-linear-gradient(90deg,transparent 0 20%,color-mix(in srgb,var(--fg) 8%,transparent) 20.5% 21%,transparent 21.5% 40%)}.shoji-stamp{font-family:Georgia,serif;font-size:11px;letter-spacing:.2em;color:var(--b);margin-bottom:30vh}.shoji-panel .time{font-family:Georgia,serif;font-weight:400}.brush{position:absolute;right:24px;bottom:22px;writing-mode:vertical-rl;font-family:Georgia,serif;font-size:12px;letter-spacing:.14em}
+
+/* static mode: animations intentionally disabled */
+*,*::before,*::after{transform:none;}
+
+/* static UI: intentional no motion */
+*,*::before,*::after{animation:none!important;transition:none!important;transform:none!important;}
+
+/* original static stylised clock treatment; conceptually inspired by open clock galleries, not copied */
+.clock-style-poster .time{font-family:Impact,sans-serif;font-size:clamp(54px,19vw,96px);line-height:.82;letter-spacing:-.04em}.clock-style-poster .word{font-weight:900;letter-spacing:.02em}

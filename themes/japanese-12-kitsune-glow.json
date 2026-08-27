@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "c1202a02d3f6d6bdd9de0a0983571014f5d9edc05ab73d25baaadb39a926d118"
+      "sha256": "dc485377424777324e14e4aa2763f22489e79abf4a34a48b374d179ce8b6cd8e"
     },
     {
       "path": "script.js",
@@ -16,7 +16,7 @@
     },
     {
       "path": "style.css",
-      "sha256": "3ce3c57ecb3ec2b5d58c044159a0cb47bff2a3258688b6d28f4907b735f45b2b"
+      "sha256": "80fb6fe115bfc6b56b80877d9c955cf2db6b3166fcb5679c6e59f2fc2da343e2"
     }
   ],
   "typography": {
@@ -27,5 +27,7 @@
   "clockComposition": {
     "family": "shoji",
     "variant": 6
-  }
+  },
+  "staticUI": true,
+  "clockStyle": "pill"
 }

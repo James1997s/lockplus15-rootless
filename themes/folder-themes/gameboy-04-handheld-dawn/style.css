@@ -1,1 +1,10 @@
 :root{--bg:#071a1c;--fg:#e3ffd8;--a:#6af0c7;--b:#ed7dff}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif}.lockscreen{position:fixed;inset:0;background:linear-gradient(160deg,transparent 30%,color-mix(in srgb,var(--a) 16%,transparent)),var(--bg)}.time{font-size:clamp(48px,17vw,82px);font-weight:800;line-height:.88;letter-spacing:-.06em}.word{font-size:13px;letter-spacing:.18em;color:var(--a);font-weight:700;margin-top:12px}.date{font-size:12px;letter-spacing:.1em;opacity:.85;margin-top:12px}.weather{font-size:9px;letter-spacing:.12em;opacity:.7}.pixel-shell{position:absolute;left:22px;right:22px;top:90px;border:10px solid var(--a);background:var(--fg);color:var(--bg);padding:14px;box-shadow:10px 12px 0 var(--b)}.pixel-top{font:11px monospace;display:flex;justify-content:space-between;border-bottom:2px solid var(--bg);padding-bottom:10px}.pixel-screen{margin:28px 0;padding:22px 10px;border:3px double var(--bg);background:color-mix(in srgb,var(--a) 60%,var(--fg))}.pixel-screen .time{font-family:monospace;font-size:clamp(40px,13vw,65px);letter-spacing:.02em}.pixel-screen .word,.pixel-screen .date{color:var(--bg);font-family:monospace}.pixel-controls{display:flex;justify-content:space-around;font-size:22px}
+
+/* static mode: animations intentionally disabled */
+*,*::before,*::after{transform:none;}
+
+/* static UI: intentional no motion */
+*,*::before,*::after{animation:none!important;transition:none!important;transform:none!important;}
+
+/* original static stylised clock treatment; conceptually inspired by open clock galleries, not copied */
+.clock-style-pill .time{display:inline-block;padding:8px 22px;border-radius:999px;background:var(--a);color:var(--bg);font-weight:700;letter-spacing:-.04em}.clock-style-pill .date{padding-left:16px;border-left:4px solid var(--b)}

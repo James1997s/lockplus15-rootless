@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "e41b145c1de6d72206f4d06e30af5f34466438a00e496d56559e4c56eb65ffa9"
+      "sha256": "734c542ddf9ecb1cc18ce4dde1c2128638b371e679a60c6c6e588b5e17f3b9f5"
     },
     {
       "path": "script.js",
@@ -16,7 +16,7 @@
     },
     {
       "path": "style.css",
-      "sha256": "94451c43cf22ac7c4ed64eb929f8373e7f0c2fdbe22786ff00aaf6642c277ce5"
+      "sha256": "2467b4afa8d2d76ffbf029a634e3e2c15250472798af85aa071fdc3a4dacd541"
     }
   ],
   "typography": {
@@ -27,5 +27,7 @@
   "clockComposition": {
     "family": "dashboard",
     "variant": 3
-  }
+  },
+  "staticUI": true,
+  "clockStyle": "poster"
 }

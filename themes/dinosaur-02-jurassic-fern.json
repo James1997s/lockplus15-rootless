@@ -8,7 +8,7 @@
   "files": [
     {
       "path": "LockBackground.html",
-      "sha256": "e97c866a0062c2ceb9e0e6ec6786529638fe537e12bc2fc36cc39241987d7e99"
+      "sha256": "464d968a64c392f398117240ea3554c33786d1f5bfd390ff6ff8f86e30bdb6eb"
     },
     {
       "path": "script.js",
@@ -16,7 +16,7 @@
     },
     {
       "path": "style.css",
-      "sha256": "f5d394e470daddf08b17e7f7a0140a61b976fb3c3c78b7dff077e2711f83592c"
+      "sha256": "c49531f57f16e1acb85fcb153a73ca46b98720c333ef774f406bfa3e0bfe7275"
     }
   ],
   "typography": {
@@ -27,5 +27,7 @@
   "clockComposition": {
     "family": "dial",
     "variant": 3
-  }
+  },
+  "staticUI": true,
+  "clockStyle": "pill"
 }
