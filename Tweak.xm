@@ -74,11 +74,7 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
         return;
     }
     if (coordinator.isEnabled) {
-        if (hidden) {
-            // This is SpringBoard beginning its lock-screen dismissal. Tear down
-            // unconditionally before the passcode/home-screen animation advances.
-            [coordinator detachCurrentOverlay];
-        } else {
+        if (!hidden) {
             UIView *visualHost = self.superview;
             if (visualHost != nil) {
                 [coordinator attachToHostView:visualHost];
