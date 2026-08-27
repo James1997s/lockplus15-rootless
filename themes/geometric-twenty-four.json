@@ -17,6 +17,10 @@
     {
       "path": "style.css",
       "sha256": "353eace3fed6ff015fff76423a304317450c236f5743956f21cc1774187dea13"
+    },
+    {
+      "path": "wallpaper.jpg",
+      "sha256": "95ac6082e2abddcf4d29acf6f01deeddb0be1dfeee74d70afaaec0dcb7925b49"
     }
   ]
 }
