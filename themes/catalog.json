@@ -58,6 +58,12 @@
       "name": "iOS 26 Big Glass Clock",
       "url": "ios26-big-clock.json",
       "format": "folder"
+    },
+    {
+      "id": "oneui8-adaptive-clock",
+      "name": "One UI 8 Adaptive Clock",
+      "url": "oneui8-adaptive-clock.json",
+      "format": "folder"
     }
   ]
 }
