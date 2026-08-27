@@ -58,7 +58,7 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
     LPOverlayCoordinator *coordinator = [LPOverlayCoordinator sharedCoordinator];
     if (self.window != nil) {
         [coordinator registerStockDateView:self];
-        UIView *visualHost = self.window;
+        UIView *visualHost = self.superview;
         if (visualHost != nil) {
             [coordinator attachToHostView:visualHost];
         }
@@ -75,7 +75,7 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
     }
     if (coordinator.isEnabled) {
         if (!hidden) {
-            UIView *visualHost = self.window;
+            UIView *visualHost = self.superview;
             if (visualHost != nil) {
                 [coordinator attachToHostView:visualHost];
             }
