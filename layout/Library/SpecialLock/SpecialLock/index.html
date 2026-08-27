@@ -79,7 +79,7 @@
             element.src = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/' + encodeURIComponent(properties['asset-id']);
             element.draggable = false;
           }
-          if (type === 'clock' && properties['text-texture-asset-id'] && currentTheme && currentTheme.id) {
+          if ((type === 'clock' || type === 'date' || type === 'text') && properties['text-texture-asset-id'] && currentTheme && currentTheme.id) {
             var texturePath = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/' + encodeURIComponent(properties['text-texture-asset-id']);
             element.style.backgroundImage = 'url("' + texturePath + '")';
             element.style.backgroundSize = 'cover';
