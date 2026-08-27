@@ -44,6 +44,7 @@ static UIView *LPFullLockScreenHostForView(UIView *view) {
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) LPNativeThemeRenderer *themeRenderer;
 @property (nonatomic, strong) NSTimer *hostMonitorTimer;
+@property (nonatomic, assign) BOOL lockScreenVisible;
 @end
 
 @implementation LPOverlayCoordinator
@@ -60,6 +61,7 @@ static UIView *LPFullLockScreenHostForView(UIView *view) {
 - (instancetype)init {
     self = [super init];
     if (self) {
+        _lockScreenVisible = YES;
         CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
                                         (__bridge const void *)self,
                                         LPPreferencesChangedCallback,
@@ -185,7 +187,7 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 }
 
 - (void)ensureOverlayAttachedToCurrentHost {
-    if (!self.isEnabled && self.themeRenderer == nil) {
+    if (!self.lockScreenVisible || (!self.isEnabled && self.themeRenderer == nil)) {
         return;
     }
     UIView *currentHost = LPFullLockScreenHostForView(self.stockDateView.superview);
@@ -204,11 +206,17 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
 - (void)startHostMonitor {
     [self.hostMonitorTimer invalidate];
     self.hostMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.50 repeats:YES block:^(NSTimer *timer) {
+        if (!self.lockScreenVisible) {
+            return;
+        }
         [self ensureOverlayAttachedToCurrentHost];
     }];
 }
 
 - (void)attachToHostView:(UIView *)hostView {
+    if (!self.lockScreenVisible) {
+        return;
+    }
     hostView = LPFullLockScreenHostForView(hostView);
     if (hostView == nil || (!self.isEnabled && self.themeRenderer == nil)) {
         return;
@@ -260,6 +268,22 @@ static void LPPreferencesChangedCallback(CFNotificationCenterRef center,
         }
     }];
 }
+- (void)setLockScreenVisible:(BOOL)visible {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.lockScreenVisible = visible;
+        if (!visible) {
+            self.overlayView.hidden = YES;
+            [self.hostMonitorTimer invalidate];
+            self.hostMonitorTimer = nil;
+        } else {
+            self.overlayView.hidden = NO;
+            [self applyStockDateVisibility];
+            [self ensureOverlayAttachedToCurrentHost];
+            [self startHostMonitor];
+        }
+    });
+}
+
 - (void)detachFromHostView:(UIView *)hostView {
     if (hostView == nil || hostView != self.hostView) {
         return;

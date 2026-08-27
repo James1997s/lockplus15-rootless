@@ -12,4 +12,5 @@
 - (void)applyActiveThemeImmediately;
 - (void)registerStockDateView:(UIView *)dateView;
 - (void)unregisterStockDateView:(UIView *)dateView;
+- (void)setLockScreenVisible:(BOOL)visible;
 @end

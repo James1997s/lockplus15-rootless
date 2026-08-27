@@ -7,6 +7,8 @@
 // than the UIWindow, so SpringBoard's passcode and unlock layers remain above it.
 @interface SBFLockScreenDateView : UIView
 @end
+@interface SBDashBoardViewController : UIViewController
+@end
 
 static char kLPHiddenEmptyNotificationStateKey;
 
@@ -97,6 +99,17 @@ static BOOL LPIsEmptyNotificationStateText(NSString *text) {
 
 %end
 
+
+%hook SBDashBoardViewController
+- (void)viewWillDisappear:(BOOL)animated {
+    [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:NO];
+    %orig(animated);
+}
+- (void)viewDidAppear:(BOOL)animated {
+    %orig(animated);
+    [[LPOverlayCoordinator sharedCoordinator] setLockScreenVisible:YES];
+}
+%end
 %ctor {
     @autoreleasepool {
         [LPOverlayCoordinator sharedCoordinator];
