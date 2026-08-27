@@ -77,6 +77,13 @@
       "description": "Monochrome comic-graffiti collage with a darkened wallpaper, one large Sour Gummy live clock, and a small live date; no notifications, notch, or status-bar overlay.",
       "format": "folder",
       "url": "folder-themes/stencil-revolt/stencil-revolt.json"
+    },
+    {
+      "id": "silent-film-chaplin",
+      "name": "The Silent Hour",
+      "description": "Charlie Chaplin-inspired silent-film newspaper lock screen with the original monochrome street wallpaper, live time/date, Walsall weather label, and battery status.",
+      "format": "folder",
+      "url": "folder-themes/silent-film-chaplin/silent-film-chaplin.json"
     }
   ]
 }
