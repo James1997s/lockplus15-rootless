@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Psychedelic Lockscreen</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="phone-frame">
+        <!-- SVG Vector Graphics with Native CSS Animations -->
+        <svg class="bg-canvas" viewBox="0 0 375 812" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="bgGlow" cx="50%" cy="35%" r="60%">
+                    <stop offset="0%" stop-color="#3b0764" stop-opacity="0.8"/>
+                    <stop offset="60%" stop-color="#0f0521" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#05020c" stop-opacity="1"/>
+                </radialGradient>
+            </defs>
+            <rect width="375" height="812" fill="url(#bgGlow)" />
+
+            <!-- Rotating Sacred Geometry Mandala Background -->
+            <g class="rotating-mandala" stroke="#a855f7" stroke-opacity="0.15" stroke-width="1" fill="none">
+                <circle cx="187.5" cy="300" r="160" />
+                <circle cx="187.5" cy="300" r="120" />
+                <circle cx="187.5" cy="300" r="80" />
+                <circle cx="187.5" cy="300" r="40" />
+                <path d="M 187.5,140 L 187.5,460 M 27.5,300 L 347.5,300 M 74.3,186.8 L 300.6,413.1 M 74.3,413.1 L 300.6,186.8" />
+                <polygon points="187.5,140 326,380 49,380" />
+                <polygon points="187.5,460 326,220 49,220" />
+            </g>
+
+            <!-- Minimal Animated Cat Line Art -->
+            <g class="cat-group">
+                <path class="cat-lines" d="
+                    M 187.5,180 
+                    L 150,120 L 130,190 L 115,250 L 140,320 L 187.5,350 L 235,320 L 260,250 L 245,190 L 225,120 Z
+                    M 140,320 Q 90,400 110,500 L 265,500 Q 285,400 235,320
+                " fill="none" stroke="#c084fc" stroke-width="2.5" />
+
+                <polygon points="175,190 155,135 140,195" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-opacity="0.7"/>
+                <polygon points="200,190 220,135 235,195" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-opacity="0.7"/>
+
+                <polygon class="cat-eye" points="140,230 175,238 155,258" />
+                <polygon class="cat-eye" points="235,230 200,238 220,258" />
+
+                <polygon class="cat-eye" points="187.5,190 175,205 187.5,220 200,205" />
+
+                <path d="M 130,270 L 60,255 M 130,278 L 50,278 M 130,286 L 60,300" stroke="#00f0ff" stroke-width="1.5" stroke-opacity="0.6"/>
+                <path d="M 245,270 L 315,255 M 245,278 L 325,278 M 245,286 L 315,300" stroke="#00f0ff" stroke-width="1.5" stroke-opacity="0.6"/>
+            </g>
+        </svg>
+
+        <!-- Lock Clock Section -->
+        <div class="header-clock">
+            <div class="date" id="date-display">Tuesday, Oct 26</div>
+            <div class="time" id="time-display">10:09</div>
+        </div>
+
+        <!-- Quick Access Buttons -->
+        <div class="bottom-actions">
+            <div class="action-btn" title="Flashlight">🔦</div>
+            <div class="action-btn" title="Camera">📷</div>
+        </div>
+
+        <!-- Home Bar -->
+        <div class="home-bar"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -63,6 +63,13 @@
       "description": "Vivid purple stacked-outline clock with a vertical date rail and lower anime-inspired artwork; no music-player panel.",
       "format": "folder",
       "url": "folder-themes/purple-anime-stack-clock/purple-anime-stack-clock.json"
+    },
+    {
+      "id": "animated-psychedelic-cat",
+      "name": "Animated Psychedelic Cat",
+      "description": "Animated geometric cat lock screen with live date and time; no notification, notch, or status-bar markup.",
+      "format": "folder",
+      "url": "folder-themes/animated-psychedelic-cat/animated-psychedelic-cat.json"
     }
   ]
 }

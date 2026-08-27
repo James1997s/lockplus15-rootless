@@ -1,0 +1,22 @@
+{
+  "id": "animated-psychedelic-cat",
+  "name": "Animated Psychedelic Cat",
+  "description": "Animated geometric cat lock screen with live date and time; no notification, notch, or status-bar markup.",
+  "format": "folder",
+  "entry": "LockBackground.html",
+  "basePath": "folder-themes/animated-psychedelic-cat",
+  "files": [
+    {
+      "path": "LockBackground.html",
+      "sha256": "6df97fdd8fe6e0fe775bbf5c622ce48a45392097f9c3f74bd47e88f715b3420f"
+    },
+    {
+      "path": "style.css",
+      "sha256": "616ac928c34561a5a0929b1581d3654057cd230086af511994315cf70a10401c"
+    },
+    {
+      "path": "script.js",
+      "sha256": "8134c46172d61f69e0585f0ab468e5eff966d848cca0a6e5cf7e032cf9d8f8ca"
+    }
+  ]
+}
