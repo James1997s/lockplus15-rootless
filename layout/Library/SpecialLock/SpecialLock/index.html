@@ -49,7 +49,7 @@
       function applyProperties(element, properties) {
         Object.keys(properties).forEach(function (key) {
           var value = properties[key];
-          if (key === 'type' || key === 'innerHTML') {
+          if (key === 'type' || key === 'innerHTML' || key === 'text-texture-asset-id') {
             return;
           }
           if (key.indexOf('data-') === 0) {
@@ -69,12 +69,26 @@
 
         Object.keys(elements).forEach(function (identifier) {
           var properties = elements[identifier] || {};
-          var element = document.createElement('div');
           var type = properties.type || 'text';
+          var element = type === 'image' ? document.createElement('img') : document.createElement('div');
           element.id = identifier;
           element.className = 'lp-element lp-' + type;
           element.setAttribute('data-lp-type', type);
           applyProperties(element, properties);
+          if (type === 'image' && properties['asset-id'] && currentTheme && currentTheme.id) {
+            element.src = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/' + encodeURIComponent(properties['asset-id']);
+            element.draggable = false;
+          }
+          if (type === 'clock' && properties['text-texture-asset-id'] && currentTheme && currentTheme.id) {
+            var texturePath = 'file:///var/jb/var/mobile/Library/SpecialLock/Themes/Assets/' + encodeURIComponent(currentTheme.id) + '/' + encodeURIComponent(properties['text-texture-asset-id']);
+            element.style.backgroundImage = 'url("' + texturePath + '")';
+            element.style.backgroundSize = 'cover';
+            element.style.backgroundPosition = 'center';
+            element.style.webkitBackgroundClip = 'text';
+            element.style.backgroundClip = 'text';
+            element.style.color = 'transparent';
+            element.style.webkitTextFillColor = 'transparent';
+          }
           if (type === 'text' && typeof properties.innerHTML === 'string') {
             element.textContent = properties.innerHTML;
           }
